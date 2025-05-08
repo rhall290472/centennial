@@ -25,11 +25,8 @@ if (!is_dir($logDir)) {
 
 // Environment configuration  // development
 define('ENV', 'development'); // Set to 'production' on live server
-// Base path
-if (!defined('BASE_PATH')) {
-    define('BASE_PATH', __DIR__ . '/');
-}
 // Enable error reporting in development only
+
 if (defined('ENV') && ENV === 'development') {
   ini_set('display_errors', 1);
   error_reporting(E_ALL);
@@ -41,14 +38,14 @@ if (defined('ENV') && ENV === 'development') {
 
 
 // Dynamically set SITE_URL based on environment
-$is_localhost = in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
-$protocol = $is_localhost ? 'https' : 'https';
-$host = $is_localhost ? $_SERVER['SERVER_NAME'] : 'centennialdistrict.co';
-$port = ($is_localhost && !empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
+$is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
+$protocol = 'https'; // Simplified since it's always HTTPS in the original code
+$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'centennialdistrict.co';
+$port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
 define('SITE_URL', $protocol . '://' . $host . $port);
 
 // Assets URL
-define('ASSETS_URL', 'https://centennialdistrict.co/assets');
+define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Merit Badges');
@@ -93,9 +90,9 @@ if ($is_localhost) {
 }
 
 // Security headers
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
+//header('X-Content-Type-Options: nosniff');
+//header('X-Frame-Options: DENY');
+//header('X-XSS-Protection: 1; mode=block');
 
 // File upload limits
 ini_set('upload_max_filesize', '4M');

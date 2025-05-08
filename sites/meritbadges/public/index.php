@@ -20,12 +20,12 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/config.php';
 
 
-use Dotenv\Dotenv;
-use meritbadges\Classes\User;
+//use Dotenv\Dotenv;
+//use meritbadges\Classes\User;
 
 // Load environment variables
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../..');
-$dotenv->load();
+//$dotenv = Dotenv::createImmutable(__DIR__ . '/../../..');
+//$dotenv->load();
 
 // Load configs
 //$sharedConfig = require __DIR__ . '/../../../shared/config/database.php';
@@ -45,7 +45,7 @@ $dotenv->load();
 // Require critical dependencies
 if (file_exists(BASE_PATH . './src/Classes/CMeritBadges.php')) {
   //use CMeritBadges.php;
-  //require_once BASE_PATH . './src/Classes/CMeritBadges.php';
+  // TODO: >?? require_once BASE_PATH . './src/Classes/CMeritBadges.php';
 } else {
   error_log('Critical dependency CMeritBadges.php is missing.');
   die('An error occurred. Please try again later.');
@@ -68,17 +68,17 @@ function load_template($file)
 <html lang="en">
 
 <head>
-  <?php load_template('head.php'); ?>
+  <?php load_template('\src\Templates\head.php'); ?>
 </head>
 
 <body>
   <header id="header" class="header sticky-top" role="banner">
-    <?php load_template('navbar.php'); ?>
+    <?php load_template('\src\Templates\navbar.php'); ?>
   </header>
 
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <?php load_template('sidebar.php'); ?>
+      <?php load_template('\src\Templates\sidebar.php'); ?>
       <main id="main-content" class="col-10 py-3" role="main">
         <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
           <h1 class="display-5 fw-bold">Centennial District Merit Badges</h1>
@@ -90,7 +90,7 @@ function load_template($file)
     </div>
   </div>
 
-  <?php load_template('Footer.php'); ?>
+  <?php load_template('\src\Templates\footer.php'); ?>
 </body>
 
 </html>
