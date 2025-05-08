@@ -1,0 +1,11 @@
+{
+  "autoload": {
+      "psr-4": {
+          "Shared\\Classes\\": "shared/src/Classes/",
+          "meritbadges\\Classes\\": "sites/meritbadges/src/Classes/"
+      }
+  },
+  "require": {
+      "vlucas/phpdotenv": "^5.5"
+  }
+}
