@@ -24,6 +24,11 @@ defined('IN_APP') or die('Direct access not allowed.');
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Core theme CSS (includes Bootstrap)-->
 <link href=<?php echo SHARED_ASSETS_URL ."/styles.css"?> rel="stylesheet" />
+<?php 
+if (defined('ENV') && ENV === 'development')
+  echo SHARED_ASSETS_URL.'</br>';
+?>
+
 
 <link rel="canonical" href="https://meritbadges.centennialdistrict.co/index.php">
 <meta property="og:title" content="Open Graph Meta Tags" />

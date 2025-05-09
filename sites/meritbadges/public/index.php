@@ -40,15 +40,19 @@ require_once __DIR__ . '/../config/config.php';
 
 
 
-
-
 // Require critical dependencies
-if (file_exists(BASE_PATH . './src/Classes/CMeritBadges.php')) {
+if (file_exists(BASE_PATH . '/src/Classes/CMeritBadges.php')) {
   //use CMeritBadges.php;
   // TODO: >?? require_once BASE_PATH . './src/Classes/CMeritBadges.php';
 } else {
   error_log('Critical dependency CMeritBadges.php is missing.');
-  die('An error occurred. Please try again later.');
+  if (defined('ENV') && ENV === 'development'){
+    echo BASE_PATH . '/src/Classes/CMeritBadges.php' .'</br>';
+    die('Critical dependency CMeritBadges.php is missing.');
+    
+  }
+  else
+    die('An error occurred. Please try again later.');
 }
 
 // Template loader function
@@ -59,7 +63,12 @@ function load_template($file)
     require_once $path;
   } else {
     error_log("Template $file is missing.");
-    die('An error occurred. Please try again later.');
+    if (defined('ENV') && ENV === 'development'){
+      echo 'Template '.$path.' is missing.</br>';
+      die('Template $file is missing.');
+    }
+    else
+      die('An error occurred. Please try again later.');
   }
 }
 ?>
@@ -68,17 +77,17 @@ function load_template($file)
 <html lang="en">
 
 <head>
-  <?php load_template('\src\Templates\head.php'); ?>
+  <?php load_template('/src/Templates/head.php'); ?>
 </head>
 
 <body>
   <header id="header" class="header sticky-top" role="banner">
-    <?php load_template('\src\Templates\navbar.php'); ?>
+    <?php load_template('/src/Templates/navbar.php'); ?>
   </header>
 
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <?php load_template('\src\Templates\sidebar.php'); ?>
+      <?php load_template('/src/Templates/sidebar.php'); ?>
       <main id="main-content" class="col-10 py-3" role="main">
         <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
           <h1 class="display-5 fw-bold">Centennial District Merit Badges</h1>
@@ -90,7 +99,7 @@ function load_template($file)
     </div>
   </div>
 
-  <?php load_template('\src\Templates\footer.php'); ?>
+  <?php load_template('/src/Templates/footer.php'); ?>
 </body>
 
 </html>
