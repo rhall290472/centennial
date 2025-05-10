@@ -9,9 +9,6 @@
 
 defined('IN_APP') or die('Direct access not allowed.');
 
-// Load configuration
-//require_once 'config.php';
-
 // Start session
 if (session_status() === PHP_SESSION_NONE) {
   session_start([
@@ -35,10 +32,18 @@ foreach ($nav_links as &$link) {
   $link['active'] = (basename($link['href']) === $current_page);
 }
 
+if (!file_exists(BASE_PATH.'/src/Pages/logon.php')) {
+  echo 'file logon.php is missing.</br>';
+  die('File is missing.'.__FILE__.' '.__LINE__);
+}
+$path_logon = SITE_URL.'/centennial/sites/meritbadges/src/Pages/logon.php';
+$path_logoff =SITE_URL.'/centennial/sites/meritbadges/src/logoff.php';
+
+
 // Add Log on/Log off link
 if (!empty($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
   $nav_links[] = [
-    'href' => 'logoff.php?csrf=' . urlencode($_SESSION['csrf_token']),
+    'href' => $path_logoff.'?csrf=' . urlencode($_SESSION['csrf_token']),
     'text' => '<i class="bi bi-box-arrow-right"></i> Log off',
     'active' => false,
     'rel' => 'nofollow',
@@ -46,7 +51,7 @@ if (!empty($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
   ];
 } else {
   $nav_links[] = [
-    'href' => 'logon.php',
+    'href' => $path_logon.'?csrf=' . urlencode($_SESSION['csrf_token']),
     'text' => '<i class="bi bi-person"></i> Log on',
     'active' => ($current_page === 'logon.php'),
     'rel' => 'nofollow',

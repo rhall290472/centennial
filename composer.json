@@ -2,7 +2,7 @@
   "autoload": {
       "psr-4": {
           "Shared\\Classes\\": "shared/src/Classes/",
-          "meritbadges\\Classes\\": "sites/meritbadges/src/Classes/"
+          "meritbadges\\": "sites/meritbadges/src/Classes/"
       }
   },
   "require": {

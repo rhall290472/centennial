@@ -1,5 +1,11 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
+  require_once __DIR__ . '/../../../vendor/autoload.php';
+}
+else{
+  die('An error occurred. Please try again later. '.__FILE__.' '.__LINE__);
+}
+
 // Secure session start
 if (session_status() === PHP_SESSION_NONE) {
   session_start([
@@ -15,9 +21,31 @@ if (session_status() === PHP_SESSION_NONE) {
  * Author: Richard Hall
  * License: Proprietary Software
  */
+// Template loader function
+function load_template($file)
+{
+  $path = BASE_PATH . $file;
+  if (file_exists($path)) {
+    require_once $path;
+  } else {
+    error_log("Template $file is missing.");
+    if (defined('ENV') && ENV === 'development'){
+      echo 'Template '.$path.' is missing.</br>';
+      die('Template $file is missing.');
+    }
+    else
+      die('An error occurred. Please try again later.');
+  }
+}
+
 
 // Load configuration
-require_once __DIR__ . '/../config/config.php';
+if (file_exists(__DIR__ . '/../config/config.php')) {
+  require_once __DIR__ . '/../config/config.php';
+}
+else{
+    die('An error occurred. Please try again later.');
+}
 
 
 //use Dotenv\Dotenv;
@@ -55,22 +83,6 @@ if (file_exists(BASE_PATH . '/src/Classes/CMeritBadges.php')) {
     die('An error occurred. Please try again later.');
 }
 
-// Template loader function
-function load_template($file)
-{
-  $path = BASE_PATH . $file;
-  if (file_exists($path)) {
-    require_once $path;
-  } else {
-    error_log("Template $file is missing.");
-    if (defined('ENV') && ENV === 'development'){
-      echo 'Template '.$path.' is missing.</br>';
-      die('Template $file is missing.');
-    }
-    else
-      die('An error occurred. Please try again later.');
-  }
-}
 ?>
 
 <!DOCTYPE html>

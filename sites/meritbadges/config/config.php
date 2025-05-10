@@ -1,5 +1,4 @@
 <?php
-
 /**
  * File: config.php
  * Description: Centralized configuration settings for Centennial District Merit Badges
@@ -29,11 +28,13 @@ define('ENV', 'development'); // Set to 'production' on live server
 
 if (defined('ENV') && ENV === 'development') {
   ini_set('display_errors', 1);
+  ini_set('log_errors', 1);
+  ini_set('error_log', BASE_PATH . '/../../shared/logs');
   error_reporting(E_ALL);
 } else {
   ini_set('display_errors', 0);
   ini_set('log_errors', 1);
-  ini_set('error_log', BASE_PATH . '/../../../shared/assets/error.log');
+  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 

@@ -23,13 +23,27 @@ defined('IN_APP') or die('Direct access not allowed.');
 <!-- Bootstrap icons-->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Core theme CSS (includes Bootstrap)-->
-<link href=<?php echo SHARED_ASSETS_URL ."/styles.css"?> rel="stylesheet" />
+ <?php
+  $is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
+  if($is_localhost){
+    ?>
+     <link href="https://localhost/centennial/shared/assets/styles.css" rel="stylesheet"/>
+  <?php
+  }else{?>
+  <link href="https://shared.centennialdistrict.co/assets/styles.css" rel="stylesheet" />
+<?php } ?>
 <?php 
-if (defined('ENV') && ENV === 'development')
-  echo SHARED_ASSETS_URL.'</br>';
+if (defined('ENV') && ENV === 'development'){
+  //echo SHARED_ASSETS_URL.'</br>';
+  //echo BASE_PATH.'</br>';
+  //echo __DIR__.'</br>';
+  //echo file_get_contents('../../../shared/assets/styles.css');
+  
+}
+
 ?>
 
-
+<!--
 <link rel="canonical" href="https://meritbadges.centennialdistrict.co/index.php">
 <meta property="og:title" content="Open Graph Meta Tags" />
 <meta property="og:description" content="Learn how to customize the preview that is displayed when people share your website on social media." />
@@ -43,7 +57,7 @@ if (defined('ENV') && ENV === 'development')
 <meta property="og:image:type" content="image/jpeg" />
 <meta property="og:url" content="https://meritbadges.centennialdistrict.co/index.php" />
 <meta property="og:type" content="website" />
-
+-->
 <script defer>
   document.addEventListener('DOMContentLoaded', () => {
     const scrollTop = document.getElementById('scroll-top');
