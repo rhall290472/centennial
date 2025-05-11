@@ -1,38 +1,26 @@
+<?php
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+  require_once __DIR__ . '/../../config/config.php';
+} else {
+  die('An error occurred. Please try again later.');
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <?php include("header.php"); ?>
+  <?php load_template('/src/Templates/header.php'); ?>
 </head>
 
 <body>
   <header id="header" class="header sticky-top">
-
-    <!-- Responsive navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container px-lg-5">
-        <a class="navbar-brand" href="#!">Centennial District Advancement</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="./index.php">Home</a></li>
-            <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
-            <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
-            <?php
-            if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-              echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
-            } else {
-              echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
-            }
-            ?>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <?php load_template('/src/Templates/navbar.php'); ?>
 
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <?php include 'sidebar.php'; ?>
+        <?php load_template('/src/Templates/sidebar.php'); ?>
         <div class="col py-3">
           <div class="container px-md-3">
             <div class="p-3 p-md-3 bg-light rounded-2 text-center">

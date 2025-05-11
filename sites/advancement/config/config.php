@@ -62,7 +62,7 @@ define('SMTP_USERNAME', 'rhall290472@gmail.com');
 define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
 
 $pageHome = SITE_URL.'/centennial/sites/advancement/public/index.php';
-$pageContact = SITE_URL . '/centennial/sites/advancement/public/contact.php';
+$pageContact = SITE_URL . '/centennial/sites/advancement/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
     [
