@@ -34,11 +34,7 @@ defined('IN_APP') or die('Direct access not allowed.');
 <?php } ?>
 <?php 
 if (defined('ENV') && ENV === 'development'){
-  //echo SHARED_ASSETS_URL.'</br>';
-  //echo BASE_PATH.'</br>';
-  //echo __DIR__.'</br>';
-  //echo file_get_contents('../../../shared/assets/styles.css');
-  
+
 }
 
 ?>

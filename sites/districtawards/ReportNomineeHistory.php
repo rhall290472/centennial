@@ -1,0 +1,155 @@
+<?php
+if (!session_id()) {
+    session_start();
+}
+/*
+!==============================================================================!
+!\                                                                            /!
+!\\                                                                          //!
+! \##########################################################################/ !
+!  #         This is Proprietary Software of Richard Hall                   #  !
+!  ##########################################################################  !
+!  ##########################################################################  !
+!  #                                                                        #  !
+!  #                                                                        #  !
+!  #   Copyright 2017-2024 - Richard Hall                                   #  !
+!  #                                                                        #  !
+!  #   The information contained herein is the property of Richard          #  !
+!  #   Hall, and shall not be copied, in whole or in part, or               #  !
+!  #   disclosed to others in any manner without the express written        #  !
+!  #   authorization of Richard Hall.                                       #  !
+!  #                                                                        #  !
+!  #                                                                        #  !
+! /##########################################################################\ !
+!//                                                                          \\!
+!/                                                                            \!
+!==============================================================================!
+*/
+
+require_once 'CDistrictAwards.php';
+$cDistrictAwards = cDistrictAwards::getInstance();
+
+
+// This code stops anyone for seeing this page unless they have logged in and
+// they account is enabled.
+if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
+    $cDistrictAwards->GotoURL("index.php");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <?php include("header.php"); ?>
+    <meta name="description" content="ReportNomineeHistory.php">
+</head>
+
+<body>
+    <!-- Responsive navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container px-lg-5">
+            <a class="navbar-brand" href="#!">Centennial District Awards</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="./index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
+                    <?php
+                    if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+                        echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
+                    } else {
+                        echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <?php
+    $csv_hdr = "Year, First Name, Preferred Name, Last Name, Award, Status, Member ID, Unit";
+    $csv_output = "";
+
+
+    $FirstName = "";
+    $LastName = "";
+    $Nominee = "";
+    //Display a selection of Nominees TODO:
+    if (isset($_POST['SubmitNominee'])) {
+        $Nominee = $_POST['Nominee'];
+        $cDistrictAwards->SetNominee($Nominee);
+        //header('Refresh: ' . 1);
+    }
+    // Dispay the Nominees Select dropdown selection
+    $cDistrictAwards->SelectNominee();
+
+    ?>
+
+
+    <center>
+        <h4><?php echo "Nomination History" ?> </h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th> Year</th>
+                    <th> First Name</th>
+                    <th> Perferred Name</th>
+                    <th> Last Name</th>
+                    <th> Award</th>
+                    <th> Status</th>
+                    <th> Member ID</th>
+                    <th> Unit</th>
+                </tr>
+            </thead>
+            <?php
+            $Nominee = $cDistrictAwards->GetNominee();
+            if ($Nominee != "")
+                $queryNominees = "SELECT * FROM `district_awards` WHERE MemberID='$Nominee' AND NomineeIDX > 0 AND (`IsDeleted` IS NULL || `IsDeleted` <>'1') ORDER BY `Award`";
+            else
+                $queryNominees = "SELECT * FROM `district_awards` WHERE NomineeIDX > 0 AND (`IsDeleted` IS NULL || `IsDeleted` <>'1') ORDER BY `Award`";
+
+            if (!$ResultNominees = $cDistrictAwards->doQuery($queryNominees)) {
+                $msg = "Error: doQuery()";
+                $cDistrictAwards->function_alert($msg);
+            }
+
+            ?>
+            <?php
+            while ($rowNominee = $ResultNominees->fetch_assoc()) {
+                $AwardName = $cDistrictAwards->GetAwardName($rowNominee['Award']);
+                $Status = $cDistrictAwards->GetAwardStatus($rowNominee['Status']);
+
+                echo "<tr><td style='width:150px'>" .
+                    $rowNominee["Year"] . "</td><td style='width:150px'>" .
+                    $rowNominee["FirstName"] . "</td><td style='width:150px'>" .
+                    $rowNominee["PName"] . "</td><td style='width:150px'>" .
+                    "<a href=./NomineePage.php?NomineeIDX=" . $rowNominee['NomineeIDX'] . ">" . $rowNominee['LastName'] . "</a> </td><td  style='width:500px'>" .
+                    $AwardName . "</td><td style='width:50px'>" .
+                    $Status . "</td><td style='width:150px'>" .
+                    $rowNominee['MemberID'] . "</td><td style='width:500px'>" .
+                    $rowNominee['Unit'] . "</td></tr>";
+
+                $csv_output .= $rowNominee["Year"] . ",";
+                $csv_output .= $rowNominee["FirstName"] . ",";
+                $csv_output .= $rowNominee["PName"] . ", ";
+                $csv_output .= $rowNominee["LastName"] . ",";
+                $csv_output .= $AwardName . ",";
+                $csv_output .= $Status . ",";
+                $csv_output .= $rowNominee['MemberID'] . ",";
+                $csv_output .= $rowNominee['Unit'] . "\n";
+            }
+            echo "</table>";
+            ?>
+            <form name="export" action="../export.php" method="post" style="padding: 20px;">
+                <input class='btn btn-primary btn-sm' style="width:220px" type="submit" value="Export table to CSV">
+                <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
+                <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
+            </form>
+    </center>
+    <?php include("Footer.php"); ?>
+</body>
+
+</html>

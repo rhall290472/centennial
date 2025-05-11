@@ -11,6 +11,34 @@
       "port": 9003
     },
     {
+      "name": "Launch Advancement",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost/centennial/sites/advancement/public/index.php",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch District Awards",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost/centennial/sites/districtawards/index.php",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch Eagle",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost/centennial/sites/eagle/index.php",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch MBC",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost/centennial/sites/meritbadgecollege/index.php",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "name": "Launch Merit Badges",
       "request": "launch",
       "type": "chrome",
