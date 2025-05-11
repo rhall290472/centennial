@@ -22,17 +22,22 @@
 !/                                                                            \!
 !==============================================================================!
 */
-require_once 'CDistrictAwards.php';
-require_once 'CAwards.php';
-$cDistrictAwards = cDistrictAwards::getInstance();
-$cAwards = cAwards::getInstance();
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+  require_once __DIR__ . '/../../config/config.php';
+} else {
+  die('An error occurred. Please try again later.');
+}
+
+load_template('/src/Classes/CAdvancement.php');
+
+$CAdvancement = CAdvancement::getInstance();
 
 if (!session_id()) {
   session_start();
 }
-
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $cDistrictAwards->GotoURL("index.php");
+  $CAdvancement->GotoURL("index.php");
   exit;
 }
 
@@ -42,13 +47,11 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 <html lang="en">
 
 <head>
-  <?php include("header.php"); ?>
+  <?php load_template('/src/Templates/header.php'); ?>
 </head>
 
 <body>
-  <!-- Responsive navbar-->
   <?php load_template('/src/Templates/navbar.php'); ?>
-
 
   <body style="padding:10px">
     <div class="my_div">
@@ -57,17 +60,19 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         </p>
       </div>
       <?php
-      $contents = file_get_contents('https://centennialdistrict.co/DistrictAwards/php_errors.log');
-      if (false == $contents) {
+      $errorlog = file_get_contents('https://centennialdistrict.co/php_errors.log');
+      if (false == $errorlog) {
         $cDistrictAwards->function_alert("Unable to read php_errors.log");
       } else {
-        echo nl2br($contents);
+        echo nl2br($errorlog);
       }
+
       ?>
     </div>
 
 
-    <?php include("Footer.php"); ?>
+    <!-- Footer-->
+    <?php load_template('/src/Templates/Footer.php'); ?>
   </body>
 
 </html>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File: config.php
  * Description: Centralized configuration settings for Centennial District Merit Badges
@@ -27,14 +28,14 @@ define('ENV', 'development'); // Set to 'production' on live server
 // Enable error reporting in development only
 
 if (defined('ENV') && ENV === 'development') {
-  ini_set('display_errors', 1);
-  ini_set('log_errors', 1);
-  ini_set('error_log', BASE_PATH . '/../../shared/logs');
-  error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
+    ini_set('error_log', BASE_PATH . '/../../shared/logs');
+    error_reporting(E_ALL);
 } else {
-  ini_set('display_errors', 0);
-  ini_set('log_errors', 1);
-  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
@@ -60,21 +61,23 @@ define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_USERNAME', 'rhall290472@gmail.com');
 define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
 
+$pageHome = SITE_URL.'/centennial/sites/advancement/public/index.php';
+$pageContact = SITE_URL . '/centennial/sites/advancement/public/contact.php';
 // Navigation links
 define('NAV_LINKS', [
     [
-        'href' => 'index.php',
+        'href' => $pageHome,
         'text' => 'Home',
         'active' => false,
         'rel' => 'nofollow',
         'aria-label' => 'Home'
     ],
     [
-        'href' => 'contact.php',
+        'href' => $pageContact,
         'text' => 'Contact',
         'active' => false,
         'rel' => 'nofollow',
-        'aria-label' => 'Home'
+        'aria-label' => 'Contact'
     ],
 ]);
 
@@ -99,3 +102,21 @@ if ($is_localhost) {
 ini_set('upload_max_filesize', '4M');
 ini_set('post_max_size', '4M');
 
+
+// Template loader function
+if (!function_exists('load_template')) {
+    function load_template($file)
+    {
+        $path = BASE_PATH . $file;
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            error_log("Template $file is missing.");
+            if (defined('ENV') && ENV === 'development') {
+                echo 'Template ' . $path . ' is missing.</br>';
+                die('Template $file is missing.');
+            } else
+                die('An error occurred. Please try again later.');
+        }
+    }
+}

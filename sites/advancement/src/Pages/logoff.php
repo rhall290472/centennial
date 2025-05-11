@@ -1,4 +1,7 @@
 <?php
+session_unset();
+//session_destroy();
+session_start();
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -22,52 +25,21 @@
 !/                                                                            \!
 !==============================================================================!
 */
-require_once 'CDistrictAwards.php';
-require_once 'CAwards.php';
-$cDistrictAwards = cDistrictAwards::getInstance();
-$cAwards = cAwards::getInstance();
-
-if (!session_id()) {
-  session_start();
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+    require_once __DIR__ . '/../../config/config.php';
+} else {
+    die('An error occurred. Please try again later.');
 }
 
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $cDistrictAwards->GotoURL("index.php");
-  exit;
-}
+//require 'Support_Functions.php';
+load_template('/src/Classes/CAdvancement.php');
+// Unset all of the session variables
+$_SESSION = array();
 
-?>
+// Destroy the session.
+session_destroy();
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <?php include("header.php"); ?>
-</head>
-
-<body>
-  <!-- Responsive navbar-->
-  <?php load_template('/src/Templates/navbar.php'); ?>
-
-
-  <body style="padding:10px">
-    <div class="my_div">
-      <div>
-        <p>Below is a list of recorded errors found.
-        </p>
-      </div>
-      <?php
-      $contents = file_get_contents('https://centennialdistrict.co/DistrictAwards/php_errors.log');
-      if (false == $contents) {
-        $cDistrictAwards->function_alert("Unable to read php_errors.log");
-      } else {
-        echo nl2br($contents);
-      }
-      ?>
-    </div>
-
-
-    <?php include("Footer.php"); ?>
-  </body>
-
-</html>
+// Redirect to login page
+CAdvancement::GotoURL(SITE_URL . '/centennial/sites/advancement/public/index.php');
+exit;

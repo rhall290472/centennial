@@ -1,10 +1,10 @@
 <?php
-  if (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
-    require_once __DIR__ . '/../../../vendor/autoload.php';
-  } else {
-    echo __DIR__.'</br>';
-    die('An error occurred. Please try again later. @' . __FILE__ . ' ' . __LINE__);
-  }
+  // if (file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
+    // require_once __DIR__ . '/../../../vendor/autoload.php';
+  // } else {
+    // echo __DIR__.'</br>';
+  // // TODO:  die('An error occurred. Please try again later. @' . __FILE__ . ' ' . __LINE__);
+  // }
 
   // Secure session start
   if (session_status() === PHP_SESSION_NONE) {
@@ -66,7 +66,7 @@
 <html lang="en">
 
 <head>
-  <?php include("header.php"); ?>
+  <?php load_template("/src/Templates/header.php"); ?>
 </head>
 
 <body>
@@ -74,11 +74,11 @@
   <header id="header" class="header sticky-top">
       <!-- Responsive navbar-->
        <?php $navbarTitle = 'Centennial District Advancement'; ?>
-       <?php include('navbar.php'); ?>
+       <?php load_template('/src/Templates/navbar.php'); ?>
 
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <?php include 'sidebar.php'; ?>
+        <?php load_template('/src/Templates/sidebar.php'); ?>
         <div class="col py-3">
         <div class="container px-lg-5">
       <div class="p-0 p-lg-0 bg-light rounded-3 text-center">
@@ -96,11 +96,11 @@
 
 
   <!-- Footer-->
-  <?php include 'Footer.php' ?>
+  <?php load_template('/src/Templates/Footer.php'); ?>
 
   <!-- Bootstrap core JS-->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> -->
   <!-- Core theme JS-->
   <script src="js/scripts.js"></script>
 </body>
