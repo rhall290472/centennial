@@ -5,7 +5,8 @@ defined('IN_APP') or die('Direct access not allowed.');
 function checkFileExists($filePath)
 {
   // Resolve relative path to absolute path
-  $dir1 = BASE_PATH . '/' . $filePath;
+  $base = BASE_PATH;
+  $dir1 = BASE_PATH . $filePath;
   $absolutePath = realpath(BASE_PATH . '/' . $filePath);
   if ($absolutePath && file_exists($absolutePath)) {
     return ['href' => $filePath, 'class' => 'nav-link px-0 text-white-50', 'valid' => true];
@@ -23,14 +24,14 @@ function checkFileExists($filePath)
       <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
         <?php
         $adultMenuLinks = [
-          ['path' => '../src/Pages/Untrained.php', 'label' => 'Untrained Leaders'],
-          ['path' => 'src/Pages/YPT.php', 'label' => 'Expired YPT'],
+          ['path' => '/src/Pages/Untrained.php', 'label' => 'Untrained Leaders'],
+          ['path' => '/src/Pages/YPT.php', 'label' => 'Expired YPT'],
         ];
         foreach ($adultMenuLinks as $link) {
           $fileCheck = checkFileExists(parse_url($link['path'], PHP_URL_PATH)); // Ignore query string for file check
         ?>
           <li class="w-100">
-            <a href="<?php echo $link['path']; ?>" class="<?php echo $fileCheck['class']; ?>">
+            <a href="<?php echo '/..'.$link['path']; ?>" class="<?php echo $fileCheck['class']; ?>">
               <span class="d-none d-sm-inline"><?php echo $link['label']; ?></span>
               <?php if (!$fileCheck['valid']) echo '<span class="text-danger ms-1">(Missing)</span>'; ?>
             </a>

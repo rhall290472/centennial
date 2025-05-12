@@ -42,7 +42,7 @@ if (defined('ENV') && ENV === 'development') {
 // Dynamically set SITE_URL based on environment
 $is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 $protocol = 'https'; // Simplified since it's always HTTPS in the original code
-$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'centennialdistrict.co';
+$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'adv.centennialdistrict.co';
 $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
 define('SITE_URL', $protocol . '://' . $host . $port);
 
