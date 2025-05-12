@@ -85,7 +85,6 @@
         <div class="m-4 m-lg-3">
           <h1 class="display-5 fw-bold">Centennial District Advancement</h1>
           <p class="fs-4">Here you will be able to review advancment reports for the Centennial District</p>
-          <!-- <a class="btn btn-primary btn-lg" href="./advancement_index.php">Advancement Data</a> -->
           </hr>
           <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
         </div>

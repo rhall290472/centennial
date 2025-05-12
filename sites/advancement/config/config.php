@@ -2,14 +2,14 @@
 
 /**
  * File: config.php
- * Description: Centralized configuration settings for Centennial District Merit Badges
+ * Description: Centralized configuration settings for Centennial District Advancement
  * Author: Richard Hall
  * License: Proprietary Software, Copyright 2024 Richard Hall
  */
 
 defined('IN_APP') or define('IN_APP', true);
-// Base path
-define('BASE_PATH', dirname(__DIR__));
+// Base path, only set once
+defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 
 // Ensure upload directory exists
 $uploadDir = BASE_PATH . '/Data/';
