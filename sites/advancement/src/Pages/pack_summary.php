@@ -6,221 +6,178 @@
 ! \##########################################################################/ !
 !  #         This is Proprietary Software of Richard Hall                   #  !
 !  ##########################################################################  !
-!  ##########################################################################  !
-!  #                                                                        #  !
-!  #                                                                        #  !
 !  #   Copyright 2017-2024 - Richard Hall                                   #  !
-!  #                                                                        #  !
 !  #   The information contained herein is the property of Richard          #  !
 !  #   Hall, and shall not be copied, in whole or in part, or               #  !
 !  #   disclosed to others in any manner without the express written        #  !
 !  #   authorization of Richard Hall.                                       #  !
-!  #                                                                        #  !
 !  #                                                                        #  !
 ! /##########################################################################\ !
 !//                                                                          \\!
 !/                                                                            \!
 !==============================================================================!
 */
-// Load configuration
-if (file_exists(__DIR__ . '/../../config/config.php')) {
-  require_once __DIR__ . '/../../config/config.php';
-} else {
-  die('An error occurred. Please try again later.');
-}
 
-//require 'Support_Functions.php';
 load_template('/src/Classes/CPack.php');
 
 $CPack = CPack::getInstance();
 
-if (isset($_POST['SubmitYear'])) {
-  $SelYear = $_POST['Year'];
-  $_SESSION['year'] = $SelYear;
+try {
+  $SelYear = isset($_SESSION['year']) ? $_SESSION['year'] : date("Y");
   $CPack->SetYear($SelYear);
+  $Totals = $CPack->GetTotals();
+
+  $PackData = "['Lion'," . $Totals['lion'] . "]," .
+    "['Tiger'," . $Totals['tiger'] . "]," .
+    "['Wolf'," . $Totals['wolf'] . "]," .
+    "['Bear'," . $Totals['bear'] . "]," .
+    "['Webelos'," . $Totals['webelos'] . "]," .
+    "['AOL'," . $Totals['aol'] . "],";
+} catch (Exception $e) {
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error loading pack data: ' . $e->getMessage()];
+  error_log("Home.php - Error: " . $e->getMessage(), 0);
+  $Totals = ['lion' => 0, 'tiger' => 0, 'wolf' => 0, 'bear' => 0, 'webelos' => 0, 'aol' => 0, 'YTD' => 0, 'adventure' => 0, 'youth' => 0];
+  $PackData = "";
 }
-
-$Totals = $CPack->GetTotals();
-
-$PackData =  "['Lion',"    . $Totals['lion']   . "]," .
-  "['Tiger',"   . $Totals['tiger']  . "]," .
-  "['Wolf',"    . $Totals['wolf']   . "]," .
-  "['Bear',"    . $Totals['bear']   . "]," .
-  "['Webelos'," . $Totals['webelos'] . "]," .
-  "['AOL',"     . $Totals['aol']    . "],";
-
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <?php load_template('/src/Templates/header.php'); ?>
-
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load('current', {
-      'packages': ['bar', 'corechart']
-    });
-    google.charts.setOnLoadCallback(drawCharts);
-
-    function drawCharts() {
-      drawBarChart();
-      drawPieChart();
-    }
-
-    function drawBarChart() {
-      var data = google.visualization.arrayToDataTable([
-        ['Rank', 'Ranks'],
-        <?php
-        echo $PackData;
-        ?>
-      ]);
-
-      var BarChartoptions = {
-        chart: {
-          title: 'District wide Pack advancement Data',
-          subtitle: 'Year to date',
-
-        },
-        bars: 'vertical' // Required for Material Bar Charts.
-      };
-
-      var BarChartchart = new google.charts.Bar(document.getElementById('barchart_material'));
-
-      BarChartchart.draw(data, google.charts.Bar.convertOptions(BarChartoptions));
-    }
-
-    function drawPieChart() {
-      var piedata = google.visualization.arrayToDataTable([
-        ['Packs meeting goal', 'Packs below goal'],
-        <?php
-        echo "['Ranks'," . $Totals['YTD'] . "],";
-        echo "['Adventure'," . $Totals['adventure'] . "],";
-        echo "['Scouts'," . $Totals['youth'] . "]";
-        ?>
-      ]);
-
-      var piechart_options = {
-        title: 'Rank eraned .vs. Scouts',
-        slices: {
-          0: {
-            color: 'green'
-          },
-          1: {
-            color: 'blue'
-          },
-          2: {
-            color: 'red'
+<sort_options>
+  <div class="px-lg-5">
+    <div class="row">
+      <div class="col-2">
+        <form action="index.php?page=home" method="POST">
+          <p class="mb-0">Select Year</p>
+          <?php
+          // Assuming SelectYear() returns a dropdown or year options
+          try {
+            $CPack->SelectYear();
+          } catch (Exception $e) {
+            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error loading year selector: ' . $e->getMessage()];
+            echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
           }
-        },
-        pieSliceText: 'value'
-      };
-
-      var piechart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-      piechart.draw(piedata, piechart_options);
-
-    }
-  </script>
-</head>
-
-<body style="padding:10px">
-  <header id="header" class="header sticky-top">
-    <?php $navbarTitle = 'Centennial District Pack Advancement Summary'; ?>
-    <?php load_template('/src/Templates/navbar.php'); ?>
-  </header>
-
-  <div class="container-fluid">
-    <div class="row flex-nowrap">
-      <?php load_template('/src/Templates/sidebar.php'); ?>
-      <sort_options>
-        <div class="px-lg-5">
-          <div class="row">
-            <div class="col-1">
-              <?php $SelYear = $CPack->SelectYear(); ?>
-              <!-- </div> -->
-              <div class="col-4">
-                <div id="barchart_material" style="margin-left: -200px; width: 600px; height: 300px;"></div>
-              </div>
-              <div class="col-3">
-                <!-- <div id="piechart" style="width: 500px; height: 400px;"></div> -->
-                <div id="piechart" style="margin-left: -200px;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-10">
-              <div class="py-5">
-                <p style='text-align: center;padding-bottom: 5rem !important;'>District wide advancement ratio: <?php echo number_format($CPack->GetDistrictRatio(null), 2, '.', '')
-                                                                                                                ?> / District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2, '.', '')
-                                                                                                                                    ?> </p>
-                <hr />
-
-                <?php
-                // TODO: FIxed SelYear !!
-                if ($SelYear == null)
-                  $SelYear = Date("Y");
-                ?>
-                <div class="py-5">
-                  <?php
-                  $CPack->DisplayAdvancmenetDescription();
-                  $CPack->DisplayUnitAdvancement();
-                  echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
-
-                  if ($CPack->GetNumofPacks() > 0) {
-                    $PackData = $CPack->GetPack();
-                    while ($PackAdv = $PackData->fetch_assoc()) {
-                      $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
-                      $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
-                      $Unit = $PackAdv['Unit'];
-                      $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'";
-                      $UnitView = sprintf("%s%s>%s</a>", $UnitURL, $Unit, $Unit);
-                      if ($UnitRankScout == 0) // Make it Bold
-                        $Formatter = "<b style='color:red;'>";
-                      else if ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date']))
-                        $Formatter = "<b style='color:orange;'>";
-                      else if ($UnitRankScout >= $CPack->GetIdealGoal($PackAdv['Date']))
-                        $Formatter = "<b style='color:green;'>";
-                      else
-                        $Formatter = "";
-                      echo "<tr><td>" .
-                        $UnitView . "</td><td>" .
-                        $Formatter . $PackAdv["lion"] . "</td><td>" .
-                        $Formatter . $PackAdv["tiger"] . "</td><td>" .
-                        $Formatter . $PackAdv["wolf"] . "</td><td>" .
-                        $Formatter . $PackAdv["bear"] . "</td><td>" .
-                        $Formatter . $PackAdv["webelos"] . "</td><td>" .
-                        $Formatter . $PackAdv["aol"] . "</td><td>" .
-                        $Formatter . $PackAdv["YTD"] . "</td><td>" .
-                        $Formatter . $UnitYouth . "</td><td>" .
-                        $Formatter . $UnitRankScout . "</td><td>" .
-                        $Formatter . $PackAdv["adventure"] . "</td><td>" .
-                        $Formatter . $PackAdv["Date"] . "</td></tr>";
-                      if ($UnitRankScout == 0) // Make it Bold
-                        echo "</b>";
-                    }
-                    echo "</table>";
-                    echo "</div>";
-                  } else {
-                    echo "0 result<br/>";
-                    echo $_SESSION["year"];
-                  }
-                  if ($CPack->GetNumofPacks() > 0)
-                    mysqli_free_result($PackData);
-                  ?>
-                  </table>
-                  <?php echo "<p style='text-align: center;padding-bottom: 5rem !important;'>Data last updated: " . $CPack->GetLastUpdated("adv_pack") . "</p>"; ?>
-                </div>
-              </div>
-            </div>
-          </div>
-      </sort_options>
+          ?>
+          <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+        </form>
+      </div>
+      <div class="col-4">
+        <div id="barchart_material" style="width: 600px; height: 300px;"></div>
+      </div>
+      <div class="col-3">
+        <div id="piechart" style="width: 500px; height: 400px;"></div>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-10">
+        <div class="py-5">
+          <p style="text-align: center;">District wide advancement ratio: <?php echo number_format($CPack->GetDistrictRatio(null), 2, '.', ''); ?> / District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2, '.', ''); ?></p>
+          <hr>
+          <div class="py-5">
+            <?php
+            try {
+              $CPack->DisplayAdvancmenetDescription();
+              $CPack->DisplayUnitAdvancement();
+              echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
 
+              if ($CPack->GetNumofPacks() > 0) {
+                echo '<table class="table table-striped"><thead><tr>' .
+                  '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
+                $PackDataResult = $CPack->GetPack();
+                while ($PackAdv = $PackDataResult->fetch_assoc()) {
+                  $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
+                  $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
+                  $Unit = $PackAdv['Unit'];
+                  $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'>";
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+                  $Formatter = "";
+                  if ($UnitRankScout == 0) {
+                    $Formatter = "<b style='color:red;'>";
+                  } elseif ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date'])) {
+                    $Formatter = "<b style='color:orange;'>";
+                  } elseif ($UnitRankScout >= $CPack->GetIdealGoal($PackAdv['Date'])) {
+                    $Formatter = "<b style='color:green;'>";
+                  }
+                  echo "<tr><td>$UnitView</td><td>$Formatter" . htmlspecialchars($PackAdv["lion"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["tiger"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["wolf"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["bear"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["webelos"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["aol"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["YTD"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($UnitYouth) . "</td><td>$Formatter" . htmlspecialchars($UnitRankScout) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["adventure"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["Date"]) . "</td></tr>";
+                  if ($Formatter) echo "</b>";
+                }
+                echo "</tbody></table>";
+                mysqli_free_result($PackDataResult);
+              } else {
+                echo "<p>No pack data available for $SelYear.</p>";
+              }
+              echo "<p style='text-align: center;'>Data last updated: " . htmlspecialchars($CPack->GetLastUpdated("adv_pack")) . "</p>";
+            } catch (Exception $e) {
+              $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying pack data: ' . $e->getMessage()];
+              error_log("Home.php - Error: " . $e->getMessage(), 0);
+            }
+            ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sort_options>
 
-    <!-- Footer-->
-    <?php load_template('/src/Templates/Footer.php'); ?>
-</body>
+<!-- Google Charts for Bar and Pie Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {
+    'packages': ['bar', 'corechart']
+  });
+  google.charts.setOnLoadCallback(drawCharts);
 
-</html>
+  function drawCharts() {
+    drawBarChart();
+    drawPieChart();
+  }
+
+  function drawBarChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Rank', 'Ranks'],
+      <?php echo $PackData; ?>
+    ]);
+
+    var options = {
+      chart: {
+        title: 'District wide Pack advancement Data',
+        subtitle: 'Year to date',
+      },
+      bars: 'vertical'
+    };
+
+    var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+
+  function drawPieChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Category', 'Count'],
+      ['Ranks', <?php echo $Totals['YTD']; ?>],
+      ['Adventure', <?php echo $Totals['adventure']; ?>],
+      ['Scouts', <?php echo $Totals['youth']; ?>]
+    ]);
+
+    var options = {
+      title: 'Rank earned vs. Scouts',
+      slices: {
+        0: {
+          color: 'green'
+        },
+        1: {
+          color: 'blue'
+        },
+        2: {
+          color: 'red'
+        }
+      },
+      pieSliceText: 'value'
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+  }
+</script>

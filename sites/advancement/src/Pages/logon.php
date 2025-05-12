@@ -1,7 +1,4 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -9,157 +6,63 @@ if (!session_id()) {
 ! \##########################################################################/ !
 !  #         This is Proprietary Software of Richard Hall                   #  !
 !  ##########################################################################  !
-!  ##########################################################################  !
-!  #                                                                        #  !
-!  #                                                                        #  !
 !  #   Copyright 2017-2024 - Richard Hall                                   #  !
-!  #                                                                        #  !
 !  #   The information contained herein is the property of Richard          #  !
 !  #   Hall, and shall not be copied, in whole or in part, or               #  !
 !  #   disclosed to others in any manner without the express written        #  !
 !  #   authorization of Richard Hall.                                       #  !
-!  #                                                                        #  !
 !  #                                                                        #  !
 ! /##########################################################################\ !
 !//                                                                          \\!
 !/                                                                            \!
 !==============================================================================!
 */
-// Load configuration
-if (file_exists(__DIR__ . '/../../config/config.php')) {
-  require_once __DIR__ . '/../../config/config.php';
-} else {
-  die('An error occurred. Please try again later.');
-}
 
 load_template('/src/Classes/CAdvancement.php');
-
 $CAdvancement = CAdvancement::getInstance();
 
-/* Check if the user is already logged in, if yes then redirect him to welcome page */
+// Check if the user is already logged in, redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-  CAdvancement::GotoURL(SITE_URL . '/centennial/sites/advancement/public/index.php');
+  header("Location: index.php?page=home");
   exit;
 }
 
-/* Define variables and initialize with empty values */
-$username = $password = "";
+// Initialize variables
+$username = "";
 $username_err = $password_err = $login_err = "";
-$enabled = false;
-
-/* Processing form data when form is submitted */
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-  // Check if username is empty
-  if (empty(trim($_POST["username"]))) {
-    $username_err = "Please enter username.";
-  } else {
-    $username = trim($_POST["username"]);
-  }
-
-  // Check if password is empty
-  if (empty(trim($_POST["password"]))) {
-    $password_err = "Please enter your password.";
-  } else {
-    $password = trim($_POST["password"]);
-  }
-
-  // Validate credentials
-  if (empty($username_err) && empty($password_err)) {
-    // Prepare a select statement
-    $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
-
-    if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
-      // Bind variables to the prepared statement as parameters
-      mysqli_stmt_bind_param($stmt, "s", $param_username);
-
-      // Set parameters
-      $param_username = $username;
-
-      // Attempt to execute the prepared statement
-      if (mysqli_stmt_execute($stmt)) {
-        // Store result
-        mysqli_stmt_store_result($stmt);
-
-        // Check if username exists, if yes then verify password
-        if (mysqli_stmt_num_rows($stmt) == 1) {
-          // Bind result variables
-          mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
-          if (mysqli_stmt_fetch($stmt)) {
-            if (password_verify($password, $hashed_password) && $enabled == true) {
-              // Password is correct, so start a new session
-              if (!session_id()) {
-                session_start();
-              }
-              // Store data in session variables
-              $_SESSION["loggedin"] = true;
-              $_SESSION["id"] = $id;
-              $_SESSION["username"] = $username;
-              $_SESSION["enabled"] = $enabled;
-
-              // Redirect user to welcome page
-              CAdvancement::GotoURL(SITE_URL . '/centennial/sites/advancement/public/index.php');
-            } else {
-              // Password is not valid, display a generic error message
-              $login_err = "Invalid username or password or your account has not been enabled";
-            }
-          }
-        } else {
-          // Username doesn't exist, display a generic error message
-          $login_err = "Invalid username or password.";
-        }
-      } else {
-        echo "Oops! Something went wrong. Please try again later.";
-      }
-
-      // Close statement
-      mysqli_stmt_close($stmt);
-    }
-  }
-}
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="text-center">Login</h2>
+      <p class="text-center">Please fill in your credentials to login.</p>
 
-<head>
-  <?php load_template('/src/Templates/header.php'); ?>
-</head>
+      <?php if (!empty($login_err)): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($login_err); ?></div>
+      <?php endif; ?>
 
-<body>
-  <!-- Responsive navbar-->
-  <?php load_template('/src/Templates/navbar.php'); ?>
-  <center>
-    <div class="wrapper-logon">
-      <h2>Login</h2>
-      <p>Please fill in your credentials to login.</p>
-
-
-      <?php
-      if (!empty($login_err)) {
-        echo '<div class="alert alert-danger">' . $login_err . '</div>';
-      }
-      ?>
-
-      <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
-          <span class="invalid-feedback"><?php echo $username_err; ?></span>
+      <form action="index.php?page=login" method="post">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" name="username" id="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($username); ?>">
+          <?php if (!empty($username_err)): ?>
+            <div class="invalid-feedback"><?php echo htmlspecialchars($username_err); ?></div>
+          <?php endif; ?>
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
-          <span class="invalid-feedback"><?php echo $password_err; ?></span>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" name="password" id="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
+          <?php if (!empty($password_err)): ?>
+            <div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
+          <?php endif; ?>
         </div>
-        <div class="form-group">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
+        <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>
-        <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
+        <p class="text-center">Don't have an account? <a href="register.php">Sign up now</a>.</p>
       </form>
-  </center>
-  <!-- Footer-->
-  <?php load_template('/src/Templates/Footer.php'); ?>
-</body>
-
-</html>
+    </div>
+  </div>
+</div>
