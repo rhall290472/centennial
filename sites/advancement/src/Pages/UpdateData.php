@@ -80,7 +80,7 @@ $allowed_updates = [
 	]
 ];
 
-$update = filter_input(INPUT_GET, 'update', FILTER_SANITIZE_STRING);
+$update = filter_input(INPUT_GET, 'update');
 if (!$update || !array_key_exists($update, $allowed_updates)) {
 	$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid or missing update type.'];
 	header("Location: index.php?page=home");

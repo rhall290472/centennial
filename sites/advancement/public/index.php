@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'UpdateCommissioners',
       'UpdateFunctionalRole'
     ];
-    $update = filter_input(INPUT_POST, 'submit', FILTER_SANITIZE_STRING);
+    $update = filter_input(INPUT_POST, 'submit');
     if (!in_array($update, $allowed_updates)) {
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
       header("Location: index.php?page=updatedata&update=" . urlencode($update));
@@ -341,56 +341,54 @@ if (!isset($_SESSION['csrf_token'])) {
           <a class="nav-link dropdown-toggle <?php echo $page === 'updatedata' ? 'active' : ''; ?>" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fs-4 bi-book text-danger"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
           </a>
-        <li><a class="dropdown-item" href="?updatedata">Upload</a></li>
-        <ul class="dropdown-menu">
-          <li class="submenu submenu-md dropend">
-
-            <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-              Upload Adult Data
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
-              <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
-            </ul>
-          </li>
-          <li class="submenu submenu-md dropend">
-            <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-              Upload Membership Data
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Assigned Commissioners</a></li>
-            </ul>
-          </li>
-          <li class="submenu submenu-md dropend">
-            <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-              Upload Pack Data
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Advancements</a></li>
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Awards</a></li>
-            </ul>
-          </li>
-          <li class="submenu submenu-md dropend">
-            <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-              Upload Troop Data
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Advancements</a></li>
-            </ul>
-          </li>
-          <li class="submenu submenu-md dropend">
-            <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-              Upload Crew Data
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Advancements</a></li>
-              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
-            </ul>
-          </li>
-          <li><a class="dropdown-item" href="<?php echo htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/ErrorLog.php'); ?>">View Error Log</a></li>
-        </ul>
+          <ul class="dropdown-menu">
+            <li class="submenu submenu-md dropend">
+              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                Upload Adult Data
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
+                <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
+              </ul>
+            </li>
+            <li class="submenu submenu-md dropend">
+              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                Upload Membership Data
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Assigned Commissioners</a></li>
+              </ul>
+            </li>
+            <li class="submenu submenu-md dropend">
+              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                Upload Pack Data
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Advancements</a></li>
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Awards</a></li>
+              </ul>
+            </li>
+            <li class="submenu submenu-md dropend">
+              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                Upload Troop Data
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Advancements</a></li>
+              </ul>
+            </li>
+            <li class="submenu submenu-md dropend">
+              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                Upload Crew Data
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Advancements</a></li>
+                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
+              </ul>
+            </li>
+            <li><a class="dropdown-item" href="<?php echo htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/ErrorLog.php'); ?>">View Error Log</a></li>
+          </ul>
         </li>
       <?php endif; ?>
     </ul>
