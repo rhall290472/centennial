@@ -426,7 +426,7 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/Untrained.php');
           break;
         case 'ypt':
-          include('../src/Pages/Ypt.php');
+          include('../src/Pages/YPT.php');
           break;
         case 'pack-summary':
           include('../src/Pages/pack_summary.php');
