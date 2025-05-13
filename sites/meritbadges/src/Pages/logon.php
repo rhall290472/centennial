@@ -1,5 +1,5 @@
 <?php
-namespace meritbadges;
+
 /**
  * File: logon.php
  * Description: User login page for Centennial District Merit Badges
@@ -7,32 +7,29 @@ namespace meritbadges;
  * License: Proprietary Software, Copyright 2024 Richard Hall
  */
 
+//defined('IN_APP') or die('Direct access not allowed.');
+
+// Load configuration
+require_once 'config.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+
 // Redirect if already logged in
 if (!empty($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
   header('Location: ' . SITE_URL . '/MeritBadges/index.php');
   exit;
 }
-if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
-  require_once __DIR__ . '/../../../../vendor/autoload.php';
-}
-else{
-  echo __DIR__.'</br>';
-  die('An error occurred. Please try again later. '.__FILE__.' '.__LINE__);
-}
-
-
-//$myClass = new CMeritBadges();
 
 // Generate CSRF token
-// if (empty($_SESSION['csrf_token'])) {
+if (empty($_SESSION['csrf_token'])) {
   $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-// }
-// Load configuration
-if (file_exists(__DIR__ . '/../../config/config.php')) {
-  require_once __DIR__ . '/../../config/config.php';
-}
-else{
-    die('An error occurred. Please try again later.'.__FILE__.' '.__LINE__);
 }
 
 // Initialize variables
@@ -42,10 +39,9 @@ $username_err = $password_err = $login_err = '';
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Validate CSRF token
-  //if (!isset($_POST['csrf_tokencsrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-//  if (!isset($_POST['csrf_tokencsrf_token'])) {
-//    $login_err = 'Invalid request. Please try again.';
-//  } else {
+  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    $login_err = 'Invalid request. Please try again.';
+  } else {
     // Validate username
     $username = trim($_POST['username'] ?? '');
     if (empty($username)) {
@@ -60,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate credentials
     if (empty($username_err) && empty($password_err) && empty($login_err)) {
-      //require_once BASE_PATH . 'CMeritBadges.php';
+      require_once BASE_PATH . 'CMeritBadges.php';
       $CMeritBadges = CMeritBadges::getInstance();
       $conn = $CMeritBadges->getDbConn();
 
@@ -111,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
       }
     }
-//  }
+  }
 }
 
 // Template loader
@@ -122,7 +118,7 @@ function load_template($file)
     require_once $path;
   } else {
     error_log("Template $file is missing.");
-    die('An error occurred. Please try again later.'.__FILE__.' '.__LINE__);
+    die('An error occurred. Please try again later.');
   }
 }
 ?>
@@ -131,14 +127,14 @@ function load_template($file)
 <html lang="en">
 
 <head>
-  <?php load_template('/src/Templates/head.php'); ?>
+  <?php load_template('head.php'); ?>
   <title>Login - <?php echo PAGE_TITLE; ?></title>
   <meta name="description" content="Log in to access Centennial District Merit Badges data.">
 </head>
 
 <body>
   <header id="header" class="header sticky-top" role="banner">
-    <?php load_template('/src/Templates/navbar.php'); ?>
+    <?php load_template('navbar.php'); ?>
   </header>
 
   <main id="main-content" class="container py-5" role="main">
@@ -169,7 +165,7 @@ function load_template($file)
     </div>
   </main>
 
-  <?php load_template('/src/Templates/Footer.php'); ?>
+  <?php load_template('Footer.php'); ?>
 </body>
 
 </html>

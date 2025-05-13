@@ -1,32 +1,24 @@
-<?php
+<Footer class="fixed-bottom">
 
-/**
- * File: Footer.php
- * Description: Footer and scroll-to-top button for Centennial District Merit Badges
- * Author: Richard Hall
- * License: Proprietary Software, Copyright 2024 Richard Hall
- */
+<div class=WarningMessageContainer>
+  <p class="m-0 text-center">This information is to be used only for authorized purposes on behalf of Scouting America, Greater Colorado
+    Council, Centennial District.
+    Disclosing, copying, or making any inappropriate use of this information is strictly prohibited.</p>
+</div>
 
-defined('IN_APP') or die('Direct access not allowed.');
-
-// Load configuration
-//require_once 'config.php';
-?>
-
-<!-- Scroll-to-top button -->
-<a href="#" id="scroll-top" class="scroll-top d-none d-lg-flex align-items-center justify-content-center"
-  aria-label="Scroll to top" title="Scroll to top">
-  <i class="bi bi-arrow-up-short"></i>
-  <span class="visually-hidden">Scroll to top</span>
-</a>
-
-<!-- Footer -->
-<foot class="fixed-bottom">
-  <footer class="py-3 bg-dark d-print-none" role="contentinfo">
-    <div class="container">
-      <p class="m-0 text-center text-white">
-        <?php echo htmlspecialchars(SITE_URL); ?> - Copyright &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars(PAGE_TITLE); ?>
-      </p>
-    </div>
-  </footer>
-</foot>
+<!-- Footer-->
+<footer class="py-3 bg-dark">
+  <div class="container">
+    <p class="m-0 text-center text-white">
+      <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
+    </p>
+  </div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="https://centennialdistrict.co/assets/js/scripts.js"></script>
+</Footer><!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
