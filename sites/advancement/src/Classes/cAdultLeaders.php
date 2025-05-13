@@ -37,6 +37,15 @@ if (!session_id()) {
  */
 class AdultLeaders
 {
+  // Class-level constants for CSV column indices
+  const COL_DISTRICTNAME = 0;
+  const COL_DISPLAYNAME = 1;
+  const COL_FIRSTNAME = 2;
+  const COL_LASTNAME = 3;
+  const COL_POSITIONNAME = 4;
+  const COL_PHONE = 5;
+  const COL_EMAIL = 6;
+
   private static $instances = [];
 
   /**
@@ -970,64 +979,120 @@ class AdultLeaders
        *****************************************************************************/
       public static function UpdateFunctionalRole($fileName)
       {
-        $col_districtname = 0;
-        $col_displayname = 1;
-        $col_firstname = 2;
-        $col_lastname = 3;
-        $col_positionname = 4;
-        $col_phone = 5;
-        $col_email = 6;
-
         $RecordsInError = 0;
-        $filePath = "Data/" . $fileName;
         $Inserted = 0;
         $Updated = 0;
         $Error = 0;
-        $row = 1;
-        if (($handle = fopen($filePath, "r")) !== FALSE) {
-          while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if ($row < 9) { // Skip the first row(s), headers.
-              if ($row == 5)
-                $Datestr = $data[0]; // Get the report date.
-              $row++;
-              continue;
-            }
-            $Unit = self::formatUnitNumber($data[$col_displayname], null);
-            //Search data and find member
-            $sqlFind = "SELECT * FROM trainedleaders WHERE First_Name='$data[$col_firstname]' AND  Last_Name='$data[$col_lastname]' AND Unit='$Unit' ";
-            $query = self::doQuery($sqlFind);
-            switch (mysqli_num_rows($query)) {
-              case  0:
-                // Nobody found
-                $Error++;
-                break;
-              case 1:
-                $sqlUpdate = "UPDATE `trainedleaders` SET `FunctionalRole`='$data[$col_positionname]' 
-					WHERE First_Name='$data[$col_firstname]' AND  Last_Name='$data[$col_lastname]'  AND Unit='$Unit'";
-                $query = self::doQuery($sqlUpdate);
-                if ($query)
-                  $Updated++;
-                else
-                  $Error++;
-                // Update the Function role
-                break;
-              case 2:
-              case 3:
-              case 4:
-              case 5:
-              case 6:
-              case 7:
-              case 8:
-              case 9:
-              default:
-                // Too many people found
-                $Error++;
-                break;
-            }
-          }
-        }
-      }
+        $row = 0;
+        $reportDate = null;
 
+        // Secure file path using UPLOAD_DIRECTORY
+        $filePath = UPLOAD_DIRECTORY . basename($fileName);
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+          error_log("UpdateFunctionalRole: File not found or unreadable at $filePath");
+          return ++$RecordsInError;
+        }
+
+        $dbConn = self::getDbConn(); // Assuming a method to get DB connection
+        mysqli_begin_transaction($dbConn);
+
+        try {
+          if (($handle = fopen($filePath, "r")) !== false) {
+            // Read header row to validate structure
+            $header = fgetcsv($handle, 1000, ",");
+            //            if ($header === false || count($header) < 7) {
+            if ($header === false) {
+              error_log("UpdateFunctionalRole: Invalid CSV header in $fileName");
+              throw new Exception("Invalid CSV format: Missing required columns.");
+            }
+
+            while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+              $row++;
+              // Skip empty rows
+              if (empty($data) || count($data) < 7) {
+                $Error++;
+                $RecordsInError++;
+                error_log("UpdateFunctionalRole: Skipping empty or invalid row $row in $fileName");
+                continue;
+              }
+
+              // Extract report date from row 5 (configurable if needed)
+              if ($row === 5) {
+                $reportDate = $data[0] ?? null;
+                continue;
+              }
+
+              // Skip rows before data (e.g., headers, metadata)
+              if ($row < 9) {
+                continue;
+              }
+
+              // Sanitize and validate data
+              $firstName = trim($data[self::COL_FIRSTNAME] ?? '');
+              $lastName = trim($data[self::COL_LASTNAME] ?? '');
+              $positionName = trim($data[self::COL_POSITIONNAME] ?? '');
+              $unit = self::formatUnitNumber($data[self::COL_DISPLAYNAME] ?? '', null);
+
+              //                if (empty($firstName) || empty($lastName) || empty($unit) || empty($positionName)) {
+              if (empty($firstName) || empty($lastName) || empty($positionName)) {
+                $Error++;
+                $RecordsInError++;
+                error_log("UpdateFunctionalRole: Missing required fields in row $row: " . json_encode($data));
+                continue;
+              }
+
+              // Find matching record
+              $sqlFind = "SELECT id FROM trainedleaders WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+              $stmt = mysqli_prepare($dbConn, $sqlFind);
+              if (!$stmt) {
+                throw new Exception("Failed to prepare SELECT statement: " . mysqli_error($dbConn));
+              }
+              mysqli_stmt_bind_param($stmt, "sss", $firstName, $lastName, $unit);
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+              $numRows = mysqli_num_rows($result);
+              mysqli_stmt_close($stmt);
+
+              if ($numRows === 1) {
+                // Update functional role
+                $sqlUpdate = "UPDATE trainedleaders SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+                $stmt = mysqli_prepare($dbConn, $sqlUpdate);
+                if (!$stmt) {
+                  throw new Exception("Failed to prepare UPDATE statement: " . mysqli_error($dbConn));
+                }
+                mysqli_stmt_bind_param($stmt, "ssss", $positionName, $firstName, $lastName, $unit);
+                if (mysqli_stmt_execute($stmt)) {
+                  $Updated++;
+                } else {
+                  $Error++;
+                  $RecordsInError++;
+                  error_log("UpdateFunctionalRole: Failed to update row $row: " . mysqli_error($dbConn));
+                }
+                mysqli_stmt_close($stmt);
+              } else {
+                // No match or multiple matches
+                $Error++;
+                $RecordsInError++;
+                error_log("UpdateFunctionalRole: Row $row - Found $numRows matches for FirstName: $firstName, LastName: $lastName, Unit: $unit");
+              }
+            }
+            fclose($handle);
+          } else {
+            throw new Exception("Failed to open file: $filePath");
+          }
+
+          mysqli_commit($dbConn);
+        } catch (Exception $e) {
+          mysqli_rollback($dbConn);
+          error_log("UpdateFunctionalRole: Error processing $fileName: " . $e->getMessage());
+          $RecordsInError++;
+        }
+
+        // Log summary
+        error_log("UpdateFunctionalRole: Processed $fileName - Updated: $Updated, Errors: $Error, Total Rows: $row");
+
+        return $RecordsInError;
+      }
       /******************************************************************************
        * This funtion will return trained status for direct contact leaders
        * 

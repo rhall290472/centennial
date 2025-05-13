@@ -1,144 +1,162 @@
 <?php
-if (!session_id()) {
-	session_start();
+if (session_status() === PHP_SESSION_NONE) {
+	session_start([
+		'cookie_httponly' => true,
+		'use_strict_mode' => true,
+		'cookie_secure' => isset($_SERVER['HTTPS'])
+	]);
 }
-/*
-!==============================================================================!
-!\                                                                            /!
-!\\                                                                          //!
-! \##########################################################################/ !
-!  #         This is Proprietary Software of Richard Hall                   #  !
-!  ##########################################################################  !
-!  ##########################################################################  !
-!  #                                                                        #  !
-!  #                                                                        #  !
-!  #   Copyright 2017-2024 - Richard Hall                                   #  !
-!  #                                                                        #  !
-!  #   The information contained herein is the property of Richard          #  !
-!  #   Hall, and shall not be copied, in whole or in part, or               #  !
-!  #   disclosed to others in any manner without the express written        #  !
-!  #   authorization of Richard Hall.                                       #  !
-!  #                                                                        #  !
-!  #                                                                        #  !
-! /##########################################################################\ !
-!//                                                                          \\!
-!/                                                                            \!
-!==============================================================================!
-*/
 
-include_once('CPack.php');
-include_once('CTroop.php');
-include_once('CCrew.php');
-//include_once('CPost.php');
-include_once('CUnit.php');
-//include_once('CTrainedLeaders.php')	;
-//include_once("CYpt.php");
-include_once('CAdvancement.php');
-include_once('cAdultLeaders.php');
+require_once __DIR__ . '/../config/config.php';
+require_once 'CUnit.php';
+require_once 'CPack.php';
+require_once 'CTroop.php';
+require_once 'CCrew.php';
+require_once 'CAdvancement.php';
+require_once 'cAdultLeaders.php';
 
-$CAdvancement = CAdvancement::getInstance();
-$CUnit = UNIT::getInstance();
-$CPack = CPack::getInstance();
-$CTroop = CTroop::getInstance();
-$CCrew = CCrew::getInstance();
-$CPost = CPost::getInstance();
-//$CTrainedLeaders = TrainedLeaders::getInstance();
-//$CYPT = YPT::getInstance();
-$cAdultLeaders = AdultLeaders::getInstance();
-?>
-<!DOCTYPE html>
-<html lang="en">
+class FileUploader
+{
+	private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
+	private $maxFileSize = MAX_FILE_SIZE;
+	private $uploadDir;
 
-
-<head>
-	<?php include 'head.php'; ?>
-</head>
-<?php
-$currentDirectory = getcwd();
-$uploadDirectory = "/Data/";
-
-$errors = []; // Store errors here
-
-$fileExtensionsAllowed = ['csv']; // These will be the only file extensions allowed 
-
-
-$fileName = $_FILES['the_file']['name'];
-$fileSize = $_FILES['the_file']['size'];
-$fileTmpName  = $_FILES['the_file']['tmp_name'];
-$fileType = $_FILES['the_file']['type'];
-$filedot = '.';
-$strTemp = explode($filedot, $fileName);
-$strTemp = end($strTemp);
-$fileExtension = strtolower($strTemp);
-
-$uploadPath = $currentDirectory . $uploadDirectory . basename($fileName);
-
-if (isset($_POST['submit'])) {
-
-	if (!in_array($fileExtension, $fileExtensionsAllowed)) {
-		$errors[] = "This file extension is not allowed. Please upload a CSV file";
+	public function __construct($uploadDir)
+	{
+		$this->uploadDir = rtrim($uploadDir, '/') . '/';
+		if (!is_dir($this->uploadDir)) {
+			mkdir($this->uploadDir, 0755, true);
+		}
 	}
 
-	if ($fileSize > 4000000) {
-		$errors[] = "File exceeds maximum size (4MB)";
+	public function uploadFile($file, &$errors)
+	{
+		$uploadErrors = [
+			UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the maximum size allowed by the server.",
+			UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the maximum size allowed by the form.",
+			UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
+			UPLOAD_ERR_NO_FILE => "No file was uploaded.",
+			UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
+			UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
+			UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
+		];
+
+		if ($file['error'] !== UPLOAD_ERR_OK) {
+			$errors[] = $uploadErrors[$file['error']] ?? "Unknown file upload error.";
+			return false;
+		}
+
+		$fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+		if (!in_array($fileExtension, $this->allowedExtensions)) {
+			$errors[] = "Invalid file extension. Only CSV files are allowed.";
+			return false;
+		}
+
+		if ($file['size'] > $this->maxFileSize) {
+			$errors[] = "File exceeds maximum size (4MB).";
+			return false;
+		}
+
+		if ($file['type'] !== 'text/csv' && $file['type'] !== 'application/vnd.ms-excel') {
+			$errors[] = "Invalid file type. Only CSV files are allowed.";
+			return false;
+		}
+
+		$fileHandle = fopen($file['tmp_name'], 'r');
+		$firstLine = fgetcsv($fileHandle);
+		fclose($fileHandle);
+		if ($firstLine === false || empty($firstLine)) {
+			$errors[] = "File is not a valid CSV.";
+			return false;
+		}
+
+		$uniqueFileName = uniqid('upload_', true) . '.csv';
+		$uploadPath = $this->uploadDir . $uniqueFileName;
+
+		if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+			return $uniqueFileName;
+		}
+
+		$errors[] = "Failed to move uploaded file.";
+		return false;
 	}
+}
 
-	if (empty($errors)) {
-		$didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+// Authentication check
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+	$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to upload files.'];
+	header("Location: index.php?page=login");
+	exit;
+}
 
-		if ($didUpload) {
-			/* echo "The file " . basename($fileName) . " has been uploaded<br/>"; */
-			$Update = $_POST['submit'];
-			switch ($Update) {
-				case "UpdateTotals":
-					//$RecordsInError = $CUnit->UpdateTotals($fileName);
-					$RecordsInError = $CUnit->ImportCORData($fileName);
-					break;
-				case "UpdatePack":
-					$RecordsInError = $CPack->UpdatePack($fileName);
-					break;
-				case "UpdateTroop":
-					$RecordsInError = $CTroop->UpdateTroop($fileName);
-					break;
-				case "UpdateCrew":
-					$RecordsInError = $CCrew->UpdateCrew($fileName);
-					break;
-				case "TrainedLeader":
-					$RecordsInError = $cAdultLeaders->TrainedLeader($fileName);
-					$CAdvancement->UpdateLastUpdated('trainedleaders', "");
-					break;
-				case "Updateypt":
-					$RecordsInError = $cAdultLeaders->Updateypt($fileName);
-					$CAdvancement->UpdateLastUpdated('ypt', "");
+// CSRF token validation
+if (!isset($_SESSION['csrf_token'])) {
+	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+if (isset($_POST['submit']) && (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'])) {
+	$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+	header("Location: index.php?page=updatedata&update=" . urlencode($_POST['submit']));
+	exit;
+}
 
-					break;
-				case "UpdateVenturing":
-					$RecordsInError = $CCrew->UpdateVenturing($fileName);
-					break;
-				case "UpdateAdventure":
-					$RecordsInError = $CPack->UpdateAdventure($fileName);
-					break;
-				case "UpdateCommissioners":
-					$RecordsInError = $CUnit->UpdateCommissioner($fileName);
-					break;
-				case "UpdateFunctionalRole":
-					$RecordsInError = $cAdultLeaders->UpdateFunctionalRole($fileName);
-					break;
-				default:
-					echo "Default case reached";
-					break;
+$errors = [];
+$Update = filter_input(INPUT_POST, 'submit');
+
+$classMap = [
+	'UpdateTotals' => CUnit::class,
+	'UpdatePack' => CPack::class,
+	'UpdateTroop' => CTroop::class,
+	'UpdateCrew' => CCrew::class,
+	'TrainedLeader' => AdultLeaders::class,
+	'Updateypt' => AdultLeaders::class,
+	'UpdateVenturing' => CCrew::class,
+	'UpdateAdventure' => CPack::class,
+	'UpdateCommissioners' => CUnit::class,
+	'UpdateFunctionalRole' => AdultLeaders::class,
+];
+
+$updateMethods = [
+	'UpdateTotals' => ['ImportCORData'],
+	'UpdatePack' => ['UpdatePack'],
+	'UpdateTroop' => ['UpdateTroop'],
+	'UpdateCrew' => ['UpdateCrew'],
+	'TrainedLeader' => ['TrainedLeader'],
+	'Updateypt' => ['Updateypt'],
+	'UpdateVenturing' => ['UpdateVenturing'],
+	'UpdateAdventure' => ['UpdateAdventure'],
+	'UpdateCommissioners' => ['UpdateCommissioner'],
+	'UpdateFunctionalRole' => ['UpdateFunctionalRole'],
+];
+
+if (isset($_POST['submit']) && isset($classMap[$Update])) {
+	$uploader = new FileUploader(UPLOAD_DIRECTORY);
+	$instance = $classMap[$Update]::getInstance();
+	$uploadedFile = $uploader->uploadFile($_FILES['the_file'], $errors);
+
+	if (empty($errors) && $uploadedFile) {
+		try {
+			$RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
+			unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
+			if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
+				CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
 			}
-		} else {
-			echo "An error occurred. Please contact the administrator.";
+			$_SESSION['feedback'] = [
+				'type' => $RecordsInError == 0 ? 'success' : 'warning',
+				'message' => $RecordsInError == 0 ? 'Data updated successfully.' : "$RecordsInError record(s) had errors."
+			];
+		} catch (Exception $e) {
+			error_log("Processing error for $Update: " . $e->getMessage(), 0);
+			$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during processing.'];
 		}
 	} else {
-		foreach ($errors as $error) {
-			echo $error . "These are the errors" . "\n";
-		}
+		error_log("File upload error: " . implode(', ', $errors), 0);
+		$_SESSION['feedback'] = ['type' => 'danger', 'message' => implode(' ', $errors)];
 	}
-
-	//if($RecordsInError == 0){
-	echo "<script>window.location.href = 'index.php';</script>";
-	//}
-
+	$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
+	header("Location: index.php?page=updatedata&update=" . urlencode($Update));
+	exit;
+} else {
+	$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
+	header("Location: index.php?page=updatedata");
+	exit;
 }

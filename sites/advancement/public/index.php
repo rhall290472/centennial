@@ -26,8 +26,85 @@ if (!defined('SITE_URL')) {
   define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/advancement');
 }
 
+// Load required classes for file uploads
+load_class(__DIR__ . '/../src/Classes/CUnit.php');
+load_class(__DIR__ . '/../src/Classes/CPack.php');
+load_class(__DIR__ . '/../src/Classes/CTroop.php');
+load_class(__DIR__ . '/../src/Classes/CCrew.php');
+load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
+
+// FileUploader class for secure file uploads
+class FileUploader
+{
+  private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
+  private $maxFileSize = MAX_FILE_SIZE;
+  private $uploadDir;
+
+  public function __construct($uploadDir)
+  {
+    $this->uploadDir = rtrim($uploadDir, '/') . '/';
+    if (!is_dir($this->uploadDir)) {
+      mkdir($this->uploadDir, 0755, true);
+    }
+  }
+
+  public function uploadFile($file, &$errors)
+  {
+    $uploadErrors = [
+      UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the maximum size allowed by the server.",
+      UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the maximum size allowed by the form.",
+      UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
+      UPLOAD_ERR_NO_FILE => "No file was uploaded.",
+      UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
+      UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
+      UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
+    ];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+      $errors[] = $uploadErrors[$file['error']] ?? "Unknown file upload error.";
+      return false;
+    }
+
+    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($fileExtension, $this->allowedExtensions)) {
+      $errors[] = "Invalid file extension. Only CSV files are allowed.";
+      return false;
+    }
+
+    if ($file['size'] > $this->maxFileSize) {
+      $errors[] = "File exceeds maximum size (4MB).";
+      return false;
+    }
+
+    if ($file['type'] !== 'text/csv' && $file['type'] !== 'application/vnd.ms-excel') {
+      $errors[] = "Invalid file type. Only CSV files are allowed.";
+      return false;
+    }
+
+    $fileHandle = fopen($file['tmp_name'], 'r');
+    $firstLine = fgetcsv($fileHandle);
+    fclose($fileHandle);
+    if ($firstLine === false || empty($firstLine)) {
+      $errors[] = "File is not a valid CSV.";
+      return false;
+    }
+
+    $uniqueFileName = uniqid('upload_', true) . '.csv';
+    $uploadPath = $this->uploadDir . $uniqueFileName;
+
+    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+      return $uniqueFileName;
+    }
+
+    $errors[] = "Failed to move uploaded file.";
+    return false;
+  }
+}
+
 // Simple routing based on 'page' GET parameter
-$page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$page = filter_input(INPUT_GET, 'page') ?? 'home';
+$page = strtolower(trim($page));
 $valid_pages = [
   'home',
   'ypt',
@@ -43,8 +120,7 @@ $valid_pages = [
   'membership-report',
   'login',
   'logout',
-  'updatedata',
-  'settings'
+  'updatedata'
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -57,7 +133,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: index.php?page=$page");
     exit;
   }
-  if (isset($_POST['SubmitYear']) && in_array($page, ['home', 'pack-summary', 'pack-below-goal', 'pack-meeting-goal', 'troop-summary', 'troop-below-goal', 'troop-meeting-goal', 'crew-summary', 'adv-report', 'membership-report'])) {
+
+  // Year selection
+  if (isset($_POST['SubmitYear']) && in_array($page, $valid_pages)) {
     $SelYear = filter_input(INPUT_POST, 'Year', FILTER_SANITIZE_NUMBER_INT);
     if ($SelYear && is_numeric($SelYear) && $SelYear >= 2000 && $SelYear <= date("Y")) {
       $_SESSION['year'] = $SelYear;
@@ -69,8 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: index.php?page=$page");
     exit;
   }
+
+  // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_template('/src/Classes/CAdvancement.php');
+    load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
     $CAdvancement = CAdvancement::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -124,7 +204,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
   }
+
+  // File upload for updatedata
   if ($page === 'updatedata' && isset($_FILES['the_file']) && isset($_POST['submit'])) {
+    // Authentication check
+    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to upload files.'];
+      header("Location: index.php?page=login");
+      exit;
+    }
+
+    $Update = filter_input(INPUT_POST, 'submit');
     $allowed_updates = [
       'UpdateTotals',
       'UpdatePack',
@@ -137,50 +227,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'UpdateCommissioners',
       'UpdateFunctionalRole'
     ];
-    $update = filter_input(INPUT_POST, 'submit');
-    if (!in_array($update, $allowed_updates)) {
+
+    if (!in_array($Update, $allowed_updates)) {
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($update));
+      header("Location: index.php?page=updatedata&update=" . urlencode($Update));
       exit;
     }
-    if ($_FILES['the_file']['error'] !== UPLOAD_ERR_OK) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'File upload failed: Error code ' . $_FILES['the_file']['error'] . '.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($update));
-      exit;
-    }
-    $allowed_extensions = ['csv'];
-    $file_ext = strtolower(pathinfo($_FILES['the_file']['name'], PATHINFO_EXTENSION));
-    if (!in_array($file_ext, $allowed_extensions)) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid file type. Only CSV files are allowed.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($update));
-      exit;
-    }
-    $max_size = 5 * 1024 * 1024; // 5MB
-    if ($_FILES['the_file']['size'] > $max_size) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'File too large. Maximum size is 5MB.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($update));
-      exit;
-    }
-    $upload_dir = __DIR__ . '/uploads/';
-    if (!is_dir($upload_dir)) {
-      mkdir($upload_dir, 0755, true);
-    }
-    $upload_path = $upload_dir . uniqid() . '.' . $file_ext;
-    try {
-      if (move_uploaded_file($_FILES['the_file']['tmp_name'], $upload_path)) {
-        // TODO: Process the CSV file based on $update (replace FileUpload.php logic)
-        // Placeholder: Assume processing succeeds
-        $_SESSION['feedback'] = ['type' => 'success', 'message' => "File uploaded successfully for $update."];
-        // Delete the file after processing (in real implementation, process first)
-        unlink($upload_path);
-      } else {
-        throw new Exception("Failed to move uploaded file.");
+
+    $errors = [];
+    $uploader = new FileUploader(UPLOAD_DIRECTORY);
+    $classMap = [
+      'UpdateTotals' => UNIT::class,
+      'UpdatePack' => CPack::class,
+      'UpdateTroop' => CTroop::class,
+      'UpdateCrew' => CCrew::class,
+      'TrainedLeader' => AdultLeaders::class,
+      'Updateypt' => AdultLeaders::class,
+      'UpdateVenturing' => CCrew::class,
+      'UpdateAdventure' => CPack::class,
+      'UpdateCommissioners' => UNIT::class,
+      'UpdateFunctionalRole' => AdultLeaders::class,
+    ];
+
+    $updateMethods = [
+      'UpdateTotals' => ['ImportCORData'],
+      'UpdatePack' => ['UpdatePack'],
+      'UpdateTroop' => ['UpdateTroop'],
+      'UpdateCrew' => ['UpdateCrew'],
+      'TrainedLeader' => ['TrainedLeader'],
+      'Updateypt' => ['Updateypt'],
+      'UpdateVenturing' => ['UpdateVenturing'],
+      'UpdateAdventure' => ['UpdateAdventure'],
+      'UpdateCommissioners' => ['UpdateCommissioner'],
+      'UpdateFunctionalRole' => ['UpdateFunctionalRole'],
+    ];
+
+    $instance = $classMap[$Update]::getInstance();
+    $uploadedFile = $uploader->uploadFile($_FILES['the_file'], $errors);
+
+    if (empty($errors) && $uploadedFile) {
+      try {
+        $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
+        unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
+        if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
+          CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
+        }
+        $_SESSION['feedback'] = [
+          'type' => $RecordsInError == 0 ? 'success' : 'warning',
+          'message' => $RecordsInError == 0 ? 'Data updated successfully.' : "$RecordsInError record(s) had errors."
+        ];
+      } catch (Exception $e) {
+        error_log("Processing error for $Update: " . $e->getMessage(), 0);
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during processing.'];
       }
-    } catch (Exception $e) {
-      error_log("index.php - File upload error for $update: " . $e->getMessage(), 0);
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during file upload. Please try again later.'];
+    } else {
+      error_log("File upload error: " . implode(', ', $errors), 0);
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => implode(' ', $errors)];
     }
-    header("Location: index.php?page=updatedata&update=" . urlencode($update));
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
+    header("Location: index.php?page=updatedata&update=" . urlencode($Update));
     exit;
   }
 }
@@ -256,9 +361,6 @@ if (!isset($_SESSION['csrf_token'])) {
               <li><a class="dropdown-item" href="?page=adv-report">Advancement Report</a></li>
               <li><a class="dropdown-item" href="?page=membership-report">Membership Report</a></li>
             </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link <?php echo $page === 'settings' ? 'active' : ''; ?>" href="?page=settings">Settings</a>
           </li>
           <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
             <li class="nav-item">
@@ -338,56 +440,20 @@ if (!isset($_SESSION['csrf_token'])) {
       <?php endif; ?>
       <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo $page === 'updatedata' ? 'active' : ''; ?>" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fs-4 bi-book text-danger"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
+          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
           </a>
           <ul class="dropdown-menu">
-            <li class="submenu submenu-md dropend">
-              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-                Upload Adult Data
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
-                <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
-              </ul>
-            </li>
-            <li class="submenu submenu-md dropend">
-              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-                Upload Membership Data
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Assigned Commissioners</a></li>
-              </ul>
-            </li>
-            <li class="submenu submenu-md dropend">
-              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-                Upload Pack Data
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Advancements</a></li>
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Awards</a></li>
-              </ul>
-            </li>
-            <li class="submenu submenu-md dropend">
-              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-                Upload Troop Data
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Advancements</a></li>
-              </ul>
-            </li>
-            <li class="submenu submenu-md dropend">
-              <a class="dropdown-item dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
-                Upload Crew Data
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Advancements</a></li>
-                <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
-              </ul>
-            </li>
-            <li><a class="dropdown-item" href="<?php echo htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/ErrorLog.php'); ?>">View Error Log</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Pack Assigned Commissioners</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Pack Advancements</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Pack Awards</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Troop Advancements</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Crew Advancements</a></li>
+            <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
           </ul>
         </li>
       <?php endif; ?>
@@ -456,13 +522,10 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/membership_report.php');
           break;
         case 'login':
-          include('../public/login.php');
+          include('login.php');
           break;
         case 'updatedata':
           include('../src/Pages/UpdateData.php');
-          break;
-        case 'settings':
-          echo '<h1>Settings</h1><p>Configure your application settings here.</p>';
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';

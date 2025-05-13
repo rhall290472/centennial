@@ -243,79 +243,7 @@ class CAdvancement
         </div>
       </form>
     <?php
-
     }
-
-    // Fill up the drop down with merit badge names
-    // echo "<form method=post>";
-    // echo "<label for='Year'>&nbsp;</label>";
-    // echo "<select class='selectWrapper' id= 'Year' name='Year' >";
-
-    // $yr = date("Y");
-    // if (isset($_SESSION['year']))
-    // $yr = $_SESSION['year'];
-    // // First recod is blank "all"
-    // //echo "<option value=\"\" </option>";
-    // //$Selected = "";
-    // if (!strcmp($yr, "2028")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2028' " . $Selected . ">2028</option>";
-
-    // if (!strcmp($yr, "2027")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2027' " . $Selected . ">2027</option>";
-
-    // if (!strcmp($yr, "2026")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2026' " . $Selected . ">2026</option>";
-
-    // if (!strcmp($yr, "2025")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2025' " . $Selected . ">2025</option>";
-
-    // if (!strcmp($yr, "2024")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2024' " . $Selected . ">2024</option>";
-
-    // if (!strcmp($yr, "2023")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2023' " . $Selected . ">2023</option>";
-
-    // if (!strcmp($yr, "2022")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2022' " . $Selected . ">2022</option>";
-
-    // if (!strcmp($yr, "2021")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2021' " . $Selected . ">2021</option>";
-
-    // if (!strcmp($yr, "2020")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2020' " . $Selected . " >2020</option>";
-
-    // if (!strcmp($yr, "2019")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2019' " . $Selected . " >2019</option>";
-
-    // if (!strcmp($yr, "2018")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2018' " . $Selected . " >2018</option>";
-
-    // if (!strcmp($yr, "2017")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2017' " . $Selected . " >2017</option>";
-
-    // if (!strcmp($yr, "2016")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2016' " . $Selected . " >2016</option>";
-
-    // if (!strcmp($yr, "2015")) $Selected = "selected";
-    // else $Selected = "";
-    // echo "<option value='2015' " . $Selected . " >2015</option>";
-
-    // echo '</select>';
-    // echo "<input  class='btn btn-primary btn-sm' type='submit' name='SubmitYear' placeholder='Year' value='SubmitYear'/>";
-    // echo "</form>";
   }
   /******************************************************************************
    * 

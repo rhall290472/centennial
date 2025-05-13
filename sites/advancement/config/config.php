@@ -61,6 +61,10 @@ define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_USERNAME', 'rhall290472@gmail.com');
 define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
 
+define('ALLOWED_FILE_EXTENSIONS', ['csv']);
+define('MAX_FILE_SIZE', 4000000); // 4MB
+define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
+
 $pageHome = SITE_URL.'/centennial/sites/advancement/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/advancement/src/Pages/contact.php';
 // Navigation links
@@ -112,6 +116,23 @@ if (!function_exists('load_template')) {
             require_once $path;
         } else {
             error_log("Template $file is missing.");
+            if (defined('ENV') && ENV === 'development') {
+                echo 'Template ' . $path . ' is missing.</br>';
+                die('Template $file is missing.');
+            } else
+                die('An error occurred. Please try again later.');
+        }
+    }
+}
+// Class loader function
+if (!function_exists('load_class')) {
+    function load_class($file)
+    {
+        $path = $file;
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            error_log("Class $file is missing.");
             if (defined('ENV') && ENV === 'development') {
                 echo 'Template ' . $path . ' is missing.</br>';
                 die('Template $file is missing.');

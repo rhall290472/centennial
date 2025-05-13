@@ -164,16 +164,16 @@ class CPack extends CAdvancement
 
     $resultPackSum = parent::doQuery($sqlPackSum, MYSQLI_STORE_RESULT);
     $RankTotal = $resultPackSum->fetch_assoc();
-    self::$PackTotal['lion'] = $RankTotal['SUM(lion)'];
-    self::$PackTotal['tiger'] = $RankTotal['SUM(tiger)'];
-    self::$PackTotal['bobcat'] = $RankTotal['SUM(bobcat)'];
-    self::$PackTotal['wolf'] = $RankTotal['SUM(wolf)'];
-    self::$PackTotal['bear'] = $RankTotal['SUM(bear)'];
-    self::$PackTotal['webelos'] = $RankTotal['SUM(webelos)'];
-    self::$PackTotal['aol'] = $RankTotal['SUM(aol)'];
-    self::$PackTotal['YTD'] = $RankTotal['SUM(YTD)'];
-    self::$PackTotal['adventure'] = $RankTotal['SUM(adventure)'];
-    self::$PackTotal['youth'] = parent::GetProgramTotalYouth("Pack");
+    self::$PackTotal['lion'] = (int)$RankTotal['SUM(lion)'];
+    self::$PackTotal['tiger'] = (int)$RankTotal['SUM(tiger)'];
+    self::$PackTotal['bobcat'] = (int)$RankTotal['SUM(bobcat)'];
+    self::$PackTotal['wolf'] = (int)$RankTotal['SUM(wolf)'];
+    self::$PackTotal['bear'] = (int)$RankTotal['SUM(bear)'];
+    self::$PackTotal['webelos'] = (int)$RankTotal['SUM(webelos)'];
+    self::$PackTotal['aol'] = (int)$RankTotal['SUM(aol)'];
+    self::$PackTotal['YTD'] = (int)$RankTotal['SUM(YTD)'];
+    self::$PackTotal['adventure'] = (int)$RankTotal['SUM(adventure)'];
+    self::$PackTotal['youth'] = (int)parent::GetProgramTotalYouth("Pack");
     return self::$PackTotal;
   }
   /**************************************************************************
