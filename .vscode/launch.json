@@ -21,7 +21,7 @@
       "name": "Launch District Awards",
       "request": "launch",
       "type": "chrome",
-      "url": "https://localhost/centennial/sites/districtawards/index.php",
+      "url": "https://localhost/centennial/sites/districtawards/public/index.php",
       "webRoot": "${workspaceFolder}"
     },
     {
@@ -35,7 +35,7 @@
       "name": "Launch MBC",
       "request": "launch",
       "type": "chrome",
-      "url": "https://localhost/centennial/sites/meritbadgecollege/index.php",
+      "url": "https://localhost/centennial/sites/meritbadgecollege/public/index.php",
       "webRoot": "${workspaceFolder}"
     },
     {

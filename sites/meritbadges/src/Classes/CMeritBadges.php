@@ -15,8 +15,7 @@ if (!session_id()) {
  * @license Proprietary
  */
 
-require_once 'config.php'; // Database credentials
-require_once 'cAdultLeaders.php';
+load_class(__DIR__ . '/../../../../shared/src/classes/cAdultLeaders.php');
 $cAdultLeaders = AdultLeaders::getInstance();
 
 /**

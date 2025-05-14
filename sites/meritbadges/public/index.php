@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
-    $CAdvancement = CAdvancement::getInstance();
+    load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
+    $CMeritBadges = CMeritBadges::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     if (empty($username)) {
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     try {
       $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
-      if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
+      if ($stmt = mysqli_prepare($CMeritBadges->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
@@ -116,11 +116,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php?page=login");
           }
         } else {
-          throw new Exception("Database query failed: " . mysqli_error($CAdvancement->getDbConn()));
+          throw new Exception("Database query failed: " . mysqli_error($CMeritBadges->getDbConn()));
         }
         mysqli_stmt_close($stmt);
       } else {
-        throw new Exception("Failed to prepare statement: " . mysqli_error($CAdvancement->getDbConn()));
+        throw new Exception("Failed to prepare statement: " . mysqli_error($CMeritBadges->getDbConn()));
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage(), 0);
@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
         unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
         if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
-          CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
+          CMeritBadges::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
         }
         $_SESSION['feedback'] = [
           'type' => $RecordsInError == 0 ? 'success' : 'warning',

@@ -4,9 +4,9 @@
     <span class="fs-4">Menu</span>
   </a>
   <hr>
-  <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
 
-    <ul class="nav nav-pills flex-column mb-auto">
+  <ul class="nav nav-pills flex-column mb-auto">
+    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Life Scouts</span>
@@ -61,9 +61,9 @@
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
       </li>
     <?php endif; ?>
-    </ul>
+  </ul>
 
-    <button class="btn btn-outline-secondary mt-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
-      Close Sidebar
-    </button>
+  <button class="btn btn-outline-secondary mt-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+    Close Sidebar
+  </button>
 </div>

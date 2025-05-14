@@ -354,7 +354,7 @@ if (!isset($_SESSION['csrf_token'])) {
       <?php
           break;
         case 'edit-scout':
-          include('../src/Pages/scout_controller.php');
+          include('../src/Pages/ScoutPage.php');
           break;
         case 'active-life':
           include('../src/Pages/ReportAllLifeScouts.php');

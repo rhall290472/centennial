@@ -18,8 +18,8 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CMBCollege.php');
-$CMBCollege = CMBCollege::getInstance();
+load_template('/src/Classes/CMeritBadges.php');
+$CMeritBadges = CMeritBadges::getInstance();
 
 // Check if the user is already logged in, redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
