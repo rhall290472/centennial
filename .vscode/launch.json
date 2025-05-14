@@ -28,7 +28,7 @@
       "name": "Launch Eagle",
       "request": "launch",
       "type": "chrome",
-      "url": "https://localhost/centennial/sites/eagle/index.php",
+      "url": "https://localhost/centennial/sites/eagle/public/index.php",
       "webRoot": "${workspaceFolder}"
     },
     {

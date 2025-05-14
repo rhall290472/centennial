@@ -27,11 +27,11 @@ if (!defined('SITE_URL')) {
 }
 
 // Load required classes for file uploads
-//load_class(__DIR__ . '/../src/Classes/CUnit.php');
+load_class(__DIR__ . '/../src/Classes/CEagle.php');
 //load_class(__DIR__ . '/../src/Classes/CPack.php');
 //load_class(__DIR__ . '/../src/Classes/CTroop.php');
 //load_class(__DIR__ . '/../src/Classes/CCrew.php');
-//load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+//load_class(__DIR__ . '/../src/Classes/CEagle.php');
 //load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
 
 // FileUploader class for secure file uploads
@@ -150,8 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
-    $CAdvancement = CAdvancement::getInstance();
+    load_class(__DIR__ . '/../src/Classes/CEagle.php');
+    $CEagle = CEagle::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     if (empty($username)) {
@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     try {
       $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
-      if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
+      if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
@@ -191,14 +191,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php?page=login");
           }
         } else {
-          throw new Exception("Database query failed: " . mysqli_error($CAdvancement->getDbConn()));
+          throw new Exception("Database query failed: " . mysqli_error($CEagle->getDbConn()));
         }
         mysqli_stmt_close($stmt);
       } else {
-        throw new Exception("Failed to prepare statement: " . mysqli_error($CAdvancement->getDbConn()));
+        throw new Exception("Failed to prepare statement: " . mysqli_error($CEagle->getDbConn()));
       }
     } catch (Exception $e) {
-      error_log("index.php - Login error: " . $e->getMessage(), 0);
+      error_log("index.php - Login error: " . $e->getMessage(). " ".__FILE__." ".__LINE__, 0);
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
       header("Location: index.php?page=login");
     }
@@ -270,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
         unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
         if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
-          CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
+          CEagle::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
         }
         $_SESSION['feedback'] = [
           'type' => $RecordsInError == 0 ? 'success' : 'warning',
@@ -341,10 +341,10 @@ if (!isset($_SESSION['csrf_token'])) {
       ?>
           <div class="p-0 p-lg-0 bg-light rounded-3 text-center">
             <div class="m-4 m-lg-3">
-            <h1 class="display-5 fw-bold"><?php echo PAGE_TITLE; ?></h1>
+              <h1 class="display-5 fw-bold"><?php echo PAGE_TITLE; ?></h1>
               <p class="fs-4"><?php echo PAGE_DESCRIPTION; ?></p>
               <hr>
-              <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
+              <img style="padding-top: 9rem" class=" EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
             </div>
           </div>
       <?php

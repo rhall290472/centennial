@@ -13869,3 +13869,14 @@ footer {
   background-color: #007bff;
   color: white !important;
 }
+
+.EagleScoutimage {
+  display: block;
+  /* Makes the image a block element */
+  margin-left: auto;
+  /* Centers horizontally */
+  margin-right: auto;
+  /* Centers horizontally */
+  max-width: 100%;
+  /* Ensures responsiveness */
+}
