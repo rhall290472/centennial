@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         throw new Exception("Failed to prepare statement: " . mysqli_error($CEagle->getDbConn()));
       }
     } catch (Exception $e) {
-      error_log("index.php - Login error: " . $e->getMessage(). " ".__FILE__." ".__LINE__, 0);
+      error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
       header("Location: index.php?page=login");
     }
@@ -344,7 +344,11 @@ if (!isset($_SESSION['csrf_token'])) {
               <h1 class="display-5 fw-bold"><?php echo PAGE_TITLE; ?></h1>
               <p class="fs-4"><?php echo PAGE_DESCRIPTION; ?></p>
               <hr>
-              <img style="padding-top: 9rem" class=" EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
+              <?php if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) { ?>
+                <img style="padding-top: 9rem" class=" EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
+              <?php } else { ?>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
+              <?php } ?>
             </div>
           </div>
       <?php
