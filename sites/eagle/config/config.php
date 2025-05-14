@@ -14,13 +14,13 @@ defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 // Ensure upload directory exists
 $uploadDir = BASE_PATH . '/Data/';
 if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+  mkdir($uploadDir, 0755, true);
 }
 
 // Create log directory if it doesn't exist
 $logDir = BASE_PATH . '/../../shared/logs';
 if (!is_dir($logDir)) {
-    mkdir($logDir, 0755, true);
+  mkdir($logDir, 0755, true);
 }
 
 // Environment configuration  // development
@@ -28,14 +28,14 @@ define('ENV', 'development'); // Set to 'production' on live server
 // Enable error reporting in development only
 
 if (defined('ENV') && ENV === 'development') {
-    ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
-    ini_set('error_log', BASE_PATH . '/../../shared/logs');
-    error_reporting(E_ALL);
+  ini_set('display_errors', 1);
+  ini_set('log_errors', 1);
+  ini_set('error_log', BASE_PATH . '/../../shared/logs');
+  error_reporting(E_ALL);
 } else {
-    ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+  ini_set('display_errors', 0);
+  ini_set('log_errors', 1);
+  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
@@ -65,36 +65,36 @@ define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
-$pageHome = SITE_URL.'/centennial/sites/advancement/public/index.php';
+$pageHome = SITE_URL . '/centennial/sites/advancement/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/advancement/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
-    [
-        'href' => $pageHome,
-        'text' => 'Home',
-        'active' => false,
-        'rel' => 'nofollow',
-        'aria-label' => 'Home'
-    ],
-    [
-        'href' => $pageContact,
-        'text' => 'Contact',
-        'active' => false,
-        'rel' => 'nofollow',
-        'aria-label' => 'Contact'
-    ],
+  [
+    'href' => $pageHome,
+    'text' => 'Home',
+    'active' => false,
+    'rel' => 'nofollow',
+    'aria-label' => 'Home'
+  ],
+  [
+    'href' => $pageContact,
+    'text' => 'Contact',
+    'active' => false,
+    'rel' => 'nofollow',
+    'aria-label' => 'Contact'
+  ],
 ]);
 
 if ($is_localhost) {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
+  define('DB_HOST', 'localhost');
+  define('DB_USER', 'mbcuser');
+  define('DB_PASS', 'ZCSCA?yrW7}L');
+  define('DB_NAME', 'meritbadges');
 } else {
-    define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
+  define('DB_HOST', 'rhall29047217205.ipagemysql.com');
+  define('DB_USER', 'mbcuser');
+  define('DB_PASS', 'ZCSCA?yrW7}L');
+  define('DB_NAME', 'meritbadges');
 }
 
 // Security headers
@@ -109,35 +109,36 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-    function load_template($file)
-    {
-        $path = BASE_PATH . $file;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            error_log("Template $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
-        }
+  function load_template($file)
+  {
+    $path = BASE_PATH . $file;
+    if (file_exists($path)) {
+      require_once $path;
+    } else {
+      error_log("Template $file is missing.");
+      if (defined('ENV') && ENV === 'development') {
+        echo 'Template ' . $path . ' is missing.</br>';
+        die('Template $file is missing.');
+      } else
+        die('An error occurred. Please try again later.');
     }
+  }
 }
 // Class loader function
 if (!function_exists('load_class')) {
-    function load_class($file)
-    {
-        $path = $file;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            error_log("Class $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
-        }
+  function load_class($file)
+  {
+    $path = $file;
+    if (file_exists($path)) {
+      require_once $path;
+    } else {
+      error_log("Class $file is missing.");
+      if (defined('ENV') && ENV === 'development') {
+        $realpath = realpath($path);
+        echo 'Template ' . $realpath . ' is missing.</br>';
+        die('Template $file is missing.');
+      } else
+        die('An error occurred. Please try again later.');
     }
+  }
 }

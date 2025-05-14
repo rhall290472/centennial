@@ -107,20 +107,20 @@ $page = filter_input(INPUT_GET, 'page') ?? 'home';
 $page = strtolower(trim($page));
 $valid_pages = [
   'home',
-  'ypt',
-  'untrained',
-  'pack-summary',
-  'pack-below-goal',
-  'pack-meeting-goal',
-  'troop-summary',
-  'troop-below-goal',
-  'troop-meeting-goal',
-  'crew-summary',
-  'adv-report',
-  'membership-report',
+  'edit-scout',
+  'active-life',
+  'audit-scout',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
   'login',
   'logout',
-  'updatedata'
+  ''
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -353,43 +353,43 @@ if (!isset($_SESSION['csrf_token'])) {
           </div>
       <?php
           break;
-        case 'untrained':
-          include('../src/Pages/Untrained.php');
+        case 'edit-scout':
+          include('../src/Pages/scout_controller.php');
           break;
-        case 'ypt':
-          include('../src/Pages/YPT.php');
+        case 'active-life':
+          include('../src/Pages/ReportAllLifeScouts.php');
           break;
-        case 'pack-summary':
-          include('../src/Pages/pack_summary.php');
+        case 'audit-scout':
+          include('../src/Pages/ReportAuditScout.php');
           break;
-        case 'pack-below-goal':
+        case '':
           include('../src/Pages/pack_below_goal.php');
           break;
-        case 'pack-meeting-goal':
+        case '':
           include('../src/Pages/pack_meeting_goal.php');
           break;
-        case 'troop-summary':
+        case '':
           include('../src/Pages/troop_summary.php');
           break;
-        case 'troop-below-goal':
+        case '':
           include('../src/Pages/troop_below_goal.php');
           break;
-        case 'troop-meeting-goal':
+        case '':
           include('../src/Pages/troop_meeting_goal.php');
           break;
-        case 'crew-summary':
+        case '':
           include('../src/Pages/crew_summary.php');
           break;
-        case 'adv-report':
+        case '':
           include('../src/Pages/adv_report.php');
           break;
-        case 'membership-report':
+        case '':
           include('../src/Pages/membership_report.php');
           break;
         case 'login':
           include('login.php');
           break;
-        case 'updatedata':
+        case '':
           include('../src/Pages/UpdateData.php');
           break;
         default:

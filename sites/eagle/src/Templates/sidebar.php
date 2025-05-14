@@ -12,9 +12,9 @@
           <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Life Scouts</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=untrained">Edit/Update Scout</a></li>
-          <li><a class="dropdown-item" href="?page=ypt">All Active Life Scouts</a></li>
-          <li><a class="dropdown-item" href="?page=ypt">Audit Scout</a></li>
+          <li><a class="dropdown-item" href="?page=edit-scout">Edit/Update Scout</a></li>
+          <li><a class="dropdown-item" href="?page=active-life">All Active Life Scouts</a></li>
+          <li><a class="dropdown-item" href="?page=audit-scout">Audit Scout</a></li>
         </ul>
       </li>
       <li class="nav-item dropdown">
