@@ -12,7 +12,7 @@ defined('IN_APP') or define('IN_APP', true);
 defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 
 // Ensure upload directory exists
-$uploadDir = BASE_PATH . '/Data/';
+$uploadDir = BASE_PATH . '/Uploads/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
