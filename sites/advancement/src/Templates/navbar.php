@@ -11,6 +11,15 @@
           <a class="nav-link <?php echo $page === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
         </li>
         <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Adults
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="?page=untrained">Untrained Leaders</a></li>
+            <li><a class="dropdown-item" href="?page=ypt">Expired YPT</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Packs
           </a>
