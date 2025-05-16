@@ -55,7 +55,7 @@ try {
             echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
           }
           ?>
-          <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+          <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
       <div class="col-4">

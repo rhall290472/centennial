@@ -54,7 +54,7 @@ try {
             echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
           }
           ?>
-          <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+          <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
       <div class="col-4">
@@ -71,8 +71,7 @@ try {
             echo "<p style='text-align: center;'>Number of units meeting goal: $TroopAbove Out of: $NumofTroops Troops</p>";
 
             if ($NumofTroops > 0) {
-              echo '<table class="table table-striped"><thead><tr>' .
-                '<th>Unit</th><th>Scout</th><th>Tenderfoot</th><th>Second Class</th><th>First Class</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Date</th></tr></thead><tbody>';
+              echo '<table class="table table-striped"><tbody>';
               $sql = sprintf("SELECT * FROM adv_troop WHERE Date=%d ORDER BY Unit ASC", $CTroop->GetYear());
               $result = $CTroop->doQuery($sql);
               if ($result) {

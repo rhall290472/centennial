@@ -22,6 +22,7 @@ load_template('/src/Classes/CPack.php');
 
 $CPack = CPack::getInstance();
 
+
 try {
   $SelYear = isset($_SESSION['year']) ? $_SESSION['year'] : date("Y");
   $CPack->SetYear($SelYear);
@@ -46,7 +47,7 @@ try {
     <div class="row">
       <div class="col-2">
         <form action="index.php?page=home" method="POST">
-          <p class="mb-0">Select Year</p>
+          <p class="mb-0 d-print-none">Select Year</p>
           <?php
           // Assuming SelectYear() returns a dropdown or year options
           try {
@@ -56,7 +57,7 @@ try {
             echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
           }
           ?>
-          <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+          <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
       <div class="col-4">
@@ -67,7 +68,7 @@ try {
       </div>
     </div>
     <div class="row">
-      <div class="col-10">
+      <div class="col-12">
         <div class="py-5">
           <p style="text-align: center;">District wide advancement ratio: <?php echo number_format($CPack->GetDistrictRatio(null), 2, '.', ''); ?> / District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2, '.', ''); ?></p>
           <hr>
@@ -79,8 +80,7 @@ try {
               echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
 
               if ($CPack->GetNumofPacks() > 0) {
-                echo '<table class="table table-striped"><thead><tr>' .
-                  '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
+                echo '<table class="table table-striped"><tbody>';
                 $PackDataResult = $CPack->GetPack();
                 while ($PackAdv = $PackDataResult->fetch_assoc()) {
                   $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);

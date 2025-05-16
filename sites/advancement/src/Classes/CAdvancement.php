@@ -220,7 +220,7 @@ class CAdvancement
       <!-- <div class="col-1"> -->
       <form class="d-print-none" method=post>
         <label for='Year'>&nbsp;</label>
-        <select class='form-control' id='Year' name='Year'>
+        <select class='form-control d-print-none' id='Year' name='Year'>
 
           <?php
           while ($row = $result->fetch_assoc()) {
@@ -238,8 +238,9 @@ class CAdvancement
           ?>
         </select>
         </div>
-        <div class="col-1 py-4">
-          <input class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='SubmitYear' />
+        <div class="col-1 py-6">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='Set Year' />
         </div>
       </form>
     <?php

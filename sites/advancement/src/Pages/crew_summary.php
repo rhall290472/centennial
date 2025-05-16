@@ -56,7 +56,7 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
           }
           ?>
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
-          <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+          <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
       <div class="col-5">
@@ -74,8 +74,7 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
             if ($result) {
               $rowcount = mysqli_num_rows($result);
               if ($rowcount > 0) {
-                echo '<table class="table table-striped"><thead><tr>' .
-                  '<th>Unit</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Discovery</th><th>Pathfinder</th><th>Summit</th><th>Venturing</th><th>Date</th></tr></thead><tbody>';
+                echo '<table class="table table-striped"><tbody>';
                 while ($row = $result->fetch_assoc()) {
                   $UnitYouth = $CCrew->GetUnitTotalYouth($row['Unit'], $row['Youth'], $row['Date']);
                   $Rank_Scout = sprintf("%.2f", ($row["YTD"] + $row['MeritBadge']) / max($UnitYouth, 1));

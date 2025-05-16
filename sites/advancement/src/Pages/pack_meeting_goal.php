@@ -53,7 +53,7 @@ try {
 						echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
 					}
 					?>
-					<input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year">
+					<!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
 				</form>
 			</div>
 			<div class="col-4">
@@ -70,8 +70,7 @@ try {
 						echo "<p style='text-align: center;'>Number of units meeting goal: " . $PacksAboveGoal . " Out of: " . $TotalPacks . " Packs</p>";
 
 						if ($TotalPacks > 0) {
-							echo '<table class="table table-striped"><thead><tr>' .
-								'<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
+							echo '<table class="table table-striped"><tbody>';
 							$sql = sprintf("SELECT * FROM adv_pack WHERE Date=%s ORDER BY Unit ASC", $CPack->GetYear());
 							if ($result = mysqli_query($CPack->getDbConn(), $sql)) {
 								while ($row = $result->fetch_assoc()) {
