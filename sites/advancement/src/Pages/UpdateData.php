@@ -30,8 +30,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 $allowed_updates = [
 	'UpdateTotals' => [
 		'title' => 'Update Membership Totals',
-		'description' => 'The Membership Totals Report returns a detailed list of each active unit within the structure of the district or council. By unit, the reports give you demographic data such as the number of youth and adults, male and female along with the chartered organization and charter expiration date.',
-		'file' => 'UnitBasedmembershiptotalsReport.csv'
+		'description' => 'BSA removed the membership report that broke down membership by gender so, we will use the Chartered Organization report which does not provide gender.',
+		'file' => 'CharteredOrganizations.csv'
 	],
 	'UpdatePack' => [
 		'title' => 'Update Pack Advancement',

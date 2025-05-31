@@ -347,11 +347,11 @@ class CCrew extends CAdvancement
     $Updated = 0;
     $RecordsInError = 0;
     $row = 1;
-    $filePath = "Data/" . $fileName;
+    //$filePath = "Data/" . $fileName;
     $Datestr = "";
     //$CrewYear = date("Y");
     $CrewYear = parent::GetYear();
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
+    if (($handle = fopen($fileName, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if ($row < 11) { // Skip the first row(s), headers.
           if ($row == 7)

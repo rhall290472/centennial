@@ -94,7 +94,8 @@ class FileUploader
     $uploadPath = $this->uploadDir . $uniqueFileName;
 
     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-      return $uniqueFileName;
+      //return $uniqueFileName;
+      return $uploadPath;
     }
 
     $errors[] = "Failed to move uploaded file.";

@@ -48,7 +48,7 @@ try {
   }
 
   // Validate TroopTotals
-  $requiredTroopKeys = ['Scout', 'Tenderfoot', 'SecondClass', 'FirstClass', 'Star', 'Life', 'Eagle', 'Palms', 'MeritBadge', 'YTD', 'Youth'];
+  $requiredTroopKeys = ['Scout', 'Tenderfoot', 'SecondClass', 'FirstClass', 'Star', 'Life', 'Eagle', 'Palms', 'MeritBadges', 'YTD', 'Youth'];
   foreach ($requiredTroopKeys as $key) {
     if (!isset($TroopTotals[$key]) || !is_numeric($TroopTotals[$key])) {
       throw new Exception("Invalid TroopTotals data for key: $key");
@@ -58,7 +58,7 @@ try {
   // Calculate Packs below goal
   $sqlPack = "SELECT Unit, Youth, YTD, adventure, Date FROM adv_pack WHERE Date = ?";
   $stmt = mysqli_prepare($CPack->getDbConn(), $sqlPack);
-  mysqli_stmt_bind_param($stmt, "i", $CPack->GetYear());
+  mysqli_stmt_bind_param($stmt, "i", $SelYear);
   mysqli_stmt_execute($stmt);
   $resultPack = mysqli_stmt_get_result($stmt);
   $PacksUnderGoal = 0;
@@ -79,7 +79,7 @@ try {
   // Calculate Troops below goal
   $sqlTroop = "SELECT Unit, Youth, YTD, MeritBadge, Date FROM adv_troop WHERE Date = ?";
   $stmt = mysqli_prepare($CTroop->getDbConn(), $sqlTroop);
-  mysqli_stmt_bind_param($stmt, "i", $CTroop->GetYear());
+  mysqli_stmt_bind_param($stmt, "i", $SelYear);
   mysqli_stmt_execute($stmt);
   $resultTroop = mysqli_stmt_get_result($stmt);
   $TroopsBelow = 0;
@@ -100,7 +100,7 @@ try {
   // Eagle Scout total
   $sqlEagle = "SELECT SUM(Eagle) AS total_eagle FROM adv_troop WHERE Date = ?";
   $stmt = mysqli_prepare($CTroop->getDbConn(), $sqlEagle);
-  mysqli_stmt_bind_param($stmt, "i", $CTroop->GetYear());
+  mysqli_stmt_bind_param($stmt, "i", $SelYear);
   mysqli_stmt_execute($stmt);
   $resultEagle = mysqli_stmt_get_result($stmt);
   $troopEagle = 0;
@@ -178,7 +178,7 @@ try {
         try {
           $sqlPack = "SELECT * FROM adv_pack WHERE Date = ? ORDER BY Unit ASC";
           $stmt = mysqli_prepare($CPack->getDbConn(), $sqlPack);
-          mysqli_stmt_bind_param($stmt, "i", $CPack->GetYear());
+          mysqli_stmt_bind_param($stmt, "i", $SelYear);
           mysqli_stmt_execute($stmt);
           $resultPack = mysqli_stmt_get_result($stmt);
           if ($resultPack) {
@@ -242,7 +242,7 @@ try {
         try {
           $sqlTroop = "SELECT * FROM adv_troop WHERE Date = ? ORDER BY Unit ASC";
           $stmt = mysqli_prepare($CTroop->getDbConn(), $sqlTroop);
-          mysqli_stmt_bind_param($stmt, "i", $CTroop->GetYear());
+          mysqli_stmt_bind_param($stmt, "i", $SelYear);
           mysqli_stmt_execute($stmt);
           $resultTroop = mysqli_stmt_get_result($stmt);
           if ($resultTroop) {
@@ -306,7 +306,7 @@ try {
         try {
           $sqlEagle = "SELECT Unit, Eagle, Palms, Date FROM adv_troop WHERE Eagle > 0 AND Date = ? ORDER BY Unit ASC";
           $stmt = mysqli_prepare($CTroop->getDbConn(), $sqlEagle);
-          mysqli_stmt_bind_param($stmt, "i", $CTroop->GetYear());
+          mysqli_stmt_bind_param($stmt, "i", $SelYear);
           mysqli_stmt_execute($stmt);
           $resultEagle = mysqli_stmt_get_result($stmt);
           if ($resultEagle) {
@@ -344,6 +344,7 @@ try {
 <script type="text/javascript">
   if (typeof google === 'undefined' || typeof google.charts === 'undefined') {
     console.error('Google Charts library failed to load.');
+    <?php error_log('Google Charts library failed to load.'); ?>
     document.getElementById('PackChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
     document.getElementById('Packpiechart').innerHTML = '<p>Error: Unable to load chart library.</p>';
     document.getElementById('TroopChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
@@ -376,6 +377,7 @@ try {
         <?php echo (int)$PackTotals['aol']; ?>
       ];
       if (packValues.every(val => val === 0)) {
+        <?php error_log("PackTotals: " . print_r($PackTotals, true)); ?>
         document.getElementById('PackChart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
         document.getElementById('Packpiechart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
       } else {
@@ -457,6 +459,7 @@ try {
         <?php echo (int)$TroopTotals['Palms']; ?>
       ];
       if (troopValues.every(val => val === 0)) {
+        <?php error_log("TroopTotals: " . print_r($TroopTotals, true)); ?>
         document.getElementById('TroopChart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
         document.getElementById('Trooppiechart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
       } else {
@@ -529,6 +532,7 @@ try {
       }
     } catch (e) {
       console.error('Error drawing charts: ', e);
+      <?php error_log('Error drawing charts:'); ?>
       document.getElementById('PackChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
       document.getElementById('Packpiechart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
       document.getElementById('TroopChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';

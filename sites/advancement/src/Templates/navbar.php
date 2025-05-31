@@ -11,7 +11,7 @@
           <a class="nav-link <?php echo $page === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
         </li>
         <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Adults
           </a>
           <ul class="dropdown-menu">
@@ -51,6 +51,26 @@
             <li><a class="dropdown-item" href="?page=membership-report">Membership Report</a></li>
           </ul>
         </li>
+        <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="text-danger">Admin</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Assigned Commissioners</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Pack Advancements</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Pack Awards</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Troop Advancements</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Crew Advancements</a></li>
+              <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
+            </ul>
+          </li>
+        <?php endif; ?>
+
         <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
           <li class="nav-item">
             <a class="nav-link" href="?page=logout">Logout</a>

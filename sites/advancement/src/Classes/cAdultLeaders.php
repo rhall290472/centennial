@@ -779,7 +779,7 @@ class AdultLeaders
     $Updated = 0;
     $RecordsInError = 0;
     $row = 1;
-    $filePath = "Data/" . $fileName;
+    //$filePath = "Data/" . $fileName;
     // Delete all of the Old data
     if (!self::doQuery("TRUNCATE TABLE `trainedleaders`")) {
       $strError = "see error log - TRUNCATE TABLE `trainedleaders`";
@@ -790,7 +790,7 @@ class AdultLeaders
     }
 
     // Insert new data
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
+    if (($handle = fopen($fileName, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if ($row < 10) { // Skip the first row(s), headers.
           $row++;
@@ -886,7 +886,7 @@ class AdultLeaders
     $Updated = 0;
     $RecordsInError = 0;
     $Row = 1;
-    $filePath = "Data/" . $fileName;
+    //$filePath = "Data/" . $fileName;
     $Datestr = "";
 
     // Delete all of the Old data
@@ -895,7 +895,7 @@ class AdultLeaders
       self::function_alert($strError);
     }
 
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
+    if (($handle = fopen($fileName, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if ($Row < 10) { // Skip the first row(s), headers.
           if ($Row == 5)
@@ -987,7 +987,7 @@ class AdultLeaders
         $reportDate = null;
 
         // Secure file path using UPLOAD_DIRECTORY
-        $filePath = UPLOAD_DIRECTORY . basename($fileName);
+        //$filePath = UPLOAD_DIRECTORY . basename($fileName);
         if (!file_exists($filePath) || !is_readable($filePath)) {
           error_log("UpdateFunctionalRole: File not found or unreadable at $filePath");
           return ++$RecordsInError;
@@ -997,7 +997,7 @@ class AdultLeaders
         mysqli_begin_transaction($dbConn);
 
         try {
-          if (($handle = fopen($filePath, "r")) !== false) {
+          if (($handle = fopen($fileName, "r")) !== false) {
             // Read header row to validate structure
             $header = fgetcsv($handle, 1000, ",");
             //            if ($header === false || count($header) < 7) {

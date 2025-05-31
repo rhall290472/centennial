@@ -406,7 +406,7 @@ class CPack extends CAdvancement
           $colRanksMTD = 17;
           $colRankYTD = 18;
           $colYouthTotal = 19;
-          $filePath = "Data/" . $fileName;
+          //$filePath = "Data/" . $fileName;
           $Datestr = "";
           $sqlPackInsertSt = "INSERT INTO `adv_pack`(`lion`, `tiger`, `bobcat`, `wolf`, `bear`, `webelos`, `aol`, `YTD`, `Unit`, `Date`) 
   VALUES (";
@@ -415,7 +415,7 @@ class CPack extends CAdvancement
           $RecordsInError = 0;
           $row = 1;
           $PackYear = parent::GetYear();
-          if (($handle = fopen($filePath, "r")) !== FALSE) {
+          if (($handle = fopen($fileName, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
               if ($row < 11) { // Skip the first row(s), headers.
                 if ($row == 7)
@@ -528,7 +528,7 @@ class CPack extends CAdvancement
           $colMTD_Dec      = 14;
           $colTotal        = 15;
           $ColYouth        = 16;
-          $filePath = "Data/" . $fileName;
+          //$filePath = "Data/" . $fileName;
           //$sqlPackInsertSt = "INSERT INTO `adv_pack`(`lion`, `tiger`, `bobcat`, `wolf`, `bear`, `webelos`, `aol`, `YTD`, `Unit`, `Date`) 
           //  VALUES (";
           $Inserted = 0;
@@ -537,7 +537,7 @@ class CPack extends CAdvancement
           $row = 1;
           //$PackYear = date("Y");
           $PackYear = parent::GetYear();
-          if (($handle = fopen($filePath, "r")) !== FALSE) {
+          if (($handle = fopen($fileName, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
               if ($row < 10) {
                 $row++;

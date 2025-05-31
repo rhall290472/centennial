@@ -315,13 +315,13 @@ class UNIT extends CAdvancement
 
         $DateStr = "";
         $RecordsInError = 0;
-        $filePath = "Data/" . $fileName;
+        //$filePath = "Data/" . $fileName;
         $Inserted = 0;
         $Updated = 0;
         $row = 1;
 
 
-        if (($handle = fopen($filePath, "r")) !== FALSE) {
+        if (($handle = fopen($fileName, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if ($row < 10) { // Skip the first row(s), headers.
               if ($row == 6)
@@ -543,11 +543,11 @@ class UNIT extends CAdvancement
             
         $Datestr = "";
         $RecordsInError = 0;
-        $filePath = "Data/" . $fileName;
+        //$filePath = "Data/" . $fileName;
         $Inserted = 0;
         $Updated = 0;
         $row = 1;
-        if (($handle = fopen($filePath, "r")) !== FALSE) {
+        if (($handle = fopen($fileName, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if ($row < 9) { // Skip the first row(s), headers.
               if ($row == 5)
