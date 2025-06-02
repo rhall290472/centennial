@@ -68,7 +68,7 @@ try {
           <?php
           try {
             $CPack->DisplayAdvancmenetDescription();
-            $CPack->DisplayUnitAdvancement();
+            //$CPack->DisplayUnitAdvancement();
             echo "<p style='text-align: center;'>Number of units below goal: " . $CPack->GetPacksBelowGoal() . " Out of: " . $TotalPacks . " Packs</p>";
 
             if ($TotalPacks > 0) {

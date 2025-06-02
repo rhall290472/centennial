@@ -81,11 +81,12 @@ try {
             }
 
             $CTroop->DisplayAdvancmenetDescription();
-            $CTroop->DisplayUnitAdvancement();
+            //$CTroop->DisplayUnitAdvancement();
             echo "<p style='text-align: center;'>Number of Troops in District: $NumofTroops</p>";
 
             if ($NumofTroops > 0) {
-              echo '<table class="table table-striped"><tbody>';
+              echo '<table class="table table-striped"><tbody>' .
+                '<th>Unit</th><th>Scout</th><th>Tenderfoot</th><th>Second Class</th><th>First Class</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>Total Rank</th><th>Youth</th><th>Rank/Scout</th><th>Date</th></tr></thead><tbody>';
               $sql = sprintf("SELECT * FROM adv_troop WHERE Date=%d ORDER BY Unit ASC", $CTroop->GetYear());
               if ($result = mysqli_query($CTroop->getDbConn(), $sql)) {
                 while ($row = $result->fetch_assoc()) {

@@ -76,11 +76,12 @@ try {
             <?php
             try {
               $CPack->DisplayAdvancmenetDescription();
-              $CPack->DisplayUnitAdvancement();
+              //$CPack->DisplayUnitAdvancement();
               echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
 
               if ($CPack->GetNumofPacks() > 0) {
-                echo '<table class="table table-striped"><tbody>';
+                echo '<table class="table table-striped"><tbody>' .
+                  '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
                 $PackDataResult = $CPack->GetPack();
                 while ($PackAdv = $PackDataResult->fetch_assoc()) {
                   $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
