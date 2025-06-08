@@ -153,7 +153,7 @@ class UNIT extends CAdvancement
         }
         ?>
 
-        <div class="px-5">
+        <div class="col-12 px-5">
           <table class="table table-striped">
             <td style="width:300px"> <!-- Chartered Org -->
             <td style="width:120px"> <!-- Unit -->
