@@ -48,7 +48,7 @@ try {
   }
 
   // Validate TroopTotals
-  $requiredTroopKeys = ['Scout', 'Tenderfoot', 'SecondClass', 'FirstClass', 'Star', 'Life', 'Eagle', 'Palms', 'MeritBadges', 'YTD', 'Youth'];
+  $requiredTroopKeys = ['Scout', 'Tenderfoot', 'SecondClass', 'FirstClass', 'Star', 'Life', 'Eagle', 'Palms', 'MeritBadge', 'YTD', 'Youth'];
   foreach ($requiredTroopKeys as $key) {
     if (!isset($TroopTotals[$key]) || !is_numeric($TroopTotals[$key])) {
       throw new Exception("Invalid TroopTotals data for key: $key");
@@ -163,10 +163,12 @@ try {
         <h2>Pack Advancement</h2>
         <div class="row">
           <div class="col-md-6">
-            <div id="PackChart" style="width: 100%; height: 400px;"></div>
+            <div id="PackChart"></div>
           </div>
           <div class="col-md-6">
-            <div id="Packpiechart" style="width: 100%; height: 400px;"></div>
+            <div id="Packpiechart"></div>
+          </div>
+          <div class="row py-6">
             <p class="text-center">
               District wide advancement ratio: <?php echo number_format($PackRatio, 2); ?> /
               District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2); ?>
@@ -355,6 +357,7 @@ try {
     });
     google.charts.setOnLoadCallback(drawCharts);
   }
+
 
   function drawCharts() {
     try {

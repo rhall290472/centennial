@@ -40,7 +40,7 @@ try {
 } catch (Exception $e) {
   $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error loading troop data: ' . $e->getMessage()];
   error_log("Troops.php - Error: " . $e->getMessage(), 0);
-  $Totals = ['Scout' => 0, 'Tenderfoot' => 0, 'SecondClass' => 0, 'FirstClass' => 0, 'Star' => 0, 'Life' => 0, 'Eagle' => 0, 'Palms' => 0, 'YTD' => 0, 'MeritBadges' => 0, 'Youth' => 0];
+  $Totals = ['Scout' => 0, 'Tenderfoot' => 0, 'SecondClass' => 0, 'FirstClass' => 0, 'Star' => 0, 'Life' => 0, 'Eagle' => 0, 'Palms' => 0, 'YTD' => 0, 'MeritBadge' => 0, 'Youth' => 0];
   $NumofTroops = 0;
   $data = "";
 }
@@ -71,7 +71,7 @@ try {
       </div>
     </div>
     <div class="row">
-      <div class="col-10">
+      <div class="col-12">
         <div class="py-5">
           <?php
           try {
@@ -167,7 +167,7 @@ try {
     var data = google.visualization.arrayToDataTable([
       ['Category', 'Count'],
       ['Ranks', <?php echo $Totals['YTD']; ?>],
-      ['Merit Badges', <?php echo $Totals['MeritBadges']; ?>],
+      ['Merit Badges', <?php echo $Totals['MeritBadge']; ?>],
       ['Scouts', <?php echo $Totals['Youth']; ?>]
     ]);
 

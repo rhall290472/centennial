@@ -62,7 +62,7 @@ try {
       </div>
     </div>
     <div class="row">
-      <div class="col-10">
+      <div class="col-12">
         <div class="py-5">
           <?php
           try {

@@ -68,7 +68,7 @@ class CTroop extends CAdvancement
     self::$TroopTotals['Palms'] = $RankTotal['SUM(Palms)'];
     self::$TroopTotals['YTD'] = $RankTotal['SUM(YTD)'];
     self::$TroopTotals['Youth'] = parent::GetProgramTotalYouth("Troop");
-    self::$TroopTotals['MeritBadges'] = $RankTotal['SUM(MeritBadge)'];
+    self::$TroopTotals['MeritBadge'] = $RankTotal['SUM(MeritBadge)'];
 
     return self::$TroopTotals;
   }
@@ -122,7 +122,7 @@ class CTroop extends CAdvancement
    *************************************************************************/
   public static function GetDistrictRatio()
   {
-    return ((self::$TroopTotals['YTD'] + self::$TroopTotals['MeritBadges']) / self::$TroopTotals['Youth']);
+    return ((self::$TroopTotals['YTD'] + self::$TroopTotals['MeritBadge']) / self::$TroopTotals['Youth']);
   }
   /**************************************************************************
    **

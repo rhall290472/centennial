@@ -129,7 +129,7 @@ $Trained = $TotalCount - $UnTrainedCount;
 
   <div class="px-lg-0">
     <div class="row">
-      <div class="col-9">
+      <div class="col-12">
         <?php
         $sort = '';
         if ($SortBy == 'ByLastName' || $SortBy == 'MemberID') {
