@@ -63,13 +63,25 @@ try {
           <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
-      <div class="col-5">
-        <div id="barchart_material" style="width: 600px; height: 300px;"></div>
+      <!-- CSS for chart containers -->
+      <style>
+        #piechart,
+        #barchart_material {
+          min-height: 400px;
+          width: 100%;
+          display: block;
+        }
+      </style>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-5">
+        <div id="barchart_material"></div>
       </div>
-      <div class="col-3">
-        <div id="piechart" style="width: 500px; height: 400px;"></div>
+      <div class="col-md-5">
+        <div id="piechart"></div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-12">
         <div class="py-5">

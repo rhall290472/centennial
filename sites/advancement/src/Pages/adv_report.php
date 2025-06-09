@@ -162,10 +162,10 @@ try {
       <div class="col-12">
         <h2>Pack Advancement</h2>
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-5">
             <div id="PackChart"></div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
             <div id="Packpiechart"></div>
           </div>
           <div class="row py-6">
@@ -226,10 +226,10 @@ try {
       <div class="col-12">
         <h2>Troop Advancement</h2>
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-5">
             <div id="TroopChart" style="width: 100%; height: 400px;"></div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
             <div id="Trooppiechart" style="width: 100%; height: 400px;"></div>
             <?php if ($TroopTotals['Youth'] > 0): ?>
               <p class="text-center">

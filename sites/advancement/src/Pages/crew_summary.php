@@ -68,13 +68,15 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
         <div class="py-5">
           <?php
           try {
-            $CCrew->DisplayUnitAdvancement();
+            //$CCrew->DisplayUnitAdvancement();
             $sql = sprintf("SELECT * FROM adv_crew WHERE Date=%d ORDER BY Unit ASC", $CCrew->GetYear());
             $result = mysqli_query($CCrew->getDbConn(), $sql);
             if ($result) {
               $rowcount = mysqli_num_rows($result);
               if ($rowcount > 0) {
-                echo '<table class="table table-striped"><tbody>';
+                echo '<table class="table table-striped"><tbody>'.
+                  '<th>Unit</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Discovery</th><th>Path Finder</th>
+                  <th>Summit</th><th>Venturing</th><th>Date</th></tr></thead><tbody>';
                 while ($row = $result->fetch_assoc()) {
                   $UnitYouth = $CCrew->GetUnitTotalYouth($row['Unit'], $row['Youth'], $row['Date']);
                   $Rank_Scout = sprintf("%.2f", ($row["YTD"] + $row['MeritBadge']) / max($UnitYouth, 1));
