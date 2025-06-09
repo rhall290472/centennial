@@ -1,43 +1,55 @@
 <?php
-if (!session_id()) {
-	session_start();
-}
+/*
+!==============================================================================!
+!\                                                                            /!
+!\\                                                                          \\!
+! \##########################################################################/ !
+!  #         This is Proprietary Software of Richard Hall                   #  !
+!  ##########################################################################  !
+!  #   Copyright 2017-2024 - Richard Hall                                   #  !
+!  #   The information contained herein is the property of Richard          #  !
+!  #   Hall, and shall not be copied, in whole or in part, or               #  !
+!  #   disclosed to others in any manner without the express written        #  !
+!  #   authorization of Richard Hall.                                       #  !
+!  #                                                                        #  !
+! /##########################################################################\ !
+!//                                                                          \\!
+!/                                                                            \!
+!==============================================================================!
+*/
 
-require_once 'CEagle.php';
+// Load CEagle class (aligned with index.php's load_class)
+load_class(__DIR__ . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
-require_once '../cAdultLeaders.php';
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
 
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
+// Session check (handled in index.php, but included for standalone testing)
+if (!session_id()) {
+	session_start([
+		'cookie_httponly' => true,
+		'use_strict_mode' => true,
+		'cookie_secure' => isset($_SERVER['HTTPS'])
+	]);
+}
+
+// Authentication check
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 	header("HTTP/1.0 403 Forbidden");
 	exit;
 }
 
+// Ensure CSRF token is set
+if (!isset($_SESSION['csrf_token'])) {
+	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-	<?php include('head.php'); ?>
-</head>
-
 <body>
-	<?php include('header.php'); ?>
-
-	<!-- If user is not logged in, then they can see nonething and do nonething. -->
-	<?php
-	if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-		//include('navmenu.php');
-	?>
-
-	<?php }
-
-	?>
-
 	<center>
 		<?php
 
@@ -54,6 +66,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 		}
 		?>
 		<form method=post>
+			<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 			<div class="form-row px-5">
 				<div class="col-2">
 					<label for='ScoutName'>Choose a Scout: </label>
@@ -124,6 +137,5 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 			</div>
 	</center>
 	</div>
-	<?php include('Footer.php'); ?>
 </body>
 </header>

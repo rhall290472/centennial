@@ -12,7 +12,7 @@ defined('IN_APP') or define('IN_APP', true);
 defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 
 // Ensure upload directory exists
-$uploadDir = BASE_PATH . '/Data/';
+$uploadDir = BASE_PATH . '/Uploads/';
 if (!is_dir($uploadDir)) {
   mkdir($uploadDir, 0755, true);
 }
@@ -48,6 +48,8 @@ define('SITE_URL', $protocol . '://' . $host . $port);
 
 // Assets URL
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
+define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
+define('SHARED_PATH', __DIR__ . '/../../../shared/'); 
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Eagles');
@@ -65,8 +67,8 @@ define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
-$pageHome = SITE_URL . '/centennial/sites/advancement/public/index.php';
-$pageContact = SITE_URL . '/centennial/sites/advancement/src/Pages/contact.php';
+$pageHome = SITE_URL . '/centennial/sites/eagle/public/index.php';
+$pageContact = SITE_URL . '/centennial/sites/eagle/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
   [
@@ -87,20 +89,15 @@ define('NAV_LINKS', [
 
 if ($is_localhost) {
   define('DB_HOST', 'localhost');
-  define('DB_USER', 'mbcuser');
-  define('DB_PASS', 'ZCSCA?yrW7}L');
-  define('DB_NAME', 'meritbadges');
+  define('DB_USER', 'root');
+  define('DB_PASS', '');
+  define('DB_NAME', 'eagle');
 } else {
   define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-  define('DB_USER', 'mbcuser');
-  define('DB_PASS', 'ZCSCA?yrW7}L');
-  define('DB_NAME', 'meritbadges');
+  define('DB_USER', 'eagleadmin');
+  define('DB_PASS', 'w3frRWX?yrW7}L');
+  define('DB_NAME', 'eagle');
 }
-
-// Security headers
-//header('X-Content-Type-Options: nosniff');
-//header('X-Frame-Options: DENY');
-//header('X-XSS-Protection: 1; mode=block');
 
 // File upload limits
 ini_set('upload_max_filesize', '4M');
@@ -134,9 +131,8 @@ if (!function_exists('load_class')) {
     } else {
       error_log("Class $file is missing.");
       if (defined('ENV') && ENV === 'development') {
-        $realpath = realpath($path);
-        echo 'Template ' . $realpath . ' is missing.</br>';
-        die('Template $file is missing.');
+        echo 'Class ' . $path . ' is missing.</br>';
+        die('Class $file is missing.');
       } else
         die('An error occurred. Please try again later.');
     }

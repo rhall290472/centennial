@@ -110,8 +110,14 @@ $valid_pages = [
   'edit-scout',
   'active-life',
   'audit-scout',
-  '',
-  '',
+  'eagle-unit',
+  'eagle-year',
+  'coach-edit',
+  'coach-active',
+  'coach-inactive',
+  'coach-ypt',
+  'coach-report',
+  'coach-history',
   '',
   '',
   '',
@@ -204,90 +210,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
   }
-
-  // File upload for updatedata
-  if ($page === 'updatedata' && isset($_FILES['the_file']) && isset($_POST['submit'])) {
-    // Authentication check
-    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to upload files.'];
-      header("Location: index.php?page=login");
-      exit;
-    }
-
-    $Update = filter_input(INPUT_POST, 'submit');
-    $allowed_updates = [
-      'UpdateTotals',
-      'UpdatePack',
-      'UpdateTroop',
-      'UpdateCrew',
-      'TrainedLeader',
-      'Updateypt',
-      'UpdateVenturing',
-      'UpdateAdventure',
-      'UpdateCommissioners',
-      'UpdateFunctionalRole'
-    ];
-
-    if (!in_array($Update, $allowed_updates)) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($Update));
-      exit;
-    }
-
-    $errors = [];
-    $uploader = new FileUploader(UPLOAD_DIRECTORY);
-    $classMap = [
-      'UpdateTotals' => UNIT::class,
-      'UpdatePack' => CPack::class,
-      'UpdateTroop' => CTroop::class,
-      'UpdateCrew' => CCrew::class,
-      'TrainedLeader' => AdultLeaders::class,
-      'Updateypt' => AdultLeaders::class,
-      'UpdateVenturing' => CCrew::class,
-      'UpdateAdventure' => CPack::class,
-      'UpdateCommissioners' => UNIT::class,
-      'UpdateFunctionalRole' => AdultLeaders::class,
-    ];
-
-    $updateMethods = [
-      'UpdateTotals' => ['ImportCORData'],
-      'UpdatePack' => ['UpdatePack'],
-      'UpdateTroop' => ['UpdateTroop'],
-      'UpdateCrew' => ['UpdateCrew'],
-      'TrainedLeader' => ['TrainedLeader'],
-      'Updateypt' => ['Updateypt'],
-      'UpdateVenturing' => ['UpdateVenturing'],
-      'UpdateAdventure' => ['UpdateAdventure'],
-      'UpdateCommissioners' => ['UpdateCommissioner'],
-      'UpdateFunctionalRole' => ['UpdateFunctionalRole'],
-    ];
-
-    $instance = $classMap[$Update]::getInstance();
-    $uploadedFile = $uploader->uploadFile($_FILES['the_file'], $errors);
-
-    if (empty($errors) && $uploadedFile) {
-      try {
-        $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
-        unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
-        if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
-          CEagle::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
-        }
-        $_SESSION['feedback'] = [
-          'type' => $RecordsInError == 0 ? 'success' : 'warning',
-          'message' => $RecordsInError == 0 ? 'Data updated successfully.' : "$RecordsInError record(s) had errors."
-        ];
-      } catch (Exception $e) {
-        error_log("Processing error for $Update: " . $e->getMessage(), 0);
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during processing.'];
-      }
-    } else {
-      error_log("File upload error: " . implode(', ', $errors), 0);
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => implode(' ', $errors)];
-    }
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
-    header("Location: index.php?page=updatedata&update=" . urlencode($Update));
-    exit;
-  }
 }
 
 // Handle logout
@@ -362,29 +284,29 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'audit-scout':
           include('../src/Pages/ReportAuditScout.php');
           break;
-        case '':
-          include('../src/Pages/pack_below_goal.php');
+        case 'eagle-unit':
+          include('../src/Pages/ReportEagles.php');
           break;
-        case '':
-          include('../src/Pages/pack_meeting_goal.php');
+        case 'eagle-year':
+          include('../src/Pages/ReportEagleYear.php');
           break;
-        case '':
-          include('../src/Pages/troop_summary.php');
+        case 'coach-edit':
+          include('../src/Pages/CoachPage.php');
           break;
-        case '':
-          include('../src/Pages/troop_below_goal.php');
+        case 'coach-active':
+          include('../src/Pages/ReportCoachesActive.php');
           break;
-        case '':
-          include('../src/Pages/troop_meeting_goal.php');
+        case 'coach-inactive':
+          include('../src/Pages/ReportCoachesInactive.php');
           break;
-        case '':
-          include('../src/Pages/crew_summary.php');
+        case 'coach-ypt':
+          include('../src/Pages/ReportCoachesActiveYPT.php');
           break;
-        case '':
-          include('../src/Pages/adv_report.php');
+        case 'coach-report':
+          include('../src/Pages/ReportCoachesLoad.php');
           break;
-        case '':
-          include('../src/Pages/membership_report.php');
+        case 'coach-history':
+          include('../src/Pages/ReportCoachesHistory.php');
           break;
         case 'login':
           include('login.php');

@@ -22,8 +22,8 @@
           <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Eagles</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=pack-summary">Eagle Scouts By Unit</a></li>
-          <li><a class="dropdown-item" href="?page=pack-below-goal">Eagle Scouts By Year</a></li>
+          <li><a class="dropdown-item" href="?page=eagle-unit">Eagle Scouts By Unit</a></li>
+          <li><a class="dropdown-item" href="?page=eagle-year">Eagle Scouts By Year</a></li>
         </ul>
       </li>
       <li class="nav-item dropdown">
@@ -31,12 +31,12 @@
           <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Coaches</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=troop-summary">Edit/Update Coach</a></li>
-          <li><a class="dropdown-item" href="?page=troop-below-goal">Active Coaches</a></li>
-          <li><a class="dropdown-item" href="?page=troop-meeting-goal">Inactive Coaches</a></li>
-          <li><a class="dropdown-item" href="?page=troop-meeting-goal">YPT Report</a></li>
-          <li><a class="dropdown-item" href="?page=troop-meeting-goal">Workload Report</a></li>
-          <li><a class="dropdown-item" href="?page=troop-meeting-goal">Workload History</a></li>
+          <li><a class="dropdown-item" href="?page=coach-edit">Edit/Update Coach</a></li>
+          <li><a class="dropdown-item" href="?page=coach-active">Active Coaches</a></li>
+          <li><a class="dropdown-item" href="?page=coach-inactive">Inactive Coaches</a></li>
+          <li><a class="dropdown-item" href="?page=coach-ypt">YPT Report</a></li>
+          <li><a class="dropdown-item" href="?page=coach-report">Workload Report</a></li>
+          <li><a class="dropdown-item" href="?page=coach-history">Workload History</a></li>
         </ul>
       </li>
       <li class="nav-item dropdown">
