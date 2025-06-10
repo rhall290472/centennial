@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CPack.php');
+load_class(BASE_PATH . '/src/Classes/CPack.php');
 
 $CPack = CPack::getInstance();
 
@@ -71,69 +71,69 @@ try {
       </style>
     </div>
     <div class="row mt-4">
-        <div class="col-md-5">
-          <div id="barchart_material"></div>
-        </div>
-        <div class="col-md-5">
-          <div id="piechart"></div>
-        </div>
+      <div class="col-md-5">
+        <div id="barchart_material"></div>
+      </div>
+      <div class="col-md-5">
+        <div id="piechart"></div>
+      </div>
     </div>
 
 
-      <div class="row">
-        <div class="col-12">
+    <div class="row">
+      <div class="col-12">
+        <div class="py-5">
+          <p style="text-align: center;">District wide advancement ratio: <?php echo number_format($CPack->GetDistrictRatio(null), 2, '.', ''); ?> / District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2, '.', ''); ?></p>
+          <hr>
           <div class="py-5">
-            <p style="text-align: center;">District wide advancement ratio: <?php echo number_format($CPack->GetDistrictRatio(null), 2, '.', ''); ?> / District goal: <?php echo number_format($CPack->GetDistrictGoal(null), 2, '.', ''); ?></p>
-            <hr>
-            <div class="py-5">
-              <?php
-              try {
-                $CPack->DisplayAdvancmenetDescription();
-                //$CPack->DisplayUnitAdvancement();
-                echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
+            <?php
+            try {
+              $CPack->DisplayAdvancmenetDescription();
+              //$CPack->DisplayUnitAdvancement();
+              echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
 
-                if ($CPack->GetNumofPacks() > 0) {
-                  echo '<table class="table table-striped"><tbody>' .
-                    '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
-                  $PackDataResult = $CPack->GetPack();
-                  while ($PackAdv = $PackDataResult->fetch_assoc()) {
-                    $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
-                    $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
-                    $Unit = $PackAdv['Unit'];
-                    $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'>";
-                    $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
-                    $Formatter = "";
-                    if ($UnitRankScout == 0) {
-                      $Formatter = "<b style='color:red;'>";
-                    } elseif ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date'])) {
-                      $Formatter = "<b style='color:orange;'>";
-                    } elseif ($UnitRankScout >= $CPack->GetIdealGoal($PackAdv['Date'])) {
-                      $Formatter = "<b style='color:green;'>";
-                    }
-                    echo "<tr><td>$UnitView</td><td>$Formatter" . htmlspecialchars($PackAdv["lion"]) . "</td><td>$Formatter" .
-                      htmlspecialchars($PackAdv["tiger"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["wolf"]) . "</td><td>$Formatter" .
-                      htmlspecialchars($PackAdv["bear"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["webelos"]) . "</td><td>$Formatter" .
-                      htmlspecialchars($PackAdv["aol"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["YTD"]) . "</td><td>$Formatter" .
-                      htmlspecialchars($UnitYouth) . "</td><td>$Formatter" . htmlspecialchars($UnitRankScout) . "</td><td>$Formatter" .
-                      htmlspecialchars($PackAdv["adventure"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["Date"]) . "</td></tr>";
-                    if ($Formatter) echo "</b>";
+              if ($CPack->GetNumofPacks() > 0) {
+                echo '<table class="table table-striped"><tbody>' .
+                  '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
+                $PackDataResult = $CPack->GetPack();
+                while ($PackAdv = $PackDataResult->fetch_assoc()) {
+                  $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
+                  $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
+                  $Unit = $PackAdv['Unit'];
+                  $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'>";
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+                  $Formatter = "";
+                  if ($UnitRankScout == 0) {
+                    $Formatter = "<b style='color:red;'>";
+                  } elseif ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date'])) {
+                    $Formatter = "<b style='color:orange;'>";
+                  } elseif ($UnitRankScout >= $CPack->GetIdealGoal($PackAdv['Date'])) {
+                    $Formatter = "<b style='color:green;'>";
                   }
-                  echo "</tbody></table>";
-                  mysqli_free_result($PackDataResult);
-                } else {
-                  echo "<p>No pack data available for $SelYear.</p>";
+                  echo "<tr><td>$UnitView</td><td>$Formatter" . htmlspecialchars($PackAdv["lion"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["tiger"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["wolf"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["bear"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["webelos"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["aol"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["YTD"]) . "</td><td>$Formatter" .
+                    htmlspecialchars($UnitYouth) . "</td><td>$Formatter" . htmlspecialchars($UnitRankScout) . "</td><td>$Formatter" .
+                    htmlspecialchars($PackAdv["adventure"]) . "</td><td>$Formatter" . htmlspecialchars($PackAdv["Date"]) . "</td></tr>";
+                  if ($Formatter) echo "</b>";
                 }
-                echo "<p style='text-align: center;'>Data last updated: " . htmlspecialchars($CPack->GetLastUpdated("adv_pack")) . "</p>";
-              } catch (Exception $e) {
-                $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying pack data: ' . $e->getMessage()];
-                error_log("Home.php - Error: " . $e->getMessage(), 0);
+                echo "</tbody></table>";
+                mysqli_free_result($PackDataResult);
+              } else {
+                echo "<p>No pack data available for $SelYear.</p>";
               }
-              ?>
-            </div>
+              echo "<p style='text-align: center;'>Data last updated: " . htmlspecialchars($CPack->GetLastUpdated("adv_pack")) . "</p>";
+            } catch (Exception $e) {
+              $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying pack data: ' . $e->getMessage()];
+              error_log("Home.php - Error: " . $e->getMessage(), 0);
+            }
+            ?>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </sort_options>
 
 <!-- Google Charts for Bar and Pie Charts -->

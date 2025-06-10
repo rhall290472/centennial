@@ -26,19 +26,19 @@ if (!session_id()) {
 !==============================================================================!
 */
 
-include('CAdvancement.php');
-$CAdvancement = CAdvancement::getInstance();
 
+require_once 'config/conn_inc.php';
 if (!session_id()) {
   session_start();
-
-  require_once 'config/conn_inc.php';
 
   if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
     $CAdvancement->GotoURL("index.php");
     exit;
   }
 }
+
+load_class(BASE_PATH.'/src/Classes/CAdvancement.php');
+$CAdvancement = CAdvancement::getInstance();
 ?>
 
 <!DOCTYPE html>

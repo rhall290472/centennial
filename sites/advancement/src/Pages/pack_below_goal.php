@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CPack.php');
+load_class(BASE_PATH . '/src/Classes/CPack.php');
 
 $CPack = CPack::getInstance();
 

@@ -26,7 +26,7 @@ if (!session_id()) {
 !==============================================================================!
 */
 
-include('CAdvancement.php');
+load_class(BASE_PATH . '/src/Classes/CAdvancement.php');
 
 // Define variables and initialize with empty values
 $username = $password = $confirm_password = "";

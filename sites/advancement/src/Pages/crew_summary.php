@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CCrew.php');
+load_class(BASE_PATH . '/src/Classes/CCrew.php');
 
 $CCrew = CCrew::getInstance();
 
@@ -74,7 +74,7 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
             if ($result) {
               $rowcount = mysqli_num_rows($result);
               if ($rowcount > 0) {
-                echo '<table class="table table-striped"><tbody>'.
+                echo '<table class="table table-striped"><tbody>' .
                   '<th>Unit</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Discovery</th><th>Path Finder</th>
                   <th>Summit</th><th>Venturing</th><th>Date</th></tr></thead><tbody>';
                 while ($row = $result->fetch_assoc()) {

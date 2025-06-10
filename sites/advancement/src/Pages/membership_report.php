@@ -18,11 +18,11 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CPack.php');
-load_template('/src/Classes/CTroop.php');
-load_template('/src/Classes/CCrew.php');
-//load_template('/src/Classes/CPost.php');
-load_template('/src/Classes/CUnit.php');
+load_class(BASE_PATH.'/src/Classes/CPack.php');
+load_class(BASE_PATH .'/src/Classes/CTroop.php');
+load_class(BASE_PATH .'/src/Classes/CCrew.php');
+//load_class('/src/Classes/CPost.php');
+load_class(BASE_PATH .'/src/Classes/CUnit.php');
 
 $CPack = CPack::getInstance();
 $CTroop = CTroop::getInstance();

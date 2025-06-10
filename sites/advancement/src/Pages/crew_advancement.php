@@ -33,7 +33,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 }
 
 //require 'Support_Functions.php';
-load_template('/src/Classes/CCrew.php');
+load_class(BASE_PATH . '/src/Classes/CCrew.php');
 
 
 $CCrew = CCrew::getInstance();

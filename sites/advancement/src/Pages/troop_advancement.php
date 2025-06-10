@@ -33,7 +33,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 }
 
 //require 'Support_Functions.php';
-load_template('/src/Classes/CTroop.php');
+load_class(BASE_PATH . '/src/Classes/CTroop.php');
 
 
 $CTroop = CTroop::getInstance();

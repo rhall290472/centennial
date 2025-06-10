@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_class('/src/Classes/CTroop.php');
+load_class(BASE_PATH . '/src/Classes/CTroop.php');
 
 $CTroop = CTroop::getInstance();
 

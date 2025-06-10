@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CAdvancement.php');
+load_class(BASE_PATH . '/src/Classes/CAdvancement.php');
 
 // Redirect non-logged-in users
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
