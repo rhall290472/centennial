@@ -21,87 +21,6 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
   die('An error occurred. Please try again later.');
 }
 
-// Define SITE_URL fallback if not set
-if (!defined('SITE_URL')) {
-  define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/districtawards');
-}
-
-// Load required classes for file uploads
-//load_class(__DIR__ . '/../src/Classes/CUnit.php');
-//load_class(__DIR__ . '/../src/Classes/CPack.php');
-//load_class(__DIR__ . '/../src/Classes/CTroop.php');
-//load_class(__DIR__ . '/../src/Classes/CCrew.php');
-//load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
-//load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
-
-// FileUploader class for secure file uploads
-class FileUploader
-{
-  private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
-  private $maxFileSize = MAX_FILE_SIZE;
-  private $uploadDir;
-
-  public function __construct($uploadDir)
-  {
-    $this->uploadDir = rtrim($uploadDir, '/') . '/';
-    if (!is_dir($this->uploadDir)) {
-      mkdir($this->uploadDir, 0755, true);
-    }
-  }
-
-  public function uploadFile($file, &$errors)
-  {
-    $uploadErrors = [
-      UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the maximum size allowed by the server.",
-      UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the maximum size allowed by the form.",
-      UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
-      UPLOAD_ERR_NO_FILE => "No file was uploaded.",
-      UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
-      UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
-      UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
-    ];
-
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-      $errors[] = $uploadErrors[$file['error']] ?? "Unknown file upload error.";
-      return false;
-    }
-
-    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($fileExtension, $this->allowedExtensions)) {
-      $errors[] = "Invalid file extension. Only CSV files are allowed.";
-      return false;
-    }
-
-    if ($file['size'] > $this->maxFileSize) {
-      $errors[] = "File exceeds maximum size (4MB).";
-      return false;
-    }
-
-    if ($file['type'] !== 'text/csv' && $file['type'] !== 'application/vnd.ms-excel') {
-      $errors[] = "Invalid file type. Only CSV files are allowed.";
-      return false;
-    }
-
-    $fileHandle = fopen($file['tmp_name'], 'r');
-    $firstLine = fgetcsv($fileHandle);
-    fclose($fileHandle);
-    if ($firstLine === false || empty($firstLine)) {
-      $errors[] = "File is not a valid CSV.";
-      return false;
-    }
-
-    $uniqueFileName = uniqid('upload_', true) . '.csv';
-    $uploadPath = $this->uploadDir . $uniqueFileName;
-
-    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-      return $uniqueFileName;
-    }
-
-    $errors[] = "Failed to move uploaded file.";
-    return false;
-  }
-}
-
 // Simple routing based on 'page' GET parameter
 $page = filter_input(INPUT_GET, 'page') ?? 'home';
 $page = strtolower(trim($page));
@@ -130,20 +49,6 @@ if (!in_array($page, $valid_pages)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    header("Location: index.php?page=$page");
-    exit;
-  }
-
-  // Year selection
-  if (isset($_POST['SubmitYear']) && in_array($page, $valid_pages)) {
-    $SelYear = filter_input(INPUT_POST, 'Year', FILTER_SANITIZE_NUMBER_INT);
-    if ($SelYear && is_numeric($SelYear) && $SelYear >= 2000 && $SelYear <= date("Y")) {
-      $_SESSION['year'] = $SelYear;
-      $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh token
-      $_SESSION['feedback'] = ['type' => 'success', 'message' => "Year set to $SelYear."];
-    } else {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid year selected. Please choose a year between 2000 and ' . date("Y") . '.'];
-    }
     header("Location: index.php?page=$page");
     exit;
   }
@@ -205,89 +110,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
   }
 
-  // File upload for updatedata
-  if ($page === 'updatedata' && isset($_FILES['the_file']) && isset($_POST['submit'])) {
-    // Authentication check
-    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to upload files.'];
-      header("Location: index.php?page=login");
-      exit;
-    }
+  $Update = filter_input(INPUT_POST, 'submit');
+  $allowed_updates = [
+    'UpdateTotals',
+    'UpdatePack',
+    'UpdateTroop',
+    'UpdateCrew',
+    'TrainedLeader',
+    'Updateypt',
+    'UpdateVenturing',
+    'UpdateAdventure',
+    'UpdateCommissioners',
+    'UpdateFunctionalRole'
+  ];
 
-    $Update = filter_input(INPUT_POST, 'submit');
-    $allowed_updates = [
-      'UpdateTotals',
-      'UpdatePack',
-      'UpdateTroop',
-      'UpdateCrew',
-      'TrainedLeader',
-      'Updateypt',
-      'UpdateVenturing',
-      'UpdateAdventure',
-      'UpdateCommissioners',
-      'UpdateFunctionalRole'
-    ];
-
-    if (!in_array($Update, $allowed_updates)) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($Update));
-      exit;
-    }
-
-    $errors = [];
-    $uploader = new FileUploader(UPLOAD_DIRECTORY);
-    $classMap = [
-      'UpdateTotals' => UNIT::class,
-      'UpdatePack' => CPack::class,
-      'UpdateTroop' => CTroop::class,
-      'UpdateCrew' => CCrew::class,
-      'TrainedLeader' => AdultLeaders::class,
-      'Updateypt' => AdultLeaders::class,
-      'UpdateVenturing' => CCrew::class,
-      'UpdateAdventure' => CPack::class,
-      'UpdateCommissioners' => UNIT::class,
-      'UpdateFunctionalRole' => AdultLeaders::class,
-    ];
-
-    $updateMethods = [
-      'UpdateTotals' => ['ImportCORData'],
-      'UpdatePack' => ['UpdatePack'],
-      'UpdateTroop' => ['UpdateTroop'],
-      'UpdateCrew' => ['UpdateCrew'],
-      'TrainedLeader' => ['TrainedLeader'],
-      'Updateypt' => ['Updateypt'],
-      'UpdateVenturing' => ['UpdateVenturing'],
-      'UpdateAdventure' => ['UpdateAdventure'],
-      'UpdateCommissioners' => ['UpdateCommissioner'],
-      'UpdateFunctionalRole' => ['UpdateFunctionalRole'],
-    ];
-
-    $instance = $classMap[$Update]::getInstance();
-    $uploadedFile = $uploader->uploadFile($_FILES['the_file'], $errors);
-
-    if (empty($errors) && $uploadedFile) {
-      try {
-        $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
-        unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
-        if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
-          CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
-        }
-        $_SESSION['feedback'] = [
-          'type' => $RecordsInError == 0 ? 'success' : 'warning',
-          'message' => $RecordsInError == 0 ? 'Data updated successfully.' : "$RecordsInError record(s) had errors."
-        ];
-      } catch (Exception $e) {
-        error_log("Processing error for $Update: " . $e->getMessage(), 0);
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during processing.'];
-      }
-    } else {
-      error_log("File upload error: " . implode(', ', $errors), 0);
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => implode(' ', $errors)];
-    }
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
+  if (!in_array($Update, $allowed_updates)) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
     header("Location: index.php?page=updatedata&update=" . urlencode($Update));
     exit;
   }
+
+  $errors = [];
 }
 
 // Handle logout
@@ -315,6 +158,12 @@ if (!isset($_SESSION['csrf_token'])) {
 
 <head>
   <?php load_template("/src/Templates/header.php"); ?>
+  <style>
+    .full-container-img {
+      width: 50%;
+      height: auto;
+    }
+  </style>
 </head>
 
 <body>
@@ -326,7 +175,16 @@ if (!isset($_SESSION['csrf_token'])) {
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="container-fluid mt-5 pt-3">
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <div class="col py-3">
+
+        </div>
+      </div>
+      <!-- </div> -->
+
+
+      <!-- <div class="container-fluid mt-5 pt-3"> -->
       <!-- Display Feedback -->
       <?php if (!empty($feedback)): ?>
         <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">
@@ -339,14 +197,34 @@ if (!isset($_SESSION['csrf_token'])) {
       switch ($page) {
         case 'home':
       ?>
-          <div class="p-0 p-lg-0 bg-light rounded-3 text-center">
-            <div class="m-4 m-lg-3">
-            <h1 class="display-5 fw-bold"><?php echo PAGE_TITLE; ?></h1>
-              <p class="fs-4"><?php echo PAGE_DESCRIPTION; ?></p>
-              <hr>
-              <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
+          <?php
+          $imagePath = defined('BASE_PATH') ? BASE_PATH . '/src/pages/img/DistrictAwards.png' : '/centennial/sites/districtawards/src/pages/img/DistrictAwards.png';
+          $imagePath = "../src/pages/img/DistrictAwards.png";
+          //debug_to_console($imagePath, 'Image Path');
+          ?>
+          <div class="container px-sm-5">
+            <div class="p-4 p-sm-5 bg-light rounded-3 text-center">
+              <div class="m-4 m-sm-5">
+                <h1 class="display-5 fw-bold">Centennial District Awards</h1>
+                <p class="fs-4">Submit a nomination for District Awards</p>
+                <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
+                  alt="Centennial District Awards Logo"
+                  class="img-fluid mx-auto d-block full-container-img">
+              </div>
+              <div class="py-1">
+                <a class="btn btn-primary btn-lg" href="./OnLineNomination.php">Submit an Online Nomination</a>
+                <a class="btn btn-primary btn-lg" href="./DocsPage.php">Download Nomination Form</a>
+              </div>
             </div>
           </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const img = document.querySelector('img[alt="Centennial District Awards Logo"]');
+              console.log('Image src:', img.src);
+              img.addEventListener('load', () => console.log('Image loaded successfully'));
+              img.addEventListener('error', () => console.error('Failed to load image:', img.src));
+            });
+          </script>
       <?php
           break;
         case 'untrained':

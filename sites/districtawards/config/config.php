@@ -51,7 +51,7 @@ define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Awards');
-define('PAGE_DESCRIPTION', 'Review District Awards for the Centennial District');
+define('PAGE_DESCRIPTION', 'Here you will be able to submit a Nomination for District Awards');
 
 // Contact email
 define('CONTACT_EMAIL', 'richard.hall@centennialdistrict.co');
