@@ -10,22 +10,22 @@ $cEagle = CEagle::getInstance();
 
 // Session check
 if (!session_id()) {
-    session_start([
-        'cookie_httponly' => true,
-        'use_strict_mode' => true,
-        'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
 }
 
 // Authentication check
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("HTTP/1.0 403 Forbidden");
-    exit;
+  header("HTTP/1.0 403 Forbidden");
+  exit;
 }
 
 // Ensure CSRF token is set
 if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 <!DOCTYPE html>

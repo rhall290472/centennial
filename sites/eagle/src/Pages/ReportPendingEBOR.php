@@ -1,23 +1,36 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
+  /*
+ * 
+ * Copyright 2017-2025 - Richard Hall (Proprietary Software).
+ */
 
-require_once 'CEagle.php';
-$cEagle = CEagle::getInstance();
+  // Load classes
+  load_class(__DIR__ . '/../Classes/CEagle.php');
+  $cEagle = CEagle::getInstance();
 
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  header("HTTP/1.0 403 Forbidden");
-  exit;
-}
-?>
+  // Session check
+  if (!session_id()) {
+    session_start([
+      'cookie_httponly' => true,
+      'use_strict_mode' => true,
+      'cookie_secure' => isset($_SERVER['HTTPS'])
+    ]);
+  }
+
+  // Authentication check
+  if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("HTTP/1.0 403 Forbidden");
+    exit;
+  }
+
+  // Ensure CSRF token is set
+  if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  }
+  ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <?php include('head.php'); ?>
   <style>
     .wrapper {
       width: 360px;
@@ -27,7 +40,6 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 </head>
 
 <body>
-  <?php include('header.php'); ?>
   <center>
     <h4>Scouts with Pending EBOR's</h4>
     <table class="tl1 tc2 tc3 tl4 tl5 tl6 table table-striped">
@@ -92,7 +104,6 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
         ?>
   </center>
-  <?php include('Footer.php'); ?>
 </body>
 
 </html>

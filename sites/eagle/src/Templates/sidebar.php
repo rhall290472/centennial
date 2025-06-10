@@ -44,14 +44,17 @@
           <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=crew-summary">All Scouts</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Age Out</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Aged Out</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Did Not Attend Preview</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Lacking Proposal Approval</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Approved Proposal</a></li>
-          <li><a class="dropdown-item" href="?page=crew-summary">Pending EBOR</a></li>
+          <li><a class="dropdown-item" href="?page=report-allscouts">All Scouts</a></li>
+          <li><a class="dropdown-item" href="?page=report-ageout">Age Out</a></li>
+          <li><a class="dropdown-item" href="?page=report-agedout">Aged Out</a></li>
+          <li><a class="dropdown-item" href="?page=report-nopreview">Did Not Attend Preview</a></li>
+          <li><a class="dropdown-item" href="?page=report-noproposal">Lacking Proposal Approval</a></li>
+          <li><a class="dropdown-item" href="?page=report-proposal">Approved Proposal</a></li>
+          <li><a class="dropdown-item" href="?page=report-ebor">Pending EBOR</a></li>
         </ul>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="?page=policy">Policies</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="?page=logout">Logout</a>

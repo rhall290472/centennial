@@ -118,12 +118,14 @@ $valid_pages = [
   'coach-ypt',
   'coach-report',
   'coach-history',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
+  'report-allscouts',
+  'report-ageout',
+  'report-agedout',
+  'report-nopreview',
+  'report-noproposal',
+  'report-proposal',
+  'report-ebor',
+  'policy',
   'login',
   'logout',
   ''
@@ -308,11 +310,32 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'coach-history':
           include('../src/Pages/ReportCoachesHistory.php');
           break;
+        case 'report-allscouts':
+          include('../src/Pages/ReportAllScouts.php');
+          break;
+        case 'report-ageout':
+          include('../src/Pages/ReportAgeOut.php');
+          break;
+        case 'report-agedout':
+          include('../src/Pages/ReportAgedOut.php');
+          break;
+        case 'report-nopreview':
+          include('../src/Pages/ReportPreview.php');
+          break;
+        case 'report-noproposal':
+          include('../src/Pages/ReportProject.php');
+          break;
+        case 'report-proposal':
+          include('../src/Pages/ReportApprovedProject.php');
+          break;
+        case 'report-ebor':
+          include('../src/Pages/ReportPendingEBOR.php');
+          break;
+        case 'policy':
+          include('../src/Pages/DocsPage.php');
+          break;
         case 'login':
           include('login.php');
-          break;
-        case '':
-          include('../src/Pages/UpdateData.php');
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';

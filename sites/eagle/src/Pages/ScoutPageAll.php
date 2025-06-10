@@ -149,7 +149,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         <div class="col-2">
           <label for='ScoutName'>Choose a Scout: </label>
           <select class='form-control' id='ScoutName' name='ScoutName'>
-            <option value=\"\" </option>
+            <option value=""> </option>
               <?php
               while ($rowScouts = $result_ByScout->fetch_assoc()) {
                 echo "<option value=" . $rowScouts['Scoutid'] . ">" . $rowScouts['LastName'] . " " . $rowScouts['FirstName'] . "</option>";
