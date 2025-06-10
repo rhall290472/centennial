@@ -163,6 +163,12 @@ if (!isset($_SESSION['csrf_token'])) {
       width: 50%;
       height: auto;
     }
+
+    .center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 
@@ -209,7 +215,7 @@ if (!isset($_SESSION['csrf_token'])) {
                 <p class="fs-4">Submit a nomination for District Awards</p>
                 <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
                   alt="Centennial District Awards Logo"
-                  class="img-fluid mx-auto d-block full-container-img">
+                  class="center">
               </div>
               <div class="py-1">
                 <a class="btn btn-primary btn-lg" href="./OnLineNomination.php">Submit an Online Nomination</a>
@@ -217,14 +223,6 @@ if (!isset($_SESSION['csrf_token'])) {
               </div>
             </div>
           </div>
-          <script>
-            document.addEventListener('DOMContentLoaded', () => {
-              const img = document.querySelector('img[alt="Centennial District Awards Logo"]');
-              console.log('Image src:', img.src);
-              img.addEventListener('load', () => console.log('Image loaded successfully'));
-              img.addEventListener('error', () => console.error('Failed to load image:', img.src));
-            });
-          </script>
       <?php
           break;
         case 'untrained':

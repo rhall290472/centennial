@@ -7,39 +7,47 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Adults</span>
+        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Scout Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=untrained">Untrained Leaders</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">Expired YPT</a></li>
+        <li><a class="dropdown-item" href="?page=untrained">1</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">2</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Packs</span>
+        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Adult Pack Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
-        <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
+        <li><a class="dropdown-item" href="?page=pack-summary">1</a></li>
+        <li><a class="dropdown-item" href="?page=pack-below-goal">2</a></li>
+        <li><a class="dropdown-item" href="?page=pack-meeting-goal">3</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Troops</span>
+        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Adult Troop Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
-        <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
+        <li><a class="dropdown-item" href="?page=troop-summary">1</a></li>
+        <li><a class="dropdown-item" href="?page=troop-below-goal">2</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">3</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Crews</span>
+        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult Crews</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">Summary</a></li>
+        <li><a class="dropdown-item" href="?page=crew-summary">1</a></li>
+      </ul>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult District Awards</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="?page=crew-summary">1</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -47,8 +55,8 @@
         <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=adv-report">District Advancement Report</a></li>
-        <li><a class="dropdown-item" href="?page=membership-report">Membership</a></li>
+        <li><a class="dropdown-item" href="?page=adv-report">1</a></li>
+        <li><a class="dropdown-item" href="?page=membership-report">2</a></li>
       </ul>
     </li>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
