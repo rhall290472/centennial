@@ -28,11 +28,6 @@ if (!defined('SITE_URL')) {
 
 // Load required classes for file uploads
 load_class(__DIR__ . '/../src/Classes/CEagle.php');
-//load_class(__DIR__ . '/../src/Classes/CPack.php');
-//load_class(__DIR__ . '/../src/Classes/CTroop.php');
-//load_class(__DIR__ . '/../src/Classes/CCrew.php');
-//load_class(__DIR__ . '/../src/Classes/CEagle.php');
-//load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
 
 // FileUploader class for secure file uploads
 class FileUploader

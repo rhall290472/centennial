@@ -30,7 +30,7 @@ define('ENV', 'development'); // Set to 'production' on live server
 if (defined('ENV') && ENV === 'development') {
   ini_set('display_errors', 1);
   ini_set('log_errors', 1);
-  ini_set('error_log', BASE_PATH . '/../../shared/logs');
+  ini_set('error_log', 'https: //shared.centennialdistrict.co/logs/error.log');
   error_reporting(E_ALL);
 } else {
   ini_set('display_errors', 0);
@@ -99,6 +99,25 @@ if ($is_localhost) {
   define('DB_PASS', 'w3frRWX^&q');
   define('DB_NAME', 'eagle');
 }
+
+
+// if (!strcmp($ip, "::1")) {
+//   $userdata['dbhost'] = "localhost";
+//   $userdata['dbuser'] = "root";
+//   $userdata['dbpass'] = "";
+//   $userdata['db']     = "eagle";
+// } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
+//   $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
+//   $userdata['dbuser'] = "eagleadmin";
+//   $userdata['dbpass'] = "w3frRWX^&q";
+//   $userdata['db']     = "eagle";
+// } else {
+//   $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
+//   $userdata['dbuser'] = "webuser1";
+//   $userdata['dbpass'] = "webuser1";
+//   $userdata['db']     = "eagle";
+// }
+
 
 // File upload limits
 ini_set('upload_max_filesize', '4M');
