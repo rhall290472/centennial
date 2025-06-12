@@ -8,7 +8,7 @@
 /// Load classes
 load_class(__DIR__ . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
-load_class(__DIR__ . '/../../../../shared/src/classes/cAdultLeaders.php');
+load_class(__DIR__ . '/../../../../shared/src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
 
 // Session check
@@ -176,12 +176,12 @@ if (isset($_POST['SubmitScout'], $_POST['ScoutID'], $_POST['csrf_token']) && $_P
 
 		if ($UnitLeader) {
             //$UnitFormatted = $cLeaders->getUnitName($UnitFormatted, $rowScout['UnitType'] ?? '');
-            $UnitLeader = $cLeaders->getUnitLeader($SelectedScout);
+            // $UnitLeader = $cLeaders->getUnitLeader($SelectedScout);
             $rowScout['ULFirst'] = trim($UnitLeader['FirstName'] ?? '');
             $rowScout['ULLast'] = trim($UnitLeader['LastName'] ?? '');
             $rowScout['ULPhone'] = str_replace(' ', '', $UnitLeader['Phone'] ?? '');
             $rowScout['ULEmail'] = trim($UnitLeader['Email'] ?? '');
-            $CommitteeChair = $cLeaders->getCommitteeChair($SelectedScout);
+            $CommitteeChair = $cLeaders->GetCommitteeChair($UnitFormatted);
             $rowScout['CCFirst'] = trim($CommitteeChair['FirstName'] ?? '');
             $rowScout['CCLast'] = trim($CommitteeChair['LastName'] ?? '');
             $rowScout['CCPhone'] = str_replace(' ', '', $CommitteeChair['Phone'] ?? '');
@@ -200,7 +200,7 @@ $feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
 unset($_SESSION['feedback']);
 ?>
 
-<div class="container-fluid mt-5 pt-3">
+<div class="container-fluid">
     <!-- Display Feedback -->
     <?php if (!empty($feedback)): ?>
         <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">
@@ -219,9 +219,11 @@ unset($_SESSION['feedback']);
                     <select class="form-control" id="ScoutID" name="ScoutID">
                         <option value="">-- Select Scout --</option>
                         <?php while ($row = $result->fetch_assoc()): ?>
+                          <?php if($row['Scoutid']!=-1){ ?>
                             <option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
                                 <?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
                             </option>
+                            <?php } ?>
                         <?php endwhile; ?>
                         <option value="-1">Add New Scout</option>
                     </select>

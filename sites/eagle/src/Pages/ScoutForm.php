@@ -12,7 +12,7 @@ $ProjectName = $ProjectName ?? '';
 ?>
 
 <div class="px-5">
-  <div class="px-5" style="background-color: #f5f5d5;">
+  <div class="px-5" style="background-color: var(--scouting-lighttan);">
     <div class="form-nominee">
       <p style="text-align:left"><b>Scout Information</b></p>
       <form action="index.php?page=edit-scout" id="form-scout" method="post">
@@ -40,7 +40,7 @@ $ProjectName = $ProjectName ?? '';
             <div class="form-check">
               <label class="form-check-label" for="element_1_5">Deleted</label>
               <input class="form-check-input" type="hidden" name="element_1_5" value="0" />
-              <input class="form-check-input" type="checkbox" name="element_1_5" id="element_1_5" value="1" <?php if (($rowScout['is_deleted'] ?? 0) == 1) echo "checked"; ?> />
+              <input class="form-check-reverse" type="checkbox" name="element_1_5" id="element_1_5" value="1" <?php if (($rowScout['is_deleted'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
         </div>
@@ -178,14 +178,14 @@ $ProjectName = $ProjectName ?? '';
             <div class="form-check">
               <label class="form-check-label" for="element_7_2">Attended Preview</label>
               <input class="form-check-input" type="hidden" name="element_7_2" value="0" />
-              <input class="form-check-input" type="checkbox" name="element_7_2" id="element_7_2" value="1" <?php if (($rowScout['AttendedPreview'] ?? 0) == 1) echo "checked"; ?> />
+              <input class="form-check-reverse" type="checkbox" name="element_7_2" id="element_7_2" value="1" <?php if (($rowScout['AttendedPreview'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
           <div class="col-1 py-4">
             <div class="form-check">
               <label class="form-check-label" for="element_7_3">Project Approved</label>
               <input class="form-check-input" type="hidden" name="element_7_3" value="0" />
-              <input class="form-check-input" type="checkbox" name="element_7_3" id="element_7_3" value="1" <?php if (($rowScout['ProjectApproved'] ?? 0) == 1) echo "checked"; ?> />
+              <input class="form-check-reverse" type="checkbox" name="element_7_3" id="element_7_3" value="1" <?php if (($rowScout['ProjectApproved'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
           <div class="col-2">
@@ -226,14 +226,14 @@ $ProjectName = $ProjectName ?? '';
             <div class="form-check">
               <label class="form-check-label" for="element_9_3">Eagled</label>
               <input class="form-check-input" type="hidden" name="element_9_3" value="0" />
-              <input class="form-check-input" type="checkbox" name="element_9_3" id="element_9_3" value="1" <?php if (($rowScout['Eagled'] ?? 0) == 1) echo "checked"; ?> />
+              <input class="form-check-reverse" type="checkbox" name="element_9_3" id="element_9_3" value="1" <?php if (($rowScout['Eagled'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
-          <div class="col-1 py-4">
+          <div class="col-2 py-4">
             <div class="form-check">
               <label class="form-check-label" for="element_9_4">Aged Out</label>
               <input class="form-check-input" type="hidden" name="element_9_4" value="0" />
-              <input class="form-check-input" type="checkbox" name="element_9_4" id="element_9_4" value="1" <?php if (($rowScout['AgedOut'] ?? 0) == 1) echo "checked"; ?> />
+              <input class="form-check-reverse" type="checkbox" name="element_9_4" id="element_9_4" value="1" <?php if (($rowScout['AgedOut'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
         </div>
