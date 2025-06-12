@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
-      $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
@@ -176,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           if (mysqli_stmt_num_rows($stmt) == 1) {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
             if (mysqli_stmt_fetch($stmt)) {
+              //$newPassword = password_hash($password, PASSWORD_DEFAULT);
               if (password_verify($password, $hashed_password) && $enabled) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;

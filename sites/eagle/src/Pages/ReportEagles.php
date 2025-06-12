@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST[
         <?php endif; ?>
 
         <h4>Scouts who have Eagled (since 2017)</h4>
-        <?php $cEagle->SelectUnit(); ?>
+        <?php $cEagle->SelectUnit($_SESSION['csrf_token']); ?>
         <table class="fixed_header table table-striped">
             <thead>
                 <tr>

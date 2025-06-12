@@ -182,13 +182,14 @@ class CEagle
      * This function will allow the user to select the year of data to view.
      * 
      *===========================================================================*/
-  public static function SelectYear()
+  public static function SelectYear($csrf_token)
   {
     // This will call the function once the user and selected a troop and click submit
 
     // Fill up the drop down with merit badge names
 ?>
     <form method=post>
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <label for='Year'>&nbsp;</label>
       <div class="form-row px-5">
         <div class="col-2">
@@ -271,7 +272,7 @@ class CEagle
      * This function will allow the user to select the units to view by.
      * 
      *===========================================================================*/
-  public static function SelectUnit()
+  public static function SelectUnit($csrf_token)
   {
     $sqlUnits = "SELECT DISTINCT `UnitType`, `UnitNumber` FROM `scouts` ORDER BY `UnitType`, `UnitNumber`";
 
@@ -283,6 +284,7 @@ class CEagle
     // Fill up the drop down with merit badge names
   ?>
     <form method=post>
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <div class="form-row px-5">
         <div class="col-1">
 

@@ -37,7 +37,7 @@ if (!isset($_SESSION['csrf_token'])) {
     $year = $_POST['Year'];
     $cEagle->SetYear($year);
   }
-  $cEagle->SelectYear();
+  $cEagle->SelectYear($_SESSION['csrf_token']);
   $csv_hdr = "Unit Type,Unit#,  Gender, Name, Year, Beneficiary, Project Name, Project Hours";
   $csv_output = "";
   // Sortable by column header..
