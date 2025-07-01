@@ -47,7 +47,9 @@ $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['
 define('SITE_URL', $protocol . '://' . $host . $port);
 
 // Assets URL
-define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets/');
+define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
+define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
+define('SHARED_PATH', __DIR__ . '/../../../shared/'); 
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Advancements');
@@ -135,7 +137,7 @@ if (!function_exists('load_class')) {
             error_log("Class $file is missing.");
             if (defined('ENV') && ENV === 'development') {
                 echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
+                die('Class $file is missing.');
             } else
                 die('An error occurred. Please try again later.');
         }
