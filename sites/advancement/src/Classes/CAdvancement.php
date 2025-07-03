@@ -291,7 +291,7 @@ class CAdvancement
    * This function will update the date the table was last updated
    * 
    *****************************************************************************/
-  function UpdateLastUpdated($Table, $Datestr)
+  public static function UpdateLastUpdated($Table, $Datestr)
   {
     $lastUpdated = null;
     if (strlen($Datestr) == 0) {

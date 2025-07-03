@@ -696,7 +696,7 @@ class AdultLeaders
    *****************************************************************************/
   public static function function_alert($msg)
   {
-    echo "<script type='text/javascript'>alert('$msg');</script>";
+   // echo "<script type='text/javascript'>alert('$msg');</script>";
   }
   /******************************************************************************
    * 
@@ -779,7 +779,13 @@ class AdultLeaders
     $Updated = 0;
     $RecordsInError = 0;
     $row = 1;
-    $filePath = "Data/" . $fileName;
+    $filePath = $fileName;
+    if(!file_exists($filePath)) {
+      $strError = "ERROR: File not found: " . $filePath;
+      error_log($strError, 0);
+      self::function_alert($strError);
+      exit();
+    }
     // Delete all of the Old data
     if (!self::doQuery("TRUNCATE TABLE `trainedleaders`")) {
       $strError = "see error log - TRUNCATE TABLE `trainedleaders`";
@@ -886,8 +892,13 @@ class AdultLeaders
     $Updated = 0;
     $RecordsInError = 0;
     $Row = 1;
-    $filePath = "Data/" . $fileName;
+    $filePath = $fileName;
     $Datestr = "";
+
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        error_log("Updateypt: File not found or unreadable at $filePath");
+        return ++$RecordsInError;
+      }
 
     // Delete all of the Old data
     if (!self::doQuery("TRUNCATE TABLE `ypt`")) {
@@ -960,16 +971,16 @@ class AdultLeaders
       }
       fclose($handle);
       $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      self::function_alert($Usermsg);
+      //self::function_alert($Usermsg);
     } else {
       $Usermsg = "Failed to open file";
-      self::function_alert($Usermsg);
+      //self::function_alert($Usermsg);
     }
 
 ?>
-    <center>
-      </br><button class='RoundButton' style='width:220px' onclick="window.location.href ='UpdateTables.php';"' >Return </button></br>
-        </center>
+    <!-- <center> -->
+      <!-- </br><button class='RoundButton' style='width:220px' onclick="window.location.href ='UpdateTables.php';"' >Return </button></br> -->
+        <!-- </center> -->
         <?php
 
         return $RecordsInError;

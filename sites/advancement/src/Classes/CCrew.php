@@ -235,7 +235,12 @@ class CCrew extends CAdvancement
     $Updated = 0;
     $RecordsInError = 0;
     $row = 1;
-    $filePath = "Data/" . $fileName;
+    $filePath = $fileName;
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+        error_log("UpdateCrew: File not found or unreadable at $filePath");
+        return ++$RecordsInError;
+      }
+
     $Datestr = "";
     $CrewYear = self::GetYear();
     if (($handle = fopen($filePath, "r")) !== FALSE) {
@@ -312,10 +317,10 @@ class CCrew extends CAdvancement
       }
       fclose($handle);
       $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     } else {
       $Usermsg = "Failed to open file";
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     }
     parent::UpdateLastUpdated('adv_crew', $Datestr);
 
@@ -415,10 +420,10 @@ class CCrew extends CAdvancement
       }
       fclose($handle);
       $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     } else {
       $Usermsg = "Failed to open file";
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     }
     parent::UpdateLastUpdated('adv_crew', $Datestr);
 

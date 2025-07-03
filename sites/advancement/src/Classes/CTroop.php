@@ -352,10 +352,10 @@ class CTroop extends CAdvancement
       }
       fclose($handle);
       $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     } else {
       $Usermsg = "Failed to open file";
-      parent::function_alert($Usermsg);
+      //parent::function_alert($Usermsg);
     }
     parent::UpdateLastUpdated('adv_troop', $Datestr);
 

@@ -100,7 +100,10 @@ try {
                   $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
                   $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
                   $Unit = $PackAdv['Unit'];
-                  $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'>";
+                  //include('../src/Pages/adv_report.php');
+                  
+                  $URLPath = '../src/Pages/Unit_View.php?btn=Units&unit_name='.$Unit;
+                  $UnitURL = "<a href=$URLPath>";
                   $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $Formatter = "";
                   if ($UnitRankScout == 0) {

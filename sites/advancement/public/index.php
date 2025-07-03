@@ -270,7 +270,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors) && $uploadedFile) {
       try {
         $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
-        unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
+        //unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
+        unlink($uploadedFile); // Clean up
         if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
           CAdvancement::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
         }
