@@ -5,7 +5,8 @@ if (!session_id()) {
 
 require_once 'CEagle.php';
 $cEagle = CEagle::getInstance();
-require_once '../cAdultLeaders.php';
+//require_once '../cAdultLeaders.php';
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
 
 // This code stops anyone for seeing this page unless they have logged in and

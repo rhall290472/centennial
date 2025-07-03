@@ -1,6 +1,7 @@
 <?php
 
-include('../cAdultLeaders.php');
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
+//include('../cAdultLeaders.php');
 require_once '../CUnit.php';
 
 $cAdultLeaders = AdultLeaders::getInstance();

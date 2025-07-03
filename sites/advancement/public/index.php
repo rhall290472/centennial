@@ -32,7 +32,8 @@ load_class(__DIR__ . '/../src/Classes/CPack.php');
 load_class(__DIR__ . '/../src/Classes/CTroop.php');
 load_class(__DIR__ . '/../src/Classes/CCrew.php');
 load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
-load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
+//load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 // FileUploader class for secure file uploads
 class FileUploader

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../Classes/CEagle.php';
-require_once __DIR__ . '/../../../../shared/src/classes/cAdultLeaders.php';
+//require_once __DIR__ . '/../../../../shared/src/classes/cAdultLeaders.php';
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
   header("HTTP/1.0 403 Forbidden");
