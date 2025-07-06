@@ -72,6 +72,17 @@ class UNIT extends CAdvancement
     return $resultunit;
   }
 
+  public static function GetCrewUnits()
+  {
+    $qryunit = "SELECT DISTINCT Unit FROM membershiptotals WHERE Unit Like '%Crew%' AND (Expire_Date LIKE '%";
+
+    $CurrentYear = parent::GetYear();
+    $NextYear = $CurrentYear + 1;
+    $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
+    $resultunit = parent::doQuery($qry);
+    return $resultunit;
+  }
+
   public static function DispayTable($rowcount, $result)
   {
 ?>

@@ -40,11 +40,93 @@ load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $UNIT = UNIT::getInstance();
 $cAdultLeaders = AdultLeaders::getInstance();
 
+if (isset($_POST['btn'])) {
+  if (isset($_POST['packs']))
+    $_GET['unit_name'] = $_POST['packs'];
+  else if (isset($_POST['troops']))
+    $_GET['unit_name'] = $_POST['troops'];
+  else if (isset($_POST['crews']))
+    $_GET['unit_name'] = $_POST['crews'];
+}
 // Get Unit Name if supplied..
 if (isset($_GET['unit_name'])) {
   $unit_name = $_GET['unit_name'];
-} else
+} else {
   $unit_name = "";
+?>
+  <div class="container-fluid">
+    <select_unit>
+      <div class="px-lg-5">
+        <div class="row">
+          <div class="col-2">
+            <form method="post">
+              <select class="form-control d-print-none" id="packs" name="packs">
+                <?php
+                // First recod is blank "all"
+                echo "<option value=\"\" </option>";
+                $ResultUnits = $UNIT->GetPackUnits();
+                while ($rowUnits = $ResultUnits->fetch_assoc()) {
+                  echo "<option value=\"{$rowUnits['Unit']}\">";
+                  echo $rowUnits['Unit'];
+                  echo "</option>";
+                }
+                ?>
+              </select>
+          </div>
+          <div class="col-1">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input class="btn btn-primary btn-sm" type="submit" value="Packs" name="btn">
+          </div>
+          </form>
+
+          <div class="col-2">
+            <form method="post">
+              <select class="form-control d-print-none" id="troops" name="troops">
+                <?php
+                // First recod is blank "all"
+                echo "<option value=\"\" </option>";
+                $ResultUnits = $UNIT->GetTroopUnits();
+                while ($rowUnits = $ResultUnits->fetch_assoc()) {
+                  echo "<option value=\"{$rowUnits['Unit']}\">";
+                  echo $rowUnits['Unit'];
+                  echo "</option>";
+                }
+                ?>
+              </select>
+          </div>
+          <div class="col-1">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input class="btn btn-primary btn-sm" type="submit" value="Troops" name="btn">
+          </div>
+          </form>
+
+          <div class="col-2">
+            <form method="post">
+              <select class="form-control d-print-none" id="crews" name="crews">
+                <?php
+                // First recod is blank "all"
+                echo "<option value=\"\" </option>";
+                $ResultUnits = $UNIT->GetCrewUnits();
+                while ($rowUnits = $ResultUnits->fetch_assoc()) {
+                  echo "<option value=\"{$rowUnits['Unit']}\">";
+                  echo $rowUnits['Unit'];
+                  echo "</option>";
+                }
+                ?>
+              </select>
+          </div>
+          <div class="col-1">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input class="btn btn-primary btn-sm" type="submit" value="Crews" name="btn">
+          </div>
+          </form>
+
+        </div>
+      </div>
+    </select_unit>
+  </div>
+<?php
+}
 
 if (empty($unit_name)) {
   $Direct = $cAdultLeaders->DirectTrained($unit_name, "YES");

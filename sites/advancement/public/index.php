@@ -122,7 +122,8 @@ $valid_pages = [
   'membership-report',
   'login',
   'logout',
-  'updatedata'
+  'updatedata',
+  'unitview'
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -390,6 +391,9 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
         case 'updatedata':
           include('../src/Pages/UpdateData.php');
+          break;
+        case 'unitview':
+          include('../src/Pages/Unit_View.php');
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
