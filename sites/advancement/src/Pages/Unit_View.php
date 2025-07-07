@@ -386,9 +386,6 @@ if (empty($unit_name)) {
   }
   ?>
 
-  <!-- Footer-->
-  <?php load_template('/src/Templates/Footer.php'); ?>
-
 </body>
 
 </html>
