@@ -27,6 +27,7 @@
             <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
             <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
             <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
+            <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -37,11 +38,13 @@
             <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
             <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
             <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
+            <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
           </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo $page === 'crew-summary' ? 'active' : ''; ?>" href="?page=crew-summary">Crews</a>
         </li>
+        <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle <?php echo in_array($page, ['adv-report', 'membership-report']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Reports

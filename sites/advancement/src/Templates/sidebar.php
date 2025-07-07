@@ -33,6 +33,7 @@
         <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
         <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
         <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
+        <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -41,6 +42,7 @@
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=crew-summary">Summary</a></li>
+        <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
