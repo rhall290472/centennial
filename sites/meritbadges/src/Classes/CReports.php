@@ -63,25 +63,26 @@ class CReports extends CMeritBadges
           <?php } ?>
 
 
-          <table>
-            <tr>
-              <th style='width:250px'>TBD</th>
-              <th style='width:250px'>Richard Hall</th>
-            </tr>
-            <tr>
-              <td>Merit Badge College Dean</td>
-              <td>District Advancement Chair</td>
-            </tr>
-            <tr>
-              <td><a href='mailto:TDB?subject=Merit Badge Counselor'>TDB</a></td>
-              <td><a href='mailto:richard.hall@centennialdistrict.co?subject=Merit Badge Counselor'>richard.hall@centennialdistrict.co</a></td>
-            </tr>
-            <tr>
-              <td>TDB</td>
-              <td>720.324.4235</td>
-            </tr>
-          </table>
-
+          <div class="d-flex justify-content-center align-items-center">
+            <table>
+              <tr>
+                <th style='width:250px'>TBD</th>
+                <th style='width:250px'>Richard Hall</th>
+              </tr>
+              <tr>
+                <td>Merit Badge College Dean</td>
+                <td>District Advancement Chair</td>
+              </tr>
+              <tr>
+                <td><a href='mailto:TDB?subject=Merit Badge Counselor'>TDB</a></td>
+                <td><a href='mailto:richard.hall@centennialdistrict.co?subject=Merit Badge Counselor'>richard.hall@centennialdistrict.co</a></td>
+              </tr>
+              <tr>
+                <td>TDB</td>
+                <td>720.324.4235</td>
+              </tr>
+            </table>
+          </div>
 
 
           <?php
@@ -339,10 +340,6 @@ class CReports extends CMeritBadges
 
     $report_results = self::doQuery($queryByTroop);
 
-
-
-
-    $Debug = false;
     $Troop = "-1";
     $SpecialTraining = "";
     $Phone = "";
@@ -373,9 +370,6 @@ class CReports extends CMeritBadges
         $sql = sprintf("%s '%s'", $sqlByMBCount, $row['MeritName']);
         $CounselorCount = self::MeritQueryRows($sql);
         echo "</table>";
-        //echo "<div class='a' style='width:1300px'>";
-        //echo "<p>", $SpecialTraining, "</p>";
-        //echo "<br>";
         if (!empty($row['Unit1']) && strpos($row['Unit1'], "-NA"))
           echo "<h2 style='background-color: var(--scouting-paleblue);'> Crew ", $row['Unit1'], "</h2>";
         else if (!empty($row['Unit1']))
@@ -607,7 +601,7 @@ class CReports extends CMeritBadges
         echo "</dev>";
         echo "<br>";
         echo "<h2 style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
-        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" . "<img src='" . $row['Logo'] . "'" . " width='50' height='50'></a>";
+        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" . "<img src='"  . "'" . " width='50' height='50'></a>";
         $MeritBadge = $row['MeritName'];
         echo "<br>";
         echo "<table class='table table-striped'>";

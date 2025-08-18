@@ -54,6 +54,14 @@ if (empty($report)) {
 
       case 'ByCounselor':
         echo '<p class="lead">Active Merit Badge Counselors in Centennial District</p>';
+        $queryByCounselors = "SELECT * FROM counselors INNER JOIN(meritbadges INNER JOIN counselormerit ON meritbadges.MeritName = counselormerit.MeritName)
+      		ON (counselors.FirstName = counselormerit.FirstName) AND (counselors.LastName = counselormerit.LastName )
+      		WHERE counselors.Active = 'Yes' AND counselormerit.Status <> 'DROP'
+      		ORDER BY
+      			counselors.LastName,
+      			counselors.FirstName,
+      			counselormerit.MeritName;";
+
         $results = $reports->doQuery($queryByCounselors);
         $reports->reportCounselors($results);
         $results->free_result();
@@ -138,6 +146,12 @@ if (empty($report)) {
         break;
 
       case 'BySelectedCounselor':
+        $querySelectedCounselor1 = "SELECT DISTINCTROW counselors.LastName, counselors.FirstName, counselors.MemberID FROM counselors
+        	WHERE counselors.Active='YES'
+        	ORDER BY
+        		counselors.LastName,
+        		counselors.FirstName";
+
         $results = $reports->doQuery($querySelectedCounselor1);
         ?>
         <form method="post" class="mb-4">

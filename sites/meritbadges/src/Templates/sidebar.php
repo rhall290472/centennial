@@ -7,7 +7,7 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
+        <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=counselorsperbadge&ReportBy=ByMB">Counselors per Badge</a></li>
@@ -22,10 +22,10 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Uploads</span>
+        <i class="fs-4 bi bi-upload"></i><span class="ms-1 d-none d-sm-inline">Uploads</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=pack-summary">Counselor List</a></li>
+        <li><a class="dropdown-item" href="?page=uploadcounselors">Counselor List</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -33,26 +33,17 @@
         <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Functions</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=troop-summary">Edits</a></li>
-        <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Crews</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">Summary</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=adv-report">District Advancement Report</a></li>
-        <li><a class="dropdown-item" href="?page=membership-report">Membership</a></li>
+        <li><a class="dropdown-item" href="?page=troop-summary">Untrained Counselors</a></li>
+        <li><a class="dropdown-item" href="?page=troop-below-goal">Expired YPT</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Inactive Counselors</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Counselors/Badge</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">MB > 15</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Cousnelors No MID</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Cousnelors No Email</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Counselors 0 Badges</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Special Training</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">No Counselors/Badge</a></li>
+        <li><a class="dropdown-item" href="?page=troop-meeting-goal">No Unit</a></li>
       </ul>
     </li>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>

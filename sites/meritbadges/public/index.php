@@ -24,8 +24,8 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 
-      // Define SITE_URL fallback if not set
-      if (!defined('SITE_URL')) {
+// Define SITE_URL fallback if not set
+if (!defined('SITE_URL')) {
   define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/meritbadges');
 }
 
@@ -42,6 +42,7 @@ $valid_pages = [
   'forselectedtroop',
   'byselectedcounselor',
   'byfullselectedtroop',
+  'uploadcounselors',
   'login',
   'logout'
 ];
@@ -53,20 +54,6 @@ if (!in_array($page, $valid_pages)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    header("Location: index.php?page=$page");
-    exit;
-  }
-
-  // Year selection
-  if (isset($_POST['SubmitYear']) && in_array($page, $valid_pages)) {
-    $SelYear = filter_input(INPUT_POST, 'Year', FILTER_SANITIZE_NUMBER_INT);
-    if ($SelYear && is_numeric($SelYear) && $SelYear >= 2000 && $SelYear <= date("Y")) {
-      $_SESSION['year'] = $SelYear;
-      $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh token
-      $_SESSION['feedback'] = ['type' => 'success', 'message' => "Year set to $SelYear."];
-    } else {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid year selected. Please choose a year between 2000 and ' . date("Y") . '.'];
-    }
     header("Location: index.php?page=$page");
     exit;
   }
@@ -203,12 +190,12 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'forselectedtroop':
         case 'byselectedcounselor':
         case 'byfullselectedtroop':
-          include('../src/Pages/reports.php');
-          break;
         case 'allcounselorsperbadge':
           include('../src/Pages/reports.php');
           break;
-  
+        case 'uploadcounselors':
+          include('../src/Pages/FileUpload.php');
+          break;
 
           
         case 'login':

@@ -1,34 +1,29 @@
 <?php
 
-declare(strict_types=1);
-
-// Start session with secure settings
-session_start([
-  'cookie_httponly' => true,
-  'cookie_secure' => true, // Enable if using HTTPS
-  'use_strict_mode' => true,
-]);
-
 /**
- * File: FileUpload.php
- * Description: Handles file uploads for Centennial District Advancement Data
- * Author: Richard Hall
- * Copyright: 2017-2024 Richard Hall
- * License: Proprietary, see LICENSE file for details
+ * Centennial District Advancement Data Websites
+ * 
+ * @author Richard Hall
+ * @copyright 2017-2025 Richard Hall
+ * @license Proprietary
+ * @description Supports Centennial District Advancement Data reporting
  */
 
-//use App\CMeritBadges; // Assuming PSR-4 namespace
-
-// Load dependencies (use Composer autoloader if possible)
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/sqlStatements.php';
-require_once __DIR__ . '/CMeritBadges.php';
-
-// Secure session check
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-  header('Location: /index.php', true, 403);
-  exit;
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+  require_once __DIR__ . '/../../config/config.php';
+} else {
+  error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Configuration file missing.'];
+  return;
 }
+
+load_class(BASE_PATH . '/src/Classes/CReports.php');
+load_class(BASE_PATH . '/src/Classes/CMeritBadges.php');
+// Load dependencies (use Composer autoloader if possible)
+//require_once __DIR__ . '/sqlStatements.php';
+//require_once __DIR__ . '/CMeritBadges.php';
+
 
 // Validate CSRF token
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'])) {
@@ -44,10 +39,8 @@ try {
 }
 
 // Configuration
-const UPLOAD_DIR = __DIR__ . '/Data/';
 const ALLOWED_EXTENSIONS = ['csv'];
-const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
-const VALID_REPORT_TYPES = ['Counselors', 'YPT', 'CouncilList'];
+const VALID_REPORT_TYPES = ['Counselors'];
 
 $errors = [];
 $successMessage = '';
@@ -96,14 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
               $CMeritBadges->UpdateCounselors($fileName);
               $successMessage = 'Counselors list updated successfully.';
               break;
-            case 'YPT':
-              $CMeritBadges->UpdateYPT($fileName);
-              $successMessage = 'YPT list updated successfully.';
-              break;
-            case 'CouncilList':
-              $CMeritBadges->UpdateCouncilList($fileName);
-              $successMessage = 'Council list updated successfully.';
-              break;
             default:
               $errors[] = 'Unknown report type requested.';
               break;
@@ -130,40 +115,22 @@ function isValidFileName(string $fileName): bool
   return preg_match('/^[a-zA-Z0-9_\-\.]+$/', $fileName) === 1;
 }
 
-// Template loader function
-function load_template($file)
-{
-  $path = BASE_PATH . $file;
-  if (file_exists($path)) {
-    require_once $path;
-  } else {
-    error_log("Template $file is missing.");
-    die('An error occurred. Please try again later.');
-  }
-}
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <?php load_template('head.php'); ?>
-</head>
-
 <body>
-  <header id="header" class="header sticky-top" role="banner">
-    <?php load_template('navbar.php'); ?>
-  </header>
 
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <?php include __DIR__ . '/sidebar.php'; ?>
+      <?php //include __DIR__ . '/sidebar.php'; ?>
       <div class="col py-3">
         <div class="container px-lg-5">
           <div class="p-4 p-lg-5 bg-light rounded-3">
             <h1 class="display-5 fw-bold text-center">File Upload</h1>
-            <p class="fs-5 text-center">Upload a CSV file for processing (Counselors, YPT, or Council List).</p>
+            <p class="fs-5 text-center">Upload a CSV file for processing (Counselors, ...).</p>
 
             <?php if (!empty($errors)): ?>
               <div class="alert alert-danger" role="alert">
@@ -188,14 +155,6 @@ function load_template($file)
                 <div id="form-instructions" class="form-text">Upload a valid CSV file (max 4MB).</div>
               </div>
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-              <div class="mb-3">
-                <label class="form-label">Report Type</label>
-                <select class="form-select" name="submit" required>
-                  <option value="Counselors">Counselors</option>
-                  <option value="YPT">YPT</option>
-                  <option value="CouncilList">Council List</option>
-                </select>
-              </div>
               <button class="btn btn-primary" type="submit">Upload File</button>
             </form>
           </div>
@@ -204,7 +163,6 @@ function load_template($file)
     </div>
   </div>
 
-  <?php include __DIR__ . '/Footer.php'; ?>
   <script src="/bootstrap-5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 

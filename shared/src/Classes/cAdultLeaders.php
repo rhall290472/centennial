@@ -313,6 +313,37 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
+  public static function GetYPTByID($mid)
+  {
+    // Validate input
+    if (empty($mid) || !is_string($mid)) {
+      return null;
+    }
+
+    // Use prepared statement to prevent SQL injection
+    $conn = self::getDbConn(); // Assume a method to get DB connection
+    $stmt = $conn->prepare("SELECT `Y01_Expires` FROM `ypt` WHERE `Member_ID` = ?");
+    if (!$stmt) {
+      return null; // Handle preparation failure
+    }
+
+    $stmt->bind_param("s", $mid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Fetch result
+    $ypt_expires = $result->fetch_assoc();
+
+    // Clean up
+    $stmt->close();
+
+    // Return null if no row found
+    return $ypt_expires ?: null;
+  }
+
+  /******************************************************************************
+   * 
+   *****************************************************************************/
   public static function GetYPTPositon()
   {
     $qry_ypt_position = "SELECT DISTINCT Position FROM ypt Where Status = 'NO' ORDER BY Position";
