@@ -14,8 +14,7 @@ if (!session_id()) {
  * @author Richard Hall
  * @license Proprietary
  */
-
-load_class(__DIR__ . '/../../../../shared/src/classes/cAdultLeaders.php');
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cAdultLeaders = AdultLeaders::getInstance();
 
 /**

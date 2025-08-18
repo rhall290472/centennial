@@ -35,7 +35,7 @@ if (defined('ENV') && ENV === 'development') {
 } else {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    ini_set('error_log', 'https://shared.centennialdistrict.co/assets/error.log');
 }
 
 
@@ -48,6 +48,8 @@ define('SITE_URL', $protocol . '://' . $host . $port);
 
 // Assets URL
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
+define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
+define('SHARED_PATH', __DIR__ . '/../../../shared/');
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Merit Badges');
