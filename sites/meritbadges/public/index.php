@@ -22,7 +22,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 }
 
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
-
+load_class(__DIR__ . '/../src/Classes/CAdmin.php');
 
 // Define SITE_URL fallback if not set
 if (!defined('SITE_URL')) {
@@ -43,6 +43,19 @@ $valid_pages = [
   'byselectedcounselor',
   'byfullselectedtroop',
   'uploadcounselors',
+  'untrainedcounselors',
+  'byexpireypt',
+  'byinactive',
+  'counsloresbadge',
+  'reportmb15',
+  'counselornoid',
+
+  'counselornoemail',
+  'counselor0badges',
+  'specialtraining',
+  'counselornobadge',
+  'counselornounit',
+
   'login',
   'logout'
 ];
@@ -196,8 +209,43 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'uploadcounselors':
           include('../src/Pages/FileUpload.php');
           break;
+          // Load CMeritBadges to get database connection
+          load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
+          $CMeritBadges = CMeritBadges::getInstance();
+          // Query to get counselors with more than 15 merit badges
+          $sql = "SELECT counselors.Unit1, counselors.FirstName, counselors.LastName, counselors.Email, counselors.MemberID, counselors.ValidationDate, counselors.Active
+            FROM counselors
+            WHERE counselors.Active = 'Yes'
+            AND (
+              SELECT COUNT(*) 
+              FROM counselormerit 
+              WHERE counselormerit.FirstName = counselors.FirstName 
+              AND counselormerit.LastName = counselors.LastName 
+              AND counselormerit.Status <> 'DROP'
+            ) > 15";
+          $results = $CMeritBadges->doQuery($sql);
+          if ($results) {
+            $CAdmin = CAdmin::getInstance();
+            $CAdmin->ReportMB15($results);
+          } else {
+            echo '<div class="alert alert-danger">Error fetching report data: ' . htmlspecialchars(mysqli_error($CMeritBadges->getDbConn())) . '</div>';
+          }
+          break;
 
-          
+
+        case 'untrainedcounselors':
+        case "byexpireypt":
+        case 'byinactive':
+        case 'counsloresbadge';
+        case 'reportmb15':
+        case 'counselornoid':
+        case 'counselornoemail':
+        case 'counselor0badges':
+        case 'specialtraining':
+        case 'counselornobadge':
+        case 'counselornounit':
+          include('../src/Pages/AdminFunctions.php');
+          break;
         case 'login':
           include('login.php');
           break;
