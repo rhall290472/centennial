@@ -12,7 +12,7 @@ defined('IN_APP') or define('IN_APP', true);
 defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 
 // Ensure upload directory exists
-$uploadDir = BASE_PATH . '/Data/';
+$uploadDir = BASE_PATH . '/Uploads/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
@@ -35,14 +35,14 @@ if (defined('ENV') && ENV === 'development') {
 } else {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/assets/error.log');
+    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
 // Dynamically set SITE_URL based on environment
 $is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 $protocol = 'https'; // Simplified since it's always HTTPS in the original code
-$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'maritbadges.centennialdistrict.co';
+$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'centennialdistrict.co';
 $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
 define('SITE_URL', $protocol . '://' . $host . $port);
 
@@ -136,8 +136,8 @@ if (!function_exists('load_class')) {
         } else {
             error_log("Class $file is missing.");
             if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
+                echo 'Class ' . $path . ' is missing.</br>';
+                die('Class $file is missing.');
             } else
                 die('An error occurred. Please try again later.');
         }

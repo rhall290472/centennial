@@ -10,14 +10,14 @@
         <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=untrained">Counselors per Badge</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">All Counselors per Badge</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">Counselors</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">By Unit</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">By Merit Badge</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">By Troop</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">By Counselor</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">All for Unit</a></li>
+        <li><a class="dropdown-item" href="?page=counselorsperbadge&ReportBy=ByMB">Counselors per Badge</a></li>
+        <li><a class="dropdown-item" href="?page=allcounselorsperbadge&ReportBy=ByMB_ALL">All Counselors per Badge</a></li>
+        <li><a class="dropdown-item" href="?page=ByCounselor&ReportBy=ByCounselor">Counselors</a></li>
+        <li><a class="dropdown-item" href="?page=ByTroop&ReportBy=ByTroop">By Unit</a></li>
+        <li><a class="dropdown-item" href="?page=CounselorofMB&ReportBy=CounselorofMB">By Merit Badge</a></li>
+        <li><a class="dropdown-item" href="?page=ForSelectedTroop&ReportBy=ForSelectedTroop">By Troop</a></li>
+        <li><a class="dropdown-item" href="?page=BySelectedCounselor&ReportBy=BySelectedCounselor">By Counselor</a></li>
+        <li><a class="dropdown-item" href="?page=ByFullSelectedTroop&ReportBy=ByFullSelectedTroop">All for Unit</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">

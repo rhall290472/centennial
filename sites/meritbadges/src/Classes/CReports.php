@@ -3,7 +3,7 @@ if (!session_id()) {
   session_start();
 }
 include_once('CMeritBadges.php');
-include_once('cAdultLeaders.php');
+//include_once('cAdultLeaders.php');
 
 class CReports extends CMeritBadges
 {
@@ -46,18 +46,19 @@ class CReports extends CMeritBadges
 ?>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <?php self::load_template('sidebar.php'); ?>
+        <?php //self::load_template('sidebar.php'); 
+        ?>
         <main id="main-content" class="col-11 py-3" role="main">
 
           <?php if (!$All) { ?>
-            <div>
+            <div class="text-center">
               <h2>This report will contain all active Merit Badge Counselors in the Centennial District.</h2>
             </div>
           <?php } else { ?>
-            <div class='alert alert-danger' role='alert'>
+            <div class='alert alert-danger text-center' role='alert'>
               This report will contain all active Merit Badge Counselors
               in the Centennial District. This list include Counselor that DO NOT wish
-              to have their information published. <p style='color:red;'><b>THIS LIST WILL NOT TO BE PUBLISHED</b></p>";
+              to have their information published. <p style='color:red;'><b>THIS LIST WILL NOT TO BE PUBLISHED</b></p>
             </div>
           <?php } ?>
 
@@ -143,8 +144,9 @@ class CReports extends CMeritBadges
               //        var_dump($row['Logo'], $row['URL'], $row['RequirementsRevised'], $CounselorCount);
               //        echo '</pre>';
               ?>
-              <h2 style='background-color: var(--scouting-paleblue);'>
-                <a href="<?php echo !empty($row['URL']) ? htmlspecialchars($row['URL']) : '#'; ?>"><?php echo htmlspecialchars($row['MeritName']); ?> </a></h2>
+              <h2 class="text-center" style='background-color: var(--scouting-paleblue);'>
+                <a href="<?php echo !empty($row['URL']) ? htmlspecialchars($row['URL']) : '#'; ?>"><?php echo htmlspecialchars($row['MeritName']); ?> </a>
+              </h2>
               <table class="table" style="text-align: center;">
                 <tr>
                   <td style="vertical-align: middle;">
@@ -257,7 +259,7 @@ class CReports extends CMeritBadges
         echo "<p class='text-center'>Number of Badges:", $row['NumOfBadges'], "</p>";
         $Expired = false;
         $Counselorsypt = AdultLeaders::GetYPTByID($row['MemberID']);
-        if(isset($Counselorsypt))
+        if (isset($Counselorsypt))
           $Counselorsypttime = strtotime($Counselorsypt['Y01_Expires']);
         else
           $Counselorsypt['Y01_Expires'] = "Unknow";
@@ -693,7 +695,7 @@ class CReports extends CMeritBadges
             $strNumBadges = "<span style='color:#212529'>Number of Badges: " . $row['NumOfBadges'] . "</span><br/>";
           echo $strNumBadges;
           $Expired = false;
-          
+
           $Counselorsypt = AdultLeaders::GetYPTByID($row['MemberID']);
           $Counselorsypttime = strtotime($Counselorsypt['Y01_Expires']);
           if ($TodaysDate > $Counselorsypttime) {

@@ -21,31 +21,29 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
   die('An error occurred. Please try again later.');
 }
 
-// Define SITE_URL fallback if not set
-if (!defined('SITE_URL')) {
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
+
+
+      // Define SITE_URL fallback if not set
+      if (!defined('SITE_URL')) {
   define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/meritbadges');
 }
-
 
 // Simple routing based on 'page' GET parameter
 $page = filter_input(INPUT_GET, 'page') ?? 'home';
 $page = strtolower(trim($page));
 $valid_pages = [
   'home',
-  'ypt',
-  'untrained',
-  'pack-summary',
-  'pack-below-goal',
-  'pack-meeting-goal',
-  'troop-summary',
-  'troop-below-goal',
-  'troop-meeting-goal',
-  'crew-summary',
-  'adv-report',
-  'membership-report',
+  'counselorsperbadge',
+  'allcounselorsperbadge',
+  'bycounselor',
+  'bytroop',
+  'counselorofmb',
+  'forselectedtroop',
+  'byselectedcounselor',
+  'byfullselectedtroop',
   'login',
-  'logout',
-  'updatedata'
+  'logout'
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -130,87 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
   }
 
-  // File upload for updatedata
-  if ($page === 'updatedata' && isset($_FILES['the_file']) && isset($_POST['submit'])) {
-    // Authentication check
-    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to upload files.'];
-      header("Location: index.php?page=login");
-      exit;
-    }
-
-    $Update = filter_input(INPUT_POST, 'submit');
-    $allowed_updates = [
-      'UpdateTotals',
-      'UpdatePack',
-      'UpdateTroop',
-      'UpdateCrew',
-      'TrainedLeader',
-      'Updateypt',
-      'UpdateVenturing',
-      'UpdateAdventure',
-      'UpdateCommissioners',
-      'UpdateFunctionalRole'
-    ];
-
-    if (!in_array($Update, $allowed_updates)) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
-      header("Location: index.php?page=updatedata&update=" . urlencode($Update));
-      exit;
-    }
-
-    $errors = [];
-    $uploader = new FileUploader(UPLOAD_DIRECTORY);
-    $classMap = [
-      'UpdateTotals' => UNIT::class,
-      'UpdatePack' => CPack::class,
-      'UpdateTroop' => CTroop::class,
-      'UpdateCrew' => CCrew::class,
-      'TrainedLeader' => AdultLeaders::class,
-      'Updateypt' => AdultLeaders::class,
-      'UpdateVenturing' => CCrew::class,
-      'UpdateAdventure' => CPack::class,
-      'UpdateCommissioners' => UNIT::class,
-      'UpdateFunctionalRole' => AdultLeaders::class,
-    ];
-
-    $updateMethods = [
-      'UpdateTotals' => ['ImportCORData'],
-      'UpdatePack' => ['UpdatePack'],
-      'UpdateTroop' => ['UpdateTroop'],
-      'UpdateCrew' => ['UpdateCrew'],
-      'TrainedLeader' => ['TrainedLeader'],
-      'Updateypt' => ['Updateypt'],
-      'UpdateVenturing' => ['UpdateVenturing'],
-      'UpdateAdventure' => ['UpdateAdventure'],
-      'UpdateCommissioners' => ['UpdateCommissioner'],
-      'UpdateFunctionalRole' => ['UpdateFunctionalRole'],
-    ];
-
-    $instance = $classMap[$Update]::getInstance();
-    $uploadedFile = $uploader->uploadFile($_FILES['the_file'], $errors);
-
-    if (empty($errors) && $uploadedFile) {
-      try {
-        $RecordsInError = call_user_func([$instance, $updateMethods[$Update][0]], $uploadedFile);
-        unlink(UPLOAD_DIRECTORY . $uploadedFile); // Clean up
-        if (in_array($Update, ['TrainedLeader', 'Updateypt'])) {
-          CMeritBadges::getInstance()->UpdateLastUpdated(strtolower(str_replace('Update', '', $Update)), '');
-        }
-        $_SESSION['feedback'] = [
-          'type' => $RecordsInError == 0 ? 'success' : 'warning',
-          'message' => $RecordsInError == 0 ? 'Data updated successfully.' : "$RecordsInError record(s) had errors."
-        ];
-      } catch (Exception $e) {
-        error_log("Processing error for $Update: " . $e->getMessage(), 0);
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during processing.'];
-      }
-    } else {
-      error_log("File upload error: " . implode(', ', $errors), 0);
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => implode(' ', $errors)];
-    }
+  // Handle report form submissions
+  if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
+    $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
-    header("Location: index.php?page=updatedata&update=" . urlencode($Update));
+    header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;
   }
 }
@@ -274,44 +196,23 @@ if (!isset($_SESSION['csrf_token'])) {
           </div>
       <?php
           break;
-        case 'untrained':
-          include('../src/Pages/Untrained.php');
+        case 'counselorsperbadge':
+        case 'bycounselor':
+        case 'bytroop':
+        case 'counselorofmb':
+        case 'forselectedtroop':
+        case 'byselectedcounselor':
+        case 'byfullselectedtroop':
+          include('../src/Pages/reports.php');
           break;
-        case 'ypt':
-          include('../src/Pages/YPT.php');
+        case 'allcounselorsperbadge':
+          include('../src/Pages/reports.php');
           break;
-        case 'pack-summary':
-          include('../src/Pages/pack_summary.php');
-          break;
-        case 'pack-below-goal':
-          include('../src/Pages/pack_below_goal.php');
-          break;
-        case 'pack-meeting-goal':
-          include('../src/Pages/pack_meeting_goal.php');
-          break;
-        case 'troop-summary':
-          include('../src/Pages/troop_summary.php');
-          break;
-        case 'troop-below-goal':
-          include('../src/Pages/troop_below_goal.php');
-          break;
-        case 'troop-meeting-goal':
-          include('../src/Pages/troop_meeting_goal.php');
-          break;
-        case 'crew-summary':
-          include('../src/Pages/crew_summary.php');
-          break;
-        case 'adv-report':
-          include('../src/Pages/adv_report.php');
-          break;
-        case 'membership-report':
-          include('../src/Pages/membership_report.php');
-          break;
+  
+
+          
         case 'login':
           include('login.php');
-          break;
-        case 'updatedata':
-          include('../src/Pages/UpdateData.php');
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';

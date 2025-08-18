@@ -224,9 +224,8 @@ class AdultLeaders
    *****************************************************************************/
   public static function IsTrained($FName, $LName, $Position)
   {
-    $qryTrained = "SELECT Trained 
-    
-    First_Name='$FName' AND Last_Name='$LName' AND Position='$Position'";
+    $qryTrained = "SELECT Trained FROM trainedleaders WHERE 
+      First_Name='$FName' AND Last_Name='$LName' AND Position='$Position'";
     $result_trained = self::doQuery($qryTrained);
     $row = $result_trained->fetch_assoc();
 
