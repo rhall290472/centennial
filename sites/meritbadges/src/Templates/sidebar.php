@@ -54,6 +54,7 @@
       </li>
     </ul>
   <?php else: ?>
+    <ul>
     <li class="nav-item">
       <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
     </li>
