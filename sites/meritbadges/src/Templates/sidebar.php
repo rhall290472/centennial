@@ -7,29 +7,33 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Adults</span>
+        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=untrained">Untrained Leaders</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">Expired YPT</a></li>
+        <li><a class="dropdown-item" href="?page=untrained">Counselors per Badge</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">All Counselors per Badge</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">Counselors</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">By Unit</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">By Merit Badge</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">By Troop</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">By Counselor</a></li>
+        <li><a class="dropdown-item" href="?page=ypt">All for Unit</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Packs</span>
+        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Uploads</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
-        <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
+        <li><a class="dropdown-item" href="?page=pack-summary">Counselor List</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Troops</span>
+        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Functions</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
+        <li><a class="dropdown-item" href="?page=troop-summary">Edits</a></li>
         <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
         <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
       </ul>
