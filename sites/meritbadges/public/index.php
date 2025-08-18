@@ -23,6 +23,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 load_class(__DIR__ . '/../src/Classes/CAdmin.php');
+load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
 
 // Define SITE_URL fallback if not set
 if (!defined('SITE_URL')) {

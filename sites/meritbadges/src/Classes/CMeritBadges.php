@@ -1,9 +1,16 @@
 <?php
 defined('IN_APP') or die('Direct access not allowed.');
 
-if (!session_id()) {
-  session_start();
+
+// Load configuration
+if (file_exists(BASE_PATH . '/config/config.php')) {
+  require_once BASE_PATH . '/config/config.php';
+} else {
+  error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
+  echo 'Path == ' . BASE_PATH . '/config/config.php';
+  die('An error occurred. Please try again later. Config.php');
 }
+
 
 /**
  * Centennial District Advancement Merit Badge Class

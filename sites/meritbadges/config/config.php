@@ -87,17 +87,17 @@ define('NAV_LINKS', [
     ],
 ]);
 
-if ($is_localhost) {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
-} else {
+//if ($is_localhost) {
+//    define('DB_HOST', 'localhost');
+//    define('DB_USER', 'mbcuser');
+//    define('DB_PASS', 'ZCSCA?yrW7}L');
+//    define('DB_NAME', 'meritbadges');
+//} else {
     define('DB_HOST', 'rhall29047217205.ipagemysql.com');
     define('DB_USER', 'mbcuser');
     define('DB_PASS', 'ZCSCA?yrW7}L');
     define('DB_NAME', 'meritbadges');
-}
+//}
 
 // Security headers
 //header('X-Content-Type-Options: nosniff');
