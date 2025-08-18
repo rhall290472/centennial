@@ -24,8 +24,9 @@
 				case "ByEditMB":
 					break;
 				case "ByExpireypt":
-					echo "<p>This report will contain all active Merit Badge counselors in the Centennial District with Expired ypt.</p>";
-
+					echo "<div class='text-center'>";
+					echo "<h2>This report will contain all active Merit Badge counselors in the Centennial District with Expired ypt.</h2>";
+					echo "</div>";
 					$sqlExpiredypt = "SELECT * FROM `counselors` WHERE `Active`='YES'";
 					if ($Results = $CAdmin->doQuery($sqlExpiredypt, MYSQLI_STORE_RESULT)) {
 						if ($CAdmin->ReportExpiredypt($Results)) {
@@ -95,11 +96,6 @@
 				case "ByMB15":
 					echo "<p>This report will contain all active Merit Badge Counselors
 			that have more than 15 merit badges.</p>";
-					//if($Results = $CAdmin->doQuery($sqlQuery15, MYSQLI_STORE_RESULT)){
-					//    if(ReportMB15($con, $Results)){
-					//    	$Results->free_result();
-					//    }
-					//}
 					$sqlQuery15_1 = "SELECT * FROM counselors WHERE NumOfBadges > 15 AND counselors.Active = 'YES'";
 
 					if ($Results = $CAdmin->doQuery($sqlQuery15_1, MYSQLI_STORE_RESULT)) {

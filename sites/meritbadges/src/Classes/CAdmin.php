@@ -35,13 +35,7 @@ class CAdmin extends CMeritBadges
 	function ReportExpiredypt($Results)
 	{
 
-		echo "<table class='table table-striped' style='width:60vw'>";
-		echo "<td style='width:100px'>";
-		echo "<td style='width:100px'>";
-		echo "<td style='width:100px'>";
-		echo "<td style='width:100px'>";
-		echo "<td style='width:100px'>";
-		echo "<td style='width:100px'>";
+		echo "<table class='table table-striped'>";
 		echo "<tr>";
 		echo "<th>Unit</th>";
 		echo "<th>First Name</th>";
@@ -210,70 +204,70 @@ class CAdmin extends CMeritBadges
 	 *===========================================================================*/
 		function ReportInactive($Results)
 		{
-      ?>
-      <div class="container-fluid">
-      <p class='py-3'>This report will contain all Inactive Merit Badge Counselors.</p>
-			<table class='table table-striped'>
-			<!-- <td style='width:150px'> -->
-			<!-- <td style='width:100px'> -->
-			<!-- <td style='width:150px'> -->
-			<!-- <td style='width:150px'> -->
-			<!-- <td style='width:200px'> -->
-			<!-- <td style='width:100px'> -->
-			<!-- <td style='width:100px'> -->
-			<tr>
-			<th>District</th>
-			<th>Unit</th>
-			<th>First Name</th>
-			<th>Last Name</th>
-			<th>Email</th>
-			<th>Member ID</th>
-			<th>Validation Date</th>
-			<th>YPT</th>
-			<th>Active</th>
-			</tr>
-      <?php
-
-			$csv_hdr = "District, Unit, First Name, Last Name, Email, Member ID, Validation Date, YPT Date, Active";
-			$csv_output = "";
-
-
-			while ($row = $Results->fetch_assoc()) {
-				$Email = "<a href='mailto:" . $row['Email'] . "?subject=Merit Badge Counselor'>" . $row['Email'] . "</a>";
-				echo "<tr><td>" .
-					$row['HomeDistrict'] . "</td><td>" .
-					$row['Unit1'] . "</td><td>" .
-					$row['FirstName'] . "</td><td>" .
-					$row['LastName'] . "</td><td>" .
-					$Email . "</td><td>" .
-					$row['MemberID'] . "</td><td>" .
-					$row['ValidationDate'] . "</td><td>" .
-					$row['YPT'] . "</td><td>" .
-					$row['Active'] . "</td><td>";
-
-				$csv_output .= $row['Unit1'] . ", ";
-				$csv_output .= $row['FirstName'] . ", ";
-				$csv_output .= $row['LastName'] . ", ";
-				$csv_output .= $row['Email'] . ", ";
-				$csv_output .= $row['MemberID'] . ", ";
-				$csv_output .= $row['ValidationDate'] . ", ";
-				$csv_output .= $row['YPT'] . ",";
-				$csv_output .= $row['Active'] . "\n";
-			}
 			?>
-			</table>
-      <p>Counselors Inactive :<?php echo mysqli_num_rows($Results) ?> </p>
+				<div class="container-fluid">
+					<p class='py-3'>This report will contain all Inactive Merit Badge Counselors.</p>
+					<table class='table table-striped'>
+						<!-- <td style='width:150px'> -->
+						<!-- <td style='width:100px'> -->
+						<!-- <td style='width:150px'> -->
+						<!-- <td style='width:150px'> -->
+						<!-- <td style='width:200px'> -->
+						<!-- <td style='width:100px'> -->
+						<!-- <td style='width:100px'> -->
+						<tr>
+							<th>District</th>
+							<th>Unit</th>
+							<th>First Name</th>
+							<th>Last Name</th>
+							<th>Email</th>
+							<th>Member ID</th>
+							<th>Validation Date</th>
+							<th>YPT</th>
+							<th>Active</th>
+						</tr>
+						<?php
 
-      </div>
+						$csv_hdr = "District, Unit, First Name, Last Name, Email, Member ID, Validation Date, YPT Date, Active";
+						$csv_output = "";
 
-      <div>
-      <form name="export" action="../export.php" method="post">
-				<input class='btn btn-primary btm-sm' style="width:220px" type="submit" value="Export table to CSV">
-				<input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-				<input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-			</form>
 
-      </div>
+						while ($row = $Results->fetch_assoc()) {
+							$Email = "<a href='mailto:" . $row['Email'] . "?subject=Merit Badge Counselor'>" . $row['Email'] . "</a>";
+							echo "<tr><td>" .
+								$row['HomeDistrict'] . "</td><td>" .
+								$row['Unit1'] . "</td><td>" .
+								$row['FirstName'] . "</td><td>" .
+								$row['LastName'] . "</td><td>" .
+								$Email . "</td><td>" .
+								$row['MemberID'] . "</td><td>" .
+								$row['ValidationDate'] . "</td><td>" .
+								$row['YPT'] . "</td><td>" .
+								$row['Active'] . "</td><td>";
+
+							$csv_output .= $row['Unit1'] . ", ";
+							$csv_output .= $row['FirstName'] . ", ";
+							$csv_output .= $row['LastName'] . ", ";
+							$csv_output .= $row['Email'] . ", ";
+							$csv_output .= $row['MemberID'] . ", ";
+							$csv_output .= $row['ValidationDate'] . ", ";
+							$csv_output .= $row['YPT'] . ",";
+							$csv_output .= $row['Active'] . "\n";
+						}
+						?>
+					</table>
+					<p>Counselors Inactive :<?php echo mysqli_num_rows($Results) ?> </p>
+
+				</div>
+
+				<div>
+					<form name="export" action="../export.php" method="post">
+						<input class='btn btn-primary btm-sm' style="width:220px" type="submit" value="Export table to CSV">
+						<input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
+						<input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
+					</form>
+
+				</div>
 				<br />
 
 			<?php
