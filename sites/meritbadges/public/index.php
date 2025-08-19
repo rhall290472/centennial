@@ -13,6 +13,18 @@ if (session_status() === PHP_SESSION_NONE) {
   ]);
 }
 
+$files = [
+  __DIR__ . '/../config/config.php',
+  SHARED_PATH . 'src/Classes/cAdultLeaders.php',
+  __DIR__ . '/../src/Classes/CAdmin.php',
+  __DIR__ . '/../src/Classes/CMeritBadges.php'
+];
+foreach ($files as $file) {
+  if (!file_exists($file)) {
+    error_log("Missing file: $file");
+  }
+}
+
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -123,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage(), 0);
+      echo "index.php - Login error: " . $e->getMessage();
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
       header("Location: index.php?page=login");
     }
@@ -131,7 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Handle report form submissions
   if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
-    $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
+    $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_DEFAULT) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_DEFAULT);
+    $reportBy = is_string($reportBy) ? htmlspecialchars(strip_tags(trim($reportBy)), ENT_QUOTES, 'UTF-8') : '';
+    //$reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
     header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;
@@ -276,6 +291,9 @@ if (!isset($_SESSION['csrf_token'])) {
       });
     });
   </script>
+
+
+
 </body>
 
 </html>

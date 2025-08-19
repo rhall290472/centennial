@@ -222,14 +222,82 @@ class AdultLeaders
    * Return YES if member is YPT Current
    * 
    *****************************************************************************/
+  //public static function IsTrained($FName, $LName, $Position)
+  //{
+  //  $qryTrained = "SELECT Trained FROM trainedleaders WHERE 
+  //    First_Name='$FName' AND Last_Name='$LName' AND Position='$Position'";
+  //  $result_trained = self::doQuery($qryTrained);
+  //  $row = $result_trained->fetch_assoc();
+//
+  //  return $row['Trained'];
+  //}
   public static function IsTrained($FName, $LName, $Position)
   {
-    $qryTrained = "SELECT Trained FROM trainedleaders WHERE 
-      First_Name='$FName' AND Last_Name='$LName' AND Position='$Position'";
-    $result_trained = self::doQuery($qryTrained);
-    $row = $result_trained->fetch_assoc();
+    // Input validation
+    if (
+      !is_string($FName) || !is_string($LName) || !is_string($Position) ||
+      empty(trim($FName)) || empty(trim($LName)) || empty(trim($Position))
+    ) {
+      error_log("IsTrained: Invalid input - FName: '$FName', LName: '$LName', Position: '$Position'");
+      return false; // Return false for invalid inputs
+    }
 
-    return $row['Trained'];
+    // Sanitize inputs (trim whitespace)
+    $FName = trim($FName);
+    $LName = trim($LName);
+    $Position = trim($Position);
+
+    try {
+      // Get database connection
+      $dbConn = self::getDbConn();
+      if (!$dbConn) {
+        error_log("IsTrained: Database connection failed");
+        return false; // Return false if connection fails
+      }
+
+      // Prepare SQL query with placeholders
+      $qryTrained = "SELECT Trained FROM trainedleaders WHERE First_Name = ? AND Last_Name = ? AND Position = ?";
+      $stmt = mysqli_prepare($dbConn, $qryTrained);
+      if (!$stmt) {
+        error_log("IsTrained: Failed to prepare statement: " . mysqli_error($dbConn));
+        return false;
+      }
+
+      // Bind parameters
+      mysqli_stmt_bind_param($stmt, "sss", $FName, $LName, $Position);
+
+      // Execute query
+      if (!mysqli_stmt_execute($stmt)) {
+        error_log("IsTrained: Query execution failed: " . mysqli_stmt_error($stmt));
+        mysqli_stmt_close($stmt);
+        return false;
+      }
+
+      // Get result
+      $result = mysqli_stmt_get_result($stmt);
+      if (!$result) {
+        error_log("IsTrained: Failed to get result: " . mysqli_stmt_error($stmt));
+        mysqli_stmt_close($stmt);
+        return false;
+      }
+
+      // Fetch row
+      $row = mysqli_fetch_assoc($result);
+      mysqli_stmt_close($stmt);
+
+      // Check if row exists
+      if (!$row) {
+        error_log("IsTrained: No matching record found for FName: '$FName', LName: '$LName', Position: '$Position'");
+        return false; // No record found
+      }
+
+      // Return Trained status (assuming 'Trained' is a string like 'Yes'/'No')
+      $trained = $row['Trained'];
+      return ($trained === 'Yes' || $trained === '1' || $trained === true); // Normalize to boolean
+    } catch (Exception $e) {
+      error_log("IsTrained: Exception occurred: " . $e->getMessage());
+      return false; // Return false on any exception
+    }
   }
   /******************************************************************************
    * 

@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $fileSize = $_FILES['the_file']['size'];
     $fileTmpName = $_FILES['the_file']['tmp_name'];
     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $uploadPath = UPLOAD_DIR . basename($fileName);
+    $uploadPath = UPLOAD_DIRECTORY . basename($fileName);
 
     // Validate file
     if (!in_array($fileExtension, ALLOWED_EXTENSIONS)) {

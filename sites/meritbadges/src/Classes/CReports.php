@@ -152,7 +152,7 @@ class CReports extends CMeritBadges
                 <tr>
                   <td style="vertical-align: middle;">
                     <a href="<?php echo !empty($row['URL']) ? htmlspecialchars($row['URL']) : '#'; ?>" title="Visit website">
-                      <!-- <img src="<?php echo !empty($row['Logo']) ? htmlspecialchars($row['Logo']) : 'images/default-logo.png'; ?>" alt="Merit Badge logo" style="display: block; object-fit: contain;"> -->
+                      <!-- <img src="<?php //echo !empty($row['Logo']) ? htmlspecialchars($row['Logo']) : 'images/default-logo.png'; ?>" alt="Merit Badge logo" style="display: block; object-fit: contain;"> -->
                     </a>
                   </td>
                   <td style="vertical-align: middle;">
@@ -371,11 +371,11 @@ class CReports extends CMeritBadges
         $CounselorCount = self::MeritQueryRows($sql);
         echo "</table>";
         if (!empty($row['Unit1']) && strpos($row['Unit1'], "-NA"))
-          echo "<h2 style='background-color: var(--scouting-paleblue);'> Crew ", $row['Unit1'], "</h2>";
+          echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'> Crew ", $row['Unit1'], "</h2>";
         else if (!empty($row['Unit1']))
-          echo "<h2 style='background-color: var(--scouting-paleblue);'> Troop ", $row['Unit1'], "</h2>";
+          echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'> Troop ", $row['Unit1'], "</h2>";
         else
-          echo "<h2 style='background-color: var(--scouting-paleblue);'> Unknow Unit </h2>";
+          echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'> Unknow Unit </h2>";
         $Troop = $row['Unit1'];
 
         echo "<br>";
@@ -483,8 +483,8 @@ class CReports extends CMeritBadges
         echo $SpecialTraining;
         echo "</dev>";
         echo "<br>";
-        echo "<h2 style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
-        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" . "<img src='" . $row['Logo'] . "'" . " width='50' height='50'></a>";
+        echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
+        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" .  "'" . " width='50' height='50'></a>";
         $MeritBadge = $row['MeritName'];
         echo "<br>";
         echo "<table class='table table-striped'>";
@@ -598,10 +598,10 @@ class CReports extends CMeritBadges
         echo "</table class='table'>";
         echo "<div class='a' style='width:1200px'>";
         echo $SpecialTraining;
-        echo "</dev>";
+        echo "</div>";
         echo "<br>";
-        echo "<h2 style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
-        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" . "<img src='"  . "'" . " width='50' height='50'></a>";
+        echo "<div class='text-center'><h2 style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
+        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'></a></div>";
         $MeritBadge = $row['MeritName'];
         echo "<br>";
         echo "<table class='table table-striped'>";
@@ -682,7 +682,7 @@ class CReports extends CMeritBadges
         if (($Fname != $row['FirstName']) && ($Lname != $row['LastName'])) {
           echo "</table>";
           echo "<br>";
-          echo "<h2 style='background-color: var(--scouting-paleblue);'>", $row['FirstName'], " ", $row['LastName'], "</h2>";
+          echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'>", $row['FirstName'], " ", $row['LastName'], "</h2>";
           if ($row['NumOfBadges'] > 15)
             $strNumBadges = "<span style='color:red; font-weight:bold;'>Number of Badges: " . $row['NumOfBadges'] . "</span><br/>";
           else
