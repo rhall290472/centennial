@@ -30,12 +30,12 @@ define('ENV', 'development'); // Set to 'production' on live server
 if (defined('ENV') && ENV === 'development') {
     ini_set('display_errors', 1);
     ini_set('log_errors', 1);
-    ini_set('error_log', BASE_PATH . '/../../shared/logs');
+    //ini_set('error_log', BASE_PATH . '/../../shared/logs');
     error_reporting(E_ALL);
 } else {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    //ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
@@ -87,17 +87,17 @@ define('NAV_LINKS', [
     ],
 ]);
 
-//if ($is_localhost) {
-//    define('DB_HOST', 'localhost');
-//    define('DB_USER', 'mbcuser');
-//    define('DB_PASS', 'ZCSCA?yrW7}L');
-//    define('DB_NAME', 'meritbadges');
-//} else {
+if ($is_localhost) {
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'mbcuser');
+    define('DB_PASS', 'ZCSCA?yrW7}L');
+    define('DB_NAME', 'meritbadges');
+} else {
     define('DB_HOST', 'rhall29047217205.ipagemysql.com');
     define('DB_USER', 'mbcuser');
     define('DB_PASS', 'ZCSCA?yrW7}L');
     define('DB_NAME', 'meritbadges');
-//}
+}
 
 // Security headers
 //header('X-Content-Type-Options: nosniff');

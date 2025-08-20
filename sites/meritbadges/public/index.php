@@ -13,6 +13,18 @@ if (session_status() === PHP_SESSION_NONE) {
   ]);
 }
 
+$files = [
+  __DIR__ . '/../config/config.php',
+  SHARED_PATH . 'src/Classes/cAdultLeaders.php',
+  __DIR__ . '/../src/Classes/CAdmin.php',
+  __DIR__ . '/../src/Classes/CMeritBadges.php'
+];
+foreach ($files as $file) {
+  if (!file_exists($file)) {
+    error_log("Missing file: $file");
+  }
+}
+
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -135,7 +147,11 @@ echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login p
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage(), 0);
+<<<<<<< HEAD
 echo "index.php - Login error: " . $e->getMessage();
+=======
+      echo "index.php - Login error: " . $e->getMessage();
+>>>>>>> 122cae9ad38e38d818de6e8e5a1a8495859d73d9
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
 echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
       header("Location: index.php?page=login");
@@ -146,7 +162,9 @@ echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login p
   // Handle report form submissions
   /*
   if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
-    $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
+    $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_DEFAULT) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_DEFAULT);
+    $reportBy = is_string($reportBy) ? htmlspecialchars(strip_tags(trim($reportBy)), ENT_QUOTES, 'UTF-8') : '';
+    //$reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
     header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;
@@ -292,6 +310,9 @@ if (!isset($_SESSION['csrf_token'])) {
       });
     });
   </script>
+
+
+
 </body>
 
 </html>
