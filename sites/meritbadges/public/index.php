@@ -27,7 +27,7 @@ if (!defined('SITE_URL')) {
 }
 
 // Load required classes for file uploads
-load_class(__DIR__ . '/../src/Classes/CEagle.php');
+load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
 
 // FileUploader class for secure file uploads
 class FileUploader
@@ -153,8 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CEagle.php');
-    $CEagle = CEagle::getInstance();
+    load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
+    $CMeritBadges = CMeritBadges::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     if (empty($username)) {
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     try {
       $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
-      if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
+      if ($stmt = mysqli_prepare($CMeritBadges->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
@@ -195,11 +195,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php?page=login");
           }
         } else {
-          throw new Exception("Database query failed: " . mysqli_error($CEagle->getDbConn()));
+          throw new Exception("Database query failed: " . mysqli_error($CMeritBadges->getDbConn()));
         }
         mysqli_stmt_close($stmt);
       } else {
-        throw new Exception("Failed to prepare statement: " . mysqli_error($CEagle->getDbConn()));
+        throw new Exception("Failed to prepare statement: " . mysqli_error($CMeritBadges->getDbConn()));
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
