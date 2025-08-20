@@ -4,8 +4,8 @@
     <span class="fs-4">Menu</span>
   </a>
   <hr>
-  <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-    <ul class="nav nav-pills flex-column mb-auto">
+  <ul class="nav nav-pills flex-column mb-auto">
+    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
@@ -52,14 +52,12 @@
       <li class="nav-item">
         <a class="nav-link" href="?page=logout">Logout</a>
       </li>
-    </ul>
-  <?php else: ?>
-    <ul>
+    <?php else: ?>
       <li class="nav-item">
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
       </li>
-    </ul>
-  <?php endif; ?>
+    <?php endif; ?>
+  </ul>
 
 
   <button class="btn btn-outline-secondary mt-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
