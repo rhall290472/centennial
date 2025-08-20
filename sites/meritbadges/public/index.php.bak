@@ -13,34 +13,88 @@ if (session_status() === PHP_SESSION_NONE) {
   ]);
 }
 
-$files = [
-  __DIR__ . '/../config/config.php',
-  SHARED_PATH . 'src/Classes/cAdultLeaders.php',
-  __DIR__ . '/../src/Classes/CAdmin.php',
-  __DIR__ . '/../src/Classes/CMeritBadges.php'
-];
-foreach ($files as $file) {
-  if (!file_exists($file)) {
-    error_log("Missing file: $file");
-  }
-}
-
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
 } else {
   error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
-  echo "Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__;
   die('An error occurred. Please try again later.');
 }
 
-load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
-load_class(__DIR__ . '/../src/Classes/CAdmin.php');
-load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
-
 // Define SITE_URL fallback if not set
 if (!defined('SITE_URL')) {
-  define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/meritbadges');
+  define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/advancement');
+}
+
+// Load required classes for file uploads
+load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
+
+// FileUploader class for secure file uploads
+class FileUploader
+{
+  private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
+  private $maxFileSize = MAX_FILE_SIZE;
+  private $uploadDir;
+
+  public function __construct($uploadDir)
+  {
+    $this->uploadDir = rtrim($uploadDir, '/') . '/';
+    if (!is_dir($this->uploadDir)) {
+      mkdir($this->uploadDir, 0755, true);
+    }
+  }
+
+  public function uploadFile($file, &$errors)
+  {
+    $uploadErrors = [
+      UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the maximum size allowed by the server.",
+      UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the maximum size allowed by the form.",
+      UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
+      UPLOAD_ERR_NO_FILE => "No file was uploaded.",
+      UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
+      UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
+      UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
+    ];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+      $errors[] = $uploadErrors[$file['error']] ?? "Unknown file upload error.";
+      return false;
+    }
+
+    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($fileExtension, $this->allowedExtensions)) {
+      $errors[] = "Invalid file extension. Only CSV files are allowed.";
+      return false;
+    }
+
+    if ($file['size'] > $this->maxFileSize) {
+      $errors[] = "File exceeds maximum size (4MB).";
+      return false;
+    }
+
+    if ($file['type'] !== 'text/csv' && $file['type'] !== 'application/vnd.ms-excel') {
+      $errors[] = "Invalid file type. Only CSV files are allowed.";
+      return false;
+    }
+
+    $fileHandle = fopen($file['tmp_name'], 'r');
+    $firstLine = fgetcsv($fileHandle);
+    fclose($fileHandle);
+    if ($firstLine === false || empty($firstLine)) {
+      $errors[] = "File is not a valid CSV.";
+      return false;
+    }
+
+    $uniqueFileName = uniqid('upload_', true) . '.csv';
+    $uploadPath = $this->uploadDir . $uniqueFileName;
+
+    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+      return $uniqueFileName;
+    }
+
+    $errors[] = "Failed to move uploaded file.";
+    return false;
+  }
 }
 
 // Simple routing based on 'page' GET parameter
@@ -71,27 +125,37 @@ $valid_pages = [
   'counselornounit',
 
   'login',
-  'logout'
+  'logout',
+  ''
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
 }
 
 // Handle POST form submissions
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
-
-  /*
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
     header("Location: index.php?page=$page");
     exit;
   }
-*/
+
+  // Year selection
+  if (isset($_POST['SubmitYear']) && in_array($page, $valid_pages)) {
+    $SelYear = filter_input(INPUT_POST, 'Year', FILTER_SANITIZE_NUMBER_INT);
+    if ($SelYear && is_numeric($SelYear) && $SelYear >= 2000 && $SelYear <= date("Y")) {
+      $_SESSION['year'] = $SelYear;
+      $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh token
+      $_SESSION['feedback'] = ['type' => 'success', 'message' => "Year set to $SelYear."];
+    } else {
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid year selected. Please choose a year between 2000 and ' . date("Y") . '.'];
+    }
+    header("Location: index.php?page=$page");
+    exit;
+  }
+
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
     load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
     $CMeritBadges = CMeritBadges::getInstance();
     $username = trim($_POST['username']);
@@ -106,18 +170,16 @@ echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login p
       header("Location: index.php?page=login");
       exit;
     }
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
     try {
-      $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CMeritBadges->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
           if (mysqli_stmt_num_rows($stmt) == 1) {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
             if (mysqli_stmt_fetch($stmt)) {
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
+              //$newPassword = password_hash($password, PASSWORD_DEFAULT);
               if (password_verify($password, $hashed_password) && $enabled) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;
@@ -125,17 +187,14 @@ echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login p
                 $_SESSION["enabled"] = $enabled;
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
                 header("Location: index.php?page=home");
               } else {
                 $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password or your account is not enabled.'];
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
                 header("Location: index.php?page=login");
               }
             }
           } else {
             $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password.'];
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
             header("Location: index.php?page=login");
           }
         } else {
@@ -146,14 +205,8 @@ echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login p
         throw new Exception("Failed to prepare statement: " . mysqli_error($CMeritBadges->getDbConn()));
       }
     } catch (Exception $e) {
-      error_log("index.php - Login error: " . $e->getMessage(), 0);
-<<<<<<< HEAD
-echo "index.php - Login error: " . $e->getMessage();
-=======
-      echo "index.php - Login error: " . $e->getMessage();
->>>>>>> 122cae9ad38e38d818de6e8e5a1a8495859d73d9
+      error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
-echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
       header("Location: index.php?page=login");
     }
     exit;

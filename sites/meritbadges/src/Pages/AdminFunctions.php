@@ -1,5 +1,13 @@
 <?php
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+  require_once __DIR__ . '/../../config/config.php';
+} else {
+  error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
+  die('An error occurred. Please try again later.');
+}
 
+load_class(BASE_PATH . '/src/Classes/CAdmin.php');
 
 ?>
 <!DOCTYPE html>
@@ -8,11 +16,9 @@
 <body>
 
 
-	<?php
-	//CHeader::DisplayPageHeader("Merit Badge Counselors for Centennial District", "", "");
-	?><div class="my_div">
-		<center>
-			<?php
+    <div class="my_div">
+        <center>
+            <?php
 			//$CAdvancement = CAdvancement::getInstance();
 			$CAdmin = CAdmin::getInstance();
 
@@ -159,8 +165,8 @@
 					break;
 			}
 			?>
-	</div>
-	</center>
+    </div>
+    </center>
 </body>
 
 </html>
