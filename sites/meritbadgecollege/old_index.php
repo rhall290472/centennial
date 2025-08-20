@@ -66,7 +66,7 @@ unset($_SESSION['year']);
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/MBCollege.css">
 	<link rel="stylesheet" href="https://www.centennialdistrict.co/bootstrap-5.3.2/css/bootstrap.css">
-	<link rel="icon" type="image/x-icon" href="./images/centennial.ico">
+	    <link rel="icon" type="image/x-icon" href="https://shared.centennialdistrict.co/assets/centennial.ico" />
 </head>
 
 <body style="padding:10px">

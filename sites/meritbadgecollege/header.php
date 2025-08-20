@@ -17,7 +17,7 @@
     <meta name="robots" content="noindex" />
     <title>Centennial District Merit Badge College</title>
     <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="https://centennialdistrict.co/assets/centennial.ico" />
+	    <link rel="icon" type="image/x-icon" href="https://shared.centennialdistrict.co/assets/centennial.ico" />
     <!-- Bootstrap icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->

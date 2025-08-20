@@ -15,7 +15,7 @@ $CDistrictAwards = CDistrictAwards::getInstance();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/districtawards.css">
     <link rel="stylesheet" href="../bootstrap-5.3.2/css/bootstrap.css">
-    <link rel="icon" type="image/x-icon" href="./img/centennial.ico">
+	    <link rel="icon" type="image/x-icon" href="https://shared.centennialdistrict.co/assets/centennial.ico" />
 </head>
 
 <?php

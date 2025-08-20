@@ -18,6 +18,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
 } else {
   error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
+  echo "Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__;
   die('An error occurred. Please try again later.');
 }
 
@@ -65,15 +66,20 @@ if (!in_array($page, $valid_pages)) {
 }
 
 // Handle POST form submissions
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
+
+  /*
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
     header("Location: index.php?page=$page");
     exit;
   }
-
+*/
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
     load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
     $CMeritBadges = CMeritBadges::getInstance();
     $username = trim($_POST['username']);
@@ -88,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       header("Location: index.php?page=login");
       exit;
     }
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
     try {
       $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CMeritBadges->getDbConn(), $sql)) {
@@ -96,7 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           mysqli_stmt_store_result($stmt);
           if (mysqli_stmt_num_rows($stmt) == 1) {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
             if (mysqli_stmt_fetch($stmt)) {
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
               if (password_verify($password, $hashed_password) && $enabled) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;
@@ -104,14 +113,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION["enabled"] = $enabled;
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
                 header("Location: index.php?page=home");
               } else {
                 $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password or your account is not enabled.'];
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
                 header("Location: index.php?page=login");
               }
             }
           } else {
             $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password.'];
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
             header("Location: index.php?page=login");
           }
         } else {
@@ -123,19 +135,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage(), 0);
+echo "index.php - Login error: " . $e->getMessage();
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
+echo "Reached login check @ " . __FILE__ . ' ' . __LINE__; // Add before login processing
       header("Location: index.php?page=login");
     }
     exit;
   }
 
   // Handle report form submissions
+  /*
   if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
     $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
     header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;
   }
+  */
 }
 
 // Handle logout

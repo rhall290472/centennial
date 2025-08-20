@@ -16,7 +16,7 @@
 	    <meta name="author" content="Richard Hall" />
 	    <title>Centennial District Eagle</title>
 	    <!-- Favicon-->
-	    <link rel="icon" type="image/x-icon" href="assets/centennial.ico" />
+	    <link rel="icon" type="image/x-icon" href="https://shared.centennialdistrict.co/assets/centennial.ico" />
 	    <!-- Bootstrap icons-->
 	    <!-- Vendor CSS Files -->
 	    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
