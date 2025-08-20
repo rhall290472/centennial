@@ -1,8 +1,17 @@
 <?php
 
+// Load configuration
+if (file_exists(BASE_PATH . '/config/config.php')) {
+  require_once BASE_PATH . '/config/config.php';
+} else {
+  error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
+  die('An error occurred. Please try again later.');
+}
+
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
+load_class(SHARED_PATH .'src/Classes/CUnit.php');
 //include('../cAdultLeaders.php');
-require_once '../CUnit.php';
+//require_once '../CUnit.php';
 
 $cAdultLeaders = AdultLeaders::getInstance();
 

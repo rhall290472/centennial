@@ -10,8 +10,7 @@
         <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Scout Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=untrained">1</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">2</a></li>
+        <li><a class="dropdown-item" href="?page=jl-year&SubmitAward=29">Junior Leader of the Year</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -19,9 +18,14 @@
         <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Adult Pack Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=pack-summary">1</a></li>
-        <li><a class="dropdown-item" href="?page=pack-below-goal">2</a></li>
-        <li><a class="dropdown-item" href="?page=pack-meeting-goal">3</a></li>
+        <li><a class="dropdown-item" href="?page=cm-year&SubmitAward=4">Cubmaster of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=rcm-year&SubmitAward=5">Rookie Cubmaster of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=dl-year&SubmitAward=12">Den Leader of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=rdl-year&SubmitAward=13">Rookie Den Leader of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=pcm-year&SubmitAward=20">Pack Committee Member of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=rpcm-year&SubmitAward=22">Rookie Pack Committee Member of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=outleader&SubmitAward=14">Outstanding Leaders</a></li>
+        <li><a class="dropdown-item" href="?page=keyscout&SubmitAward=15">Key Scouters</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -29,9 +33,12 @@
         <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Adult Troop Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=troop-summary">1</a></li>
-        <li><a class="dropdown-item" href="?page=troop-below-goal">2</a></li>
-        <li><a class="dropdown-item" href="?page=troop-meeting-goal">3</a></li>
+        <li><a class="dropdown-item" href="?page=sm-year&SubmitAward=2">Scoutmaster of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=rsm-year&SubmitAward=3">Rookie Scoutmaster of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=tcm-year&SubmitAward=8">Troop Committee Member of teh Year</a></li>
+        <li><a class="dropdown-item" href="?page=rtcm-year&SubmitAward=9">Rookie Troop Committee Member of teh Year</a></li>
+        <li><a class="dropdown-item" href="?page=outleader&SubmitAward=14">Outstanding Leaders</a></li>
+        <li><a class="dropdown-item" href="?page=keyscout&SubmitAward=15">Key Scouters</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -39,12 +46,31 @@
         <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult Crews</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">1</a></li>
+        <li><a class="dropdown-item" href="?page=ca-year&SubmitAward=">Crew Advisor</a></li>
+        <li><a class="dropdown-item" href="?page=rca-year&SubmitAward=">Rookie Crew Advisor</a></li>
+        <li><a class="dropdown-item" href="?page=skip-year&SubmitAward=">Skipper</a></li>
+        <li><a class="dropdown-item" href="?page=rskip-year&SubmitAward=">Rookie Skipper</a></li>
+        <li><a class="dropdown-item" href="?page=cscm-year&SubmitAward=">Crew/Ship Committee Member</a></li>
+        <li><a class="dropdown-item" href="?page=rcssm-year&SubmitAward=">Rookie Crew/Ship Committee Member</a></li>
+        <li><a class="dropdown-item" href="?page=outleader&SubmitAward=14">Outstanding Leaders</a></li>
+        <li><a class="dropdown-item" href="?page=keyscout&SubmitAward=15">Key Scouters</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult District Awards</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="?page=crew-summary">Bald Eagle Award</a></li>
+        <li><a class="dropdown-item" href="?page=crew-summary">District Award of Merit</a></li>
+        <li><a class="dropdown-item" href="?page=crew-summary">District Commissioner of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=crew-summary">Rookie District Commissioner of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=crew-summary">District Committee Member of the Year</a></li>
+      </ul>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Other Awards</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=crew-summary">1</a></li>

@@ -192,92 +192,98 @@ class cAwards extends CDistrictAwards
     {
         switch ($AwardIDX) {
             case 1:         // District Award of Merit
-                $FileName = "./Awards/DistrictAwardofMerit.html";
+                $FileName = BASE_PATH . '/src/Awards/DistrictAwardofMerit.html';
                 break;
             case 14:        // Outstanding Leader
-                $FileName = "./Awards/OutstandingLeader.html";
+                $FileName = BASE_PATH . '/src/Awards/OutstandingLeader.html';
                 break;
             case 15:        // Key Scouter
-                $FileName = "./Awards/KeyScouter.html";
+                $FileName = BASE_PATH . '/src/Awards/KeyScouter.html';
                 break;
             case 2:        // Scoutmaster of the Year
-                $FileName = "./Awards/Scoutmaster.html";
+                $FileName = BASE_PATH . '/src/Awards/Scoutmaster.html';
                 break;
             case 3:        // Rookie Scoutmaster of the Year
-                $FileName = "./Awards/RookieScoutmaster.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieScoutmaster.html';
                 break;
             case 4:        // Cubtmaster of the Year
-                $FileName = "./Awards/Cubmaster.html";
+                $FileName = BASE_PATH . '/src/Awards/Cubmaster.html';
                 break;
             case 5:        // Rookie Cubmaster of the Year
-                $FileName = "./Awards/RookieCubmaster.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieCubmaster.html';
                 break;
             case 6:        // Crew Advisor of the Year
-                $FileName = "./Awards/CrewAdvisor.html";
+                $FileName = BASE_PATH . '/src/Awards/CrewAdvisor.html';
                 break;
             case 7:        // Rookie Crew Advisor of the Year
-                $FileName = "./Awards/RookieCewAdvisor.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieCewAdvisor.html';
                 break;
             case 48:
-                $FileName = "./Awards/Skipper.html";
+                $FileName = BASE_PATH . '/src/Awards/Skipper.html';
                 break;
             case 49:
-                $FileName = "./Awards/RookieSkipper.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieSkipper.html';
                 break;
             case 20:
-                $FileName = "./Awards/PackCM.html";
+                $FileName = BASE_PATH .'/src/Awards/PackCM.html';
                 break;
             case 22: // Pack Rookie Committee Member
-                $FileName = "./Awards/RookiePackCM.html";
+                $FileName = BASE_PATH .'/src/Awards/RookiePackCM.html';
                 break;
             case 21:
-                $FileName = "./Awards/TroopCM.html";
+                $FileName = BASE_PATH . '/src/Awards/TroopCM.html';
                 break;
             case 23:
-                $FileName = "./Awards/RookieTroopCM.html";
+                $FileName = BASE_PATH .' / src/Awards/RookieTroopCM.html';
                 break;
             case 36:
-                $FileName = "./Awards/CrewSkipperCM.html.html";
+                $FileName = BASE_PATH .'/src/Awards/CrewSkipperCM.html.html';
                 break;
             case 49:
-                $FileName = "./Awards/CrewSkipperCM.html";
+                $FileName = BASE_PATH . '/src/Awards/CrewSkipperCM.html';
                 break;
             case 50:
-                $FileName = "./Awards/RookieCrewSkipperCM.html";
+                $FileName = BASE_PATH .' / src/Awards/RookieCrewSkipperCM.html';
                 break;
             case 18:
-                $FileName = "./Awards/Commissioner.html";
+                $FileName = BASE_PATH .'/src/Awards/Commissioner.html';
                 break;
             case 19:
-                $FileName = "./Awards/RookieCommissioner.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieCommissioner.html';
                 break;
             case 25:
-                $FileName = "./Awards/DistrictCM.html";
+                $FileName = BASE_PATH .' / src/Awards/DistrictCM.html';
                 break;
             case 16:
-                $FileName = "./Awards/BaldEagle.html";
+                $FileName = BASE_PATH .'/src/Awards/BaldEagle.html';
                 break;
             case 29:
-                $FileName = "./Awards/JuniorLeader.html";
+                $FileName = BASE_PATH .'/src/Awards/JuniorLeader.html';
                 break;
             case 31:
-                $FileName = "./Awards/PackCC.html";
+                $FileName = BASE_PATH . '/src/Awards/PackCC.html';
                 break;
             case 34:
-                $FileName = "./Awards/RookiePackCC.html";
+                $FileName = BASE_PATH .' / src/Awards/RookiePackCC.html';
                 break;
             case 17:
-                $FileName = "./Awards/FriendsofScouting.html";
+                $FileName = BASE_PATH .'/src/Awards/FriendsofScouting.html';
                 break;
             case 30:
-                $FileName = "./Awards/RookieCrewSkipperCM.html";
+                $FileName = BASE_PATH . '/src/Awards/RookieCrewSkipperCM.html';
                 break;
             default:
-                $error_msg = " AwardNomination(" . $AwardIDX . ")Default case reached with an award IDX of " . $_POST['AwardIDX'] . " in " . __FILE__ . "," . __LINE__;
+                $error_msg = " AwardNomination(" . $AwardIDX . ")Default case reached with an award IDX of " . $AwardIDX . " in " . __FILE__ . "," . __LINE__;
                 error_log($error_msg, 0);
                 $htmlMessage = $error_msg;
-                self::GotoURL('./OnLineNomination.php');
-                exit();
+                return $htmlMessage;
+        }
+
+        if (!file_exists($FileName)) {
+            $strError = "ERROR: File not found: " . $FileName;
+            error_log($strError, 0);
+            self::function_alert($strError);
+            exit();
         }
 
         $htmlMessage = file_get_contents($FileName);

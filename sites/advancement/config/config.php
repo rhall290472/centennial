@@ -47,8 +47,9 @@ $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['
 define('SITE_URL', $protocol . '://' . $host . $port);
 
 // Assets URL
-define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
-define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
+define('SHARED_URL', 'https://share.centennialdistrict.co');
+define('SHARED_ASSETS_URL', SHARED_URL . '/assets');
+define('SHARED_CLASS_URL', SHARED_URL . '/src/Classes');
 define('SHARED_PATH', __DIR__ . '/../../../shared/'); 
 
 // Site metadata

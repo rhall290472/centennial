@@ -26,17 +26,24 @@ $page = filter_input(INPUT_GET, 'page') ?? 'home';
 $page = strtolower(trim($page));
 $valid_pages = [
   'home',
-  'ypt',
-  'untrained',
-  'pack-summary',
-  'pack-below-goal',
-  'pack-meeting-goal',
-  'troop-summary',
-  'troop-below-goal',
-  'troop-meeting-goal',
-  'crew-summary',
-  'adv-report',
-  'membership-report',
+  'jl-year',
+
+  'cm-year',
+  'rcm-year',
+  'dl-year',
+  'rdl-year',
+  'pcm-year',
+  'rpcm-year',
+  'outleader',
+  'keyscout',
+
+  'sm-year',
+  'rsm-year',
+  'tcm-year',
+  'rtcm-year',
+  'outleader',
+  'keyscout',
+
   'login',
   'logout',
   'updatedata'
@@ -161,13 +168,29 @@ if (!isset($_SESSION['csrf_token'])) {
   <style>
     .full-container-img {
       width: 50%;
-      height: auto;
+      max-width: 800px;
+      /* Prevent the image from becoming too large */
+      height: 50%;
+      max-height: 600px;
+      display: block;
+      /* Ensure the image is a block element for centering */
     }
 
     .center {
       display: block;
       margin-left: auto;
       margin-right: auto;
+      width: fit-content;
+      /* Ensure the container respects the image's width */
+    }
+
+    @media (max-width: 576px) {
+      .full-container-img {
+        width: 80%;
+        /* Make the image larger relative to the container on small screens */
+        max-width: 300px;
+        /* Cap the size for very small screens */
+      }
     }
   </style>
 </head>
@@ -208,61 +231,54 @@ if (!isset($_SESSION['csrf_token'])) {
           $imagePath = "../src/pages/img/DistrictAwards.png";
           //debug_to_console($imagePath, 'Image Path');
           ?>
-          <div class="container px-sm-5">
+
+          <div class="container px-lg-5 py-5">
             <div class="p-4 p-sm-5 bg-light rounded-3 text-center">
               <div class="m-4 m-sm-5">
                 <h1 class="display-5 fw-bold">Centennial District Awards</h1>
                 <p class="fs-4">Submit a nomination for District Awards</p>
-                <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
-                  alt="Centennial District Awards Logo"
-                  class="center">
+
               </div>
               <div class="py-1">
                 <a class="btn btn-primary btn-lg" href="./OnLineNomination.php">Submit an Online Nomination</a>
                 <a class="btn btn-primary btn-lg" href="./DocsPage.php">Download Nomination Form</a>
               </div>
+
+              <!-- <div>
+                <img class="full-container-img"
+                  src="<?php //echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
+                  alt="Centennial District Awards Logo">
+              </div> -->
             </div>
           </div>
+
       <?php
+        break;
+        case 'jl-year':
+
+        case 'cm-year':
+        case 'rcm-year':
+        case 'dl-year':
+        case 'rdl-year':
+        case 'pcm-year':
+        case 'rpcm-year':
+        case 'outleader':
+        case 'keyscout':
+
+        case 'sm-year':
+        case 'rsm-year':
+        case 'tcm-year':
+        case 'rtcm-year':
+        case 'outleader':
+        case 'keyscout':
+
+          include('../src/Pages/NominationPage.php');
           break;
-        case 'untrained':
-          include('../src/Pages/Untrained.php');
-          break;
-        case 'ypt':
-          include('../src/Pages/YPT.php');
-          break;
-        case 'pack-summary':
-          include('../src/Pages/pack_summary.php');
-          break;
-        case 'pack-below-goal':
-          include('../src/Pages/pack_below_goal.php');
-          break;
-        case 'pack-meeting-goal':
-          include('../src/Pages/pack_meeting_goal.php');
-          break;
-        case 'troop-summary':
-          include('../src/Pages/troop_summary.php');
-          break;
-        case 'troop-below-goal':
-          include('../src/Pages/troop_below_goal.php');
-          break;
-        case 'troop-meeting-goal':
-          include('../src/Pages/troop_meeting_goal.php');
-          break;
-        case 'crew-summary':
-          include('../src/Pages/crew_summary.php');
-          break;
-        case 'adv-report':
-          include('../src/Pages/adv_report.php');
-          break;
-        case 'membership-report':
-          include('../src/Pages/membership_report.php');
-          break;
+
+
+
         case 'login':
           include('login.php');
-          break;
-        case 'updatedata':
-          include('../src/Pages/UpdateData.php');
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
