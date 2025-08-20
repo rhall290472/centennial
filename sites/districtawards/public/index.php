@@ -44,6 +44,20 @@ $valid_pages = [
   'outleader',
   'keyscout',
 
+  'ca-year',
+  'rca-year',
+  'skip-year',
+  'rskip-year',
+  'cscm-year',
+  'rcssm-year',
+  'keyscout',
+
+  'beaward',
+  'dam',
+  'dco-year',
+  'rdcm-year',
+  'dcm-year',
+
   'login',
   'logout',
   'updatedata'
@@ -269,8 +283,20 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'rsm-year':
         case 'tcm-year':
         case 'rtcm-year':
-        case 'outleader':
+
+        case 'ca-year':
+        case 'rca-year':
+        case 'skip-year':
+        case 'rskip-year':
+        case 'cscm-year':
+        case 'rcssm-year':
         case 'keyscout':
+
+        case 'beaward':
+        case 'dam':
+        case 'dco-year':
+        case 'rdcm-year':
+        case 'dcm-year':
 
           include('../src/Pages/NominationPage.php');
           break;

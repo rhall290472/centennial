@@ -46,12 +46,12 @@
         <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult Crews</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=ca-year&SubmitAward=">Crew Advisor</a></li>
-        <li><a class="dropdown-item" href="?page=rca-year&SubmitAward=">Rookie Crew Advisor</a></li>
-        <li><a class="dropdown-item" href="?page=skip-year&SubmitAward=">Skipper</a></li>
-        <li><a class="dropdown-item" href="?page=rskip-year&SubmitAward=">Rookie Skipper</a></li>
-        <li><a class="dropdown-item" href="?page=cscm-year&SubmitAward=">Crew/Ship Committee Member</a></li>
-        <li><a class="dropdown-item" href="?page=rcssm-year&SubmitAward=">Rookie Crew/Ship Committee Member</a></li>
+        <li><a class="dropdown-item" href="?page=ca-year&SubmitAward=6">Crew Advisor</a></li>
+        <li><a class="dropdown-item" href="?page=rca-year&SubmitAward=7">Rookie Crew Advisor</a></li>
+        <li><a class="dropdown-item" href="?page=skip-year&SubmitAward=48">Skipper</a></li>
+        <li><a class="dropdown-item" href="?page=rskip-year&SubmitAward=49">Rookie Skipper</a></li>
+        <li><a class="dropdown-item" href="?page=cscm-year&SubmitAward=50">Crew/Ship Committee Member</a></li>
+        <li><a class="dropdown-item" href="?page=rcssm-year&SubmitAward=30">Rookie Crew/Ship Committee Member</a></li>
         <li><a class="dropdown-item" href="?page=outleader&SubmitAward=14">Outstanding Leaders</a></li>
         <li><a class="dropdown-item" href="?page=keyscout&SubmitAward=15">Key Scouters</a></li>
       </ul>
@@ -61,11 +61,11 @@
         <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult District Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">Bald Eagle Award</a></li>
-        <li><a class="dropdown-item" href="?page=crew-summary">District Award of Merit</a></li>
-        <li><a class="dropdown-item" href="?page=crew-summary">District Commissioner of the Year</a></li>
-        <li><a class="dropdown-item" href="?page=crew-summary">Rookie District Commissioner of the Year</a></li>
-        <li><a class="dropdown-item" href="?page=crew-summary">District Committee Member of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=beaward&SubmitAward=16">Bald Eagle Award</a></li>
+        <li><a class="dropdown-item" href="?page=dam&SubmitAward=1">District Award of Merit</a></li>
+        <li><a class="dropdown-item" href="?page=dco-year&SubmitAward=18">District Commissioner of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=rdcm-year&SubmitAward=19">Rookie District Commissioner of the Year</a></li>
+        <li><a class="dropdown-item" href="?page=dcm-year&SubmitAward=25">District Committee Member of the Year</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -73,7 +73,7 @@
         <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Other Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">1</a></li>
+        <li><a class="dropdown-item" href="?page=fofs&SubmitAward=">Friends of Scouting</a></li>
       </ul>
     </li>
     <li class="nav-item dropdown">
