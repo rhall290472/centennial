@@ -225,7 +225,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   // Handle report form submissions
-  /*
   if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
     $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_DEFAULT) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_DEFAULT);
     $reportBy = is_string($reportBy) ? htmlspecialchars(strip_tags(trim($reportBy)), ENT_QUOTES, 'UTF-8') : '';
@@ -234,7 +233,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;
   }
-  */
 }
 
 // Handle logout
