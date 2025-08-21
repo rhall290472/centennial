@@ -254,7 +254,34 @@ if (!isset($_SESSION['csrf_token'])) {
                     <div class="m-4 m-sm-5">
                         <h1 class="display-5 fw-bold">Centennial District Awards</h1>
                         <p class="fs-4">Submit a nomination for District Awards</p>
-
+                    </div>
+                    <div>
+                      <h4>Rookies of the Year:</h4><p>(Cubmaster, Scoutmaster, Crew Advisor, Skipper and
+                          Troop, Crew, Skipper and Pack Committee Member)
+                          This is given to the new registered “Rookie” Leader who has done an outstanding job in
+                          their first year of service.</p>
+                      <h4>Leaders of the Year:</h4><p>(Cubmaster, Scoutmaster, Crew Advisor, Skipper and
+                        This recognition is given to the experienced registered Scouting leader who has given
+                        exceptional service throughout the past year towards the success of their unit.
+                        (Crew, Skipper, Pack and Troop Committee Member)</p>
+                      <h4>Commissioner and Rookie Commissioner of the Year Award:</h4><p>
+                        This award recognizes a Commissioner and Rookies who has made a tremendous impact
+                        with the units he/she has been working with.<p>
+                      <h4>District Committee Member of the Year:</h4><p>
+                        This award recognizes that District Committee member who warrants merit for service
+                        and dedication given over the past year.</p>
+                      <h4>Bald Eagle Award:</h4><p>
+                        This award is presented to an individual registered in the Boy Scouts of America –
+                        Centennial District who has had no youth involved for the past 5 years. They need to have
+                        served in a variety of positions, and have countless hours of service to Scouting.<p>
+                      <h4>Friends of Scouting Award:</h4><p>
+                        This award is presented to an individual/group/company not registered in the Boy Scouts
+                        of America – Centennial District who has had significantly supported Centennial District
+                        and its youth. They may have donated time, materials or other resources to enable our
+                        youth programs.</p>
+                      <h4>Junior Leader Award:</h4><p>
+                      This award is given to a registered Scout(s) under the age of 21 who has shown
+                      exceptional leadership ability above and beyond that of his/her peers.<p>                    
                     </div>
 
                     <!-- <div>
