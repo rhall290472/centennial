@@ -1,7 +1,4 @@
 <?php
-if (!session_id()) {
-    session_start();
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -26,48 +23,17 @@ if (!session_id()) {
 !==============================================================================!
 */
 
-require_once 'CDistrictAwards.php';
+load_class(BASE_PATH . '/src/Classes/CDistrictAwards.php');
 $cDistrictAwards = cDistrictAwards::getInstance();
-
-
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-    $cDistrictAwards->GotoURL("index.php");
-    exit;
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <?php include("header.php"); ?>
     <meta name="description" content="ReportUnitHistory.php">
 </head>
 
 <body>
-    <!-- Responsive navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container px-lg-5">
-            <a class="navbar-brand" href="#!">Centennial District Awards</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="./index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-                    <?php
-                    if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-                        echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
-                    } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
-                    }
-                    ?>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <?php
     $csv_hdr = "Unit Type,Unit#,  Gender, Name, Year, Beneficiary, Project Name, Project Hours";
@@ -151,7 +117,6 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
                 </form>
     </center>
 
-    <?php include("Footer.php"); ?>
 </body>
 
 </html>

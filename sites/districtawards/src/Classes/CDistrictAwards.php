@@ -229,9 +229,12 @@ class CDistrictAwards
       else $Selected = "";
       echo "<option value='$row[Year]' " . $Selected . ">" . $row['Year'] . "</option>";
     }
-    echo '</select>';
-    echo "<input  class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='SubmitYear'/>";
-    echo "</form>";
+    ?>
+    </select>
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+    <input  class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='SubmitYear'/>
+    </form>
+    <?php
   }
   /******************************************************************************
    * 
@@ -889,6 +892,7 @@ class CDistrictAwards
           </select>
       </div>
       <div class="col-2 py-4">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input class='btn btn-primary btn-sm' type='submit' name='SubmitNominee' placeholder='Year' value='Nominee' />
       </div>
       </form>
@@ -931,6 +935,7 @@ class CDistrictAwards
           </select>
       </div>
       <div class="col-2 py-4">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input class='btn btn-primary btn-sm' type='submit' name='SubmitAward' placeholder='Year' value='Award' />
       </div>
       </form>
@@ -974,6 +979,7 @@ class CDistrictAwards
           </select>
           </div>
           <div class="col-2 py-4">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input class='btn btn-primary btn-sm' type='submit' name='SubmitUnit' value='Unit' />
           </div>
 

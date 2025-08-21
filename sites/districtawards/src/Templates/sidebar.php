@@ -91,8 +91,15 @@
         <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=adv-report">1</a></li>
-        <li><a class="dropdown-item" href="?page=membership-report">2</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-nom-hist-all">Nominees History</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-awardees">Awardees</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-denials">Denials</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-Avail-awards">Available Awards</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-nom-hist">Nominee History</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-award-hist">Award History</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-unit-his">Unit Award History</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-nom-id">Nominees with no Member ID</a></li>
+        <li><a class="dropdown-item" href="?page=rpt-ballot">Create a Ballot</a></li>
       </ul>
     </li>
       <li class="nav-item dropdown">

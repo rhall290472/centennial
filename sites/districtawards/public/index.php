@@ -60,6 +60,16 @@ $valid_pages = [
 
   'fofs',
 
+  'rpt-nom-hist-all',
+  'rpt-awardees',
+  'rpt-denials',
+  'rpt-avail-awards',
+  'rpt-nom-hist',
+  'rpt-award-hist',
+  'rpt-unit-his',
+  'rpt-nom-id',
+  'rpt-ballot',
+
   'login',
   'logout',
   'updatedata'
@@ -132,27 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
   }
-
-  $Update = filter_input(INPUT_POST, 'submit');
-  $allowed_updates = [
-    'UpdateTotals',
-    'UpdatePack',
-    'UpdateTroop',
-    'UpdateCrew',
-    'TrainedLeader',
-    'Updateypt',
-    'UpdateVenturing',
-    'UpdateAdventure',
-    'UpdateCommissioners',
-    'UpdateFunctionalRole'
-  ];
-
-  if (!in_array($Update, $allowed_updates)) {
-    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid update type.'];
-    header("Location: index.php?page=updatedata&update=" . urlencode($Update));
-    exit;
-  }
-
   $errors = [];
 }
 
@@ -334,6 +323,35 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'login':
           include('login.php');
           break;
+
+        case 'rpt-nom-hist-all':
+          include('../src/Pages/ReportAwardYear.php');
+          break;
+        case 'rpt-awardees':
+          include('../src/Pages/ReportAwardedYear.php');
+          break;
+        case 'rpt-denials':
+          include('../src/Pages/ReportDeniedYear.php');
+          break;
+        case 'rpt-avail-awards':
+          include('../src/Pages/ReportAvailableAwards.php');
+          break;
+        case 'rpt-nom-hist':
+          include('../src/Pages/ReportNomineeHistory.php');
+          break;
+        case 'rpt-award-hist':
+          include('../src/Pages/ReportAwardHistory.php');
+          break;
+        case 'rpt-unit-his':
+          include('../src/Pages/ReportUnitHistory.php');
+          break;
+        case 'rpt-nom-id':
+          include('../src/Pages/ReportMemberID.php');
+          break;
+        case 'rpt-ballot':
+          include('../src/Pages/ReportBallot.php');
+          break;
+
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }
