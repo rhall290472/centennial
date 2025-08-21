@@ -18,8 +18,8 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CAdvancement.php');
-$CAdvancement = CAdvancement::getInstance();
+load_class(BASE_PATH . '/src/Classes/CDistrictAwards.php');
+$CAdvancement = CDistrictAwards::getInstance();
 
 // Check if the user is already logged in, redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {

@@ -7,7 +7,7 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Scout Awards</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Scout Awards</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=jl-year&SubmitAward=29">Junior Leader of the Year</a></li>
@@ -15,7 +15,7 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Adult Pack Awards</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Adult Pack Awards</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=cm-year&SubmitAward=4">Cubmaster of the Year</a></li>
@@ -30,7 +30,7 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Adult Troop Awards</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Adult Troop Awards</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=sm-year&SubmitAward=2">Scoutmaster of the Year</a></li>
@@ -43,7 +43,7 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult Crews</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Adult Crews</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=ca-year&SubmitAward=6">Crew Advisor</a></li>
@@ -58,7 +58,7 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Adult District Awards</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Adult District Awards</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=beaward&SubmitAward=16">Bald Eagle Award</a></li>
@@ -70,19 +70,10 @@
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Other Awards</span>
+        <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Other Awards</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=fofs&SubmitAward=">Friends of Scouting</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=adv-report">1</a></li>
-        <li><a class="dropdown-item" href="?page=membership-report">2</a></li>
+        <li><a class="dropdown-item" href="?page=fofs&SubmitAward=17">Friends of Scouting</a></li>
       </ul>
     </li>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
@@ -95,6 +86,15 @@
       </li>
     <?php endif; ?>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="?page=adv-report">1</a></li>
+        <li><a class="dropdown-item" href="?page=membership-report">2</a></li>
+      </ul>
+    </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>

@@ -58,6 +58,8 @@ $valid_pages = [
   'rdcm-year',
   'dcm-year',
 
+  'fofs',
+
   'login',
   'logout',
   'updatedata'
@@ -76,8 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
-    $CAdvancement = CAdvancement::getInstance();
+    load_class(BASE_PATH . '/src/Classes/CDistrictAwards.php');
+    $CAdvancement = CDistrictAwards::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     if (empty($username)) {
@@ -91,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
-      $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
@@ -178,95 +180,92 @@ if (!isset($_SESSION['csrf_token'])) {
 <html lang="en">
 
 <head>
-  <?php load_template("/src/Templates/header.php"); ?>
-  <style>
+    <?php load_template("/src/Templates/header.php"); ?>
+    <style>
     .full-container-img {
-      width: 50%;
-      max-width: 800px;
-      /* Prevent the image from becoming too large */
-      height: 50%;
-      max-height: 600px;
-      display: block;
-      /* Ensure the image is a block element for centering */
+        width: 50%;
+        max-width: 800px;
+        /* Prevent the image from becoming too large */
+        height: 50%;
+        max-height: 600px;
+        display: block;
+        /* Ensure the image is a block element for centering */
     }
 
     .center {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: fit-content;
-      /* Ensure the container respects the image's width */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: fit-content;
+        /* Ensure the container respects the image's width */
     }
 
     @media (max-width: 576px) {
-      .full-container-img {
-        width: 80%;
-        /* Make the image larger relative to the container on small screens */
-        max-width: 300px;
-        /* Cap the size for very small screens */
-      }
+        .full-container-img {
+            width: 80%;
+            /* Make the image larger relative to the container on small screens */
+            max-width: 300px;
+            /* Cap the size for very small screens */
+        }
     }
-  </style>
+    </style>
 </head>
 
 <body>
-  <!-- Navbar -->
-  <?php load_template("/src/Templates/navbar.php"); ?>
+    <!-- Navbar -->
+    <?php load_template("/src/Templates/navbar.php"); ?>
 
-  <!-- Sidebar -->
-  <?php load_template("/src/Templates/sidebar.php"); ?>
+    <!-- Sidebar -->
+    <?php load_template("/src/Templates/sidebar.php"); ?>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="container-fluid">
-      <div class="row flex-nowrap">
-        <div class="col py-3">
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <div class="row flex-nowrap">
+                <div class="col py-3">
 
-        </div>
-      </div>
-      <!-- </div> -->
+                </div>
+            </div>
+            <!-- </div> -->
 
 
-      <!-- <div class="container-fluid mt-5 pt-3"> -->
-      <!-- Display Feedback -->
-      <?php if (!empty($feedback)): ?>
-        <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">
-          <?php echo htmlspecialchars($feedback['message']); ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <?php endif; ?>
+            <!-- <div class="container-fluid mt-5 pt-3"> -->
+            <!-- Display Feedback -->
+            <?php if (!empty($feedback)): ?>
+            <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show"
+                role="alert">
+                <?php echo htmlspecialchars($feedback['message']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php endif; ?>
 
-      <?php
+            <?php
       switch ($page) {
         case 'home':
       ?>
-          <?php
+            <?php
           $imagePath = defined('BASE_PATH') ? BASE_PATH . '/src/pages/img/DistrictAwards.png' : '/centennial/sites/districtawards/src/pages/img/DistrictAwards.png';
           $imagePath = "../src/pages/img/DistrictAwards.png";
           //debug_to_console($imagePath, 'Image Path');
           ?>
 
-          <div class="container px-lg-5 py-5">
-            <div class="p-4 p-sm-5 bg-light rounded-3 text-center">
-              <div class="m-4 m-sm-5">
-                <h1 class="display-5 fw-bold">Centennial District Awards</h1>
-                <p class="fs-4">Submit a nomination for District Awards</p>
+            <div class="container px-lg-5 py-5">
+                <div class="p-4 p-sm-5 bg-light rounded-3 text-center">
+                    <div class="m-4 m-sm-5">
+                        <h1 class="display-5 fw-bold">Centennial District Awards</h1>
+                        <p class="fs-4">Submit a nomination for District Awards</p>
 
-              </div>
-              <div class="py-1">
-                <a class="btn btn-primary btn-lg" href="./OnLineNomination.php">Submit an Online Nomination</a>
-                <a class="btn btn-primary btn-lg" href="./DocsPage.php">Download Nomination Form</a>
-              </div>
+                    </div>
 
-              <!-- <div>
+                    <!-- <div>
                 <img class="full-container-img"
                   src="<?php //echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
                   alt="Centennial District Awards Logo">
               </div> -->
+                </div>
             </div>
-          </div>
 
-      <?php
+            <?php
         break;
         case 'jl-year':
 
@@ -298,6 +297,8 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'rdcm-year':
         case 'dcm-year':
 
+        case 'fofs':
+
           include('../src/Pages/NominationPage.php');
           break;
 
@@ -310,28 +311,28 @@ if (!isset($_SESSION['csrf_token'])) {
           echo '<h1>404</h1><p>Page not found.</p>';
       }
       ?>
-    </div>
-  </main>
+        </div>
+    </main>
 
-  <!-- Bootstrap 5 JS and Popper -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-  <!-- Custom JS -->
-  <script>
+    <!-- Bootstrap 5 JS and Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const sidebar = document.getElementById('sidebar');
-      if (window.innerWidth < 992) {
-        sidebar.classList.add('collapse');
-      }
-      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
         if (window.innerWidth < 992) {
-          sidebar.classList.add('collapse');
-        } else {
-          sidebar.classList.remove('collapse');
+            sidebar.classList.add('collapse');
         }
-      });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 992) {
+                sidebar.classList.add('collapse');
+            } else {
+                sidebar.classList.remove('collapse');
+            }
+        });
     });
-  </script>
+    </script>
 </body>
 
 </html>
