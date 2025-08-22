@@ -1,7 +1,4 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -25,15 +22,9 @@ if (!session_id()) {
 !/                                                                            \!
 !==============================================================================!
 */
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $cDistrictAwards->GotoURL("index.php");
-  exit;
-}
 
-require_once 'CDistrictAwards.php';
-require_once 'CAwards.php';
+load_class(BASE_PATH . '/src/Classes/CDistrictAwards.php');
+load_class(BASE_PATH . '/src/Classes/CAwards.php');
 $cDistrictAwards = cDistrictAwards::getInstance();
 $cAwards = CAwards::getInstance();
 $MemberID = "";
@@ -128,51 +119,27 @@ if (isset($_POST['SubmitForm'])) {
 <html lang="en">
 
 <head>
-  <?php include("header.php"); ?>
   <meta name="description" content="NomineePage.php">
-<script>
-  function growTextarea (i,elem) {
-	var elem = $(elem);
-	var resizeTextarea = function( elem ) {
-    	var scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft;
-    	var scrollTop  = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;  
-    	elem.css('height', 'auto').css('height', elem.prop('scrollHeight') );
-      	window.scrollTo(scrollLeft, scrollTop);
-  	};
-  	elem.on('input', function() {
-    	resizeTextarea( $(this) );
-  	});
-  	resizeTextarea( $(elem) );
-}
+  <script>
+    function growTextarea(i, elem) {
+      var elem = $(elem);
+      var resizeTextarea = function(elem) {
+        var scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+        var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+        elem.css('height', 'auto').css('height', elem.prop('scrollHeight'));
+        window.scrollTo(scrollLeft, scrollTop);
+      };
+      elem.on('input', function() {
+        resizeTextarea($(this));
+      });
+      resizeTextarea($(elem));
+    }
 
-$('.growTextarea').each(growTextarea);
-</script>
+    $('.growTextarea').each(growTextarea);
+  </script>
 </head>
 
 <body>
-  <!-- Responsive navbar-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top d-print-none">
-    <div class="container px-lg-5">
-      <a class="navbar-brand" href="#!">Centennial District Awards</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="./index.php">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-          <?php
-          if (isset($_SESSION["loggedin"]) && $_SESSION["role"] == "Admin")
-            echo '<li class="nav-item"><a class="nav-link" href="./ViewUsers.php">Users</a></li>';
-          if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-            echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
-          } else {
-            echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
-          }
-          ?>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
   <!-- Header-->
   <header class="py-5">
@@ -209,11 +176,14 @@ $('.growTextarea').each(growTextarea);
           echo "<option value=" . $rowNomineeName['NomineeIDX'] . ">" . $rowNomineeName['LastName'] . " " . $rowNomineeName['FirstName'] . " " . $rowNomineeName['Year'] . " " . $Award . "</option>";
           //echo "option value=" . $rowNomineeName['LastName'] . ">" . $rowNomineeName['FirstName'] . "/option";
         }
-        echo '</select>';
-        echo "<div class=py-3>";
-        echo "<input class='btn btn-primary btn-lg d-print-none py-3' type='submit' name='SubmitNominee' value='Select Nominee'/>";
-        echo "</form>";
-        echo "</div>";
+        ?>
+        </select>
+        <div class=py-3>
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input class='btn btn-primary btn-lg d-print-none py-3' type='submit' name='SubmitNominee' value='Select Nominee' />
+          </form>
+        </div>
+        <?php
         //#####################################################
         //
         // Check to see if user selected a Nominee.
@@ -507,6 +477,5 @@ $('.growTextarea').each(growTextarea);
         </table>
       </center>
     </div>
-    <?php include("Footer.php"); ?>
   </header>
 </body>

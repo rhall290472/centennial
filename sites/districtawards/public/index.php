@@ -70,6 +70,8 @@ $valid_pages = [
   'rpt-nom-id',
   'rpt-ballot',
 
+  'edit-nominee',
+
   'login',
   'logout',
   'updatedata'
@@ -352,6 +354,10 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/ReportBallot.php');
           break;
 
+          case 'edit-nominee':
+            include('../src/Pages/NomineePage.php');
+            break;
+            
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }

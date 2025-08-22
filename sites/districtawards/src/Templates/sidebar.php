@@ -107,16 +107,7 @@
           <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Pack Assigned Commissioners</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Pack Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Pack Awards</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Troop Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Crew Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
+          <li><a class="dropdown-item" href="?page=edit-nominee">Edit Nominee</a></li>
         </ul>
       </li>
     <?php endif; ?>
