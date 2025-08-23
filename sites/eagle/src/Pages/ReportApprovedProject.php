@@ -157,7 +157,7 @@ if (!isset($_SESSION['csrf_token'])) {
             $rowScout["UnitType"] . "</td><td>" .
             $rowScout["UnitNumber"] . "</td><td>" .
             $rowScout["Gender"] . "</td><td>" .
-            "<a href=./ScoutPageAll.php?Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
+            "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
             $rowScout["ProjectDate"] . "</td><td>" .
             $rowScout["AgeOutDate"] . "</td><td>" .
             "<a href=./CoachPage.php?Coachesid=" . $Coachid . ">" . $CoachFirst . " " . $CoachLast . "</td></tr>";

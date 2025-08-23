@@ -53,6 +53,7 @@ if (!isset($_SESSION['csrf_token'])) {
         <label for='Unit'>Choose a Unit: </label>
         <select class='form-control' id='Unit' name='Unit'>
           <?php
+           echo "<option value=\"\" </option>";
           while ($rowUnits = $Units->fetch_assoc()) {
             echo "<option value=" . $rowUnits['UnitType'] . "-" . $rowUnits['UnitNumber'] . ">" . $rowUnits['UnitType'] . " " . $rowUnits['UnitNumber'] . "</option>";
           }
@@ -139,7 +140,7 @@ if (!isset($_SESSION['csrf_token'])) {
             $rowScout["UnitType"] . "</td><td>" .
             $rowScout["UnitNumber"] . "</td><td>" .
             $rowScout["Gender"] . "</td><td style='width:250px'>" .
-            "<a href=index.php?page=edit-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
+            "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
             $rowScout["MemberId"] . "</td><td>" .
             $Formatter . $rowScout["AgeOutDate"] . "</td><td>" .
             $rowScout["ProjectDate"] . "</td></tr>";

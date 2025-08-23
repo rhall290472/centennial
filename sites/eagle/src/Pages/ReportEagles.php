@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST[
                         <td>$UnitTypeVal</td>
                         <td>$UnitNumberVal</td>
                         <td>$GenderVal</td>
-                        <td><a href=\"index.php?page=scout-details&Scoutid=$Scoutid\">$FirstName $LastName</a></td>
+                        <td><a href=index.php?page=edit-select-scout&Scoutid=$Scoutid\">$FirstName $LastName</a></td>
                         <td>$BORVal</td>
                         <td>$BeneficiaryVal</td>
                         <td>$ProjectNameVal</td>

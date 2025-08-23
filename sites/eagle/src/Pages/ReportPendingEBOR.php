@@ -93,7 +93,7 @@
             $rowScout["UnitType"] . "</td><td>" .
             $rowScout["UnitNumber"] . "</td><td>" .
             $rowScout["Gender"] . "</td><td>" .
-            "<a href=./ScoutPageAll.php?Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
+            "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
             $rowCoach['Last_Name'] . " " . $rowCoach['First_Name']  . "</td><td>" .
             $rowScout["BOR"] . "</td><td>" .
             "<a href=./CoachPage.php?Coachesid=" . $Coachid . ">" . $CoachFirst . " " . $CoachLast . "</td></tr>";

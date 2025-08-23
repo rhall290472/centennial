@@ -1,27 +1,15 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
 
-require_once 'CEagle.php';
+load_class(__DIR__ . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
-require_once '../cAdultLeaders.php';
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
-
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  header("HTTP/1.0 403 Forbidden");
-  exit;
-}
-
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <?php include('head.php'); ?>
   <style>
     /*    body {
         font: 12px sans-serif;
@@ -36,7 +24,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 </head>
 
 <body>
-  <?php include('header.php');
+  <?php
 
   //#####################################################
   //
@@ -209,6 +197,5 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
     ?>
   </center>
   </div>
-  <?php include('Footer.php'); ?>
 </body>
 </header>

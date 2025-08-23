@@ -107,7 +107,7 @@ if (!isset($_SESSION['csrf_token'])) {
               $rowScout["UnitType"] . "</td><td style='width:50px'>" .
               $rowScout["UnitNumber"] . "</td><td style='width:50px'>" .
               $rowScout["Gender"] . "</td><td style='width:250px'>" .
-              "<a href=./ScoutPageAll.php?Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td style='width:100px'>" .
+              "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td style='width:100px'>" .
               $rowScout["BOR"] . "</td><td style='width:300px'>" .
               $rowScout["Beneficiary"] . "</td><td style='width:300px'>" .
               $rowScout["ProjectName"] . "</td><td style='width:100px'>" .

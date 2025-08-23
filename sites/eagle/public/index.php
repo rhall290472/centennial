@@ -103,6 +103,7 @@ $page = strtolower(trim($page));
 $valid_pages = [
   'home',
   'edit-scout',
+  'edit-select-scout',
   'active-life',
   'audit-scout',
   'eagle-unit',
@@ -275,6 +276,9 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
         case 'edit-scout':
           include('../src/Pages/ScoutPage.php');
+          break;
+        case 'edit-select-scout':
+          include('../src/Pages/ScoutPageAll.php');
           break;
         case 'active-life':
           include('../src/Pages/ReportAllLifeScouts.php');
