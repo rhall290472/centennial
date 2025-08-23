@@ -8,7 +8,7 @@
 /// Load classes
 load_class(__DIR__ . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
-load_class(__DIR__ . '/../../../../shared/src/Classes/cAdultLeaders.php');
+load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
 
 // Session check
@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitForm'], $_POST[
         $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to update scout record.'];
     }
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    header("Location: index.php?page=edit-scout");
+    header("Location: index.php?page=home");
     exit;
 }
 
