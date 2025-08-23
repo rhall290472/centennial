@@ -20,7 +20,7 @@ $ProjectName = $ProjectName ?? '';
         <input type="hidden" name="Scoutid" value="<?php echo htmlspecialchars($rowScout['Scoutid'] ?? ''); ?>">
 
         <div class="form-row">
-          <div class="col-2">
+          <div class="col-3">
             <label>First</label>
             <input type="text" name="element_1_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['FirstName'] ?? ''); ?>" />
           </div>
@@ -32,7 +32,7 @@ $ProjectName = $ProjectName ?? '';
             <label>Middle</label>
             <input type="text" name="element_1_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['MiddleName'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Last</label>
             <input type="text" name="element_1_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['LastName'] ?? ''); ?>" />
           </div>
@@ -50,11 +50,11 @@ $ProjectName = $ProjectName ?? '';
             <label>Email</label>
             <input type="email" name="element_2_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['Email'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Home Phone Number</label>
             <input type="tel" name="element_2_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['Phone_Home'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Mobile Phone Number</label>
             <input type="tel" name="element_2_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['Phone_Mobile'] ?? ''); ?>" />
           </div>
@@ -69,22 +69,22 @@ $ProjectName = $ProjectName ?? '';
             <label>City</label>
             <input type="text" name="element_3_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['City'] ?? ''); ?>" />
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label>State</label>
             <input type="text" name="element_3_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['State'] ?? ''); ?>" />
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label>Zip</label>
             <input type="text" name="element_3_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['Zip'] ?? ''); ?>" />
           </div>
         </div>
 
         <div class="form-row">
-          <div class="col-1">
+          <div class="col-2">
             <label>Unit Type</label>
             <?php $cEagle->DisplayUnitType("element_4_1", $rowScout['UnitType'] ?? ''); ?>
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label>Unit Number</label>
             <input type="text" name="element_4_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['UnitNumber'] ?? ''); ?>" />
           </div>
@@ -100,11 +100,11 @@ $ProjectName = $ProjectName ?? '';
               <?php $cEagle->DisplayGender("element_4_4", $rowScout['Gender'] ?? ''); ?>
             </select>
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label>Age out Date</label>
             <input type="text" name="element_4_5" class="form-control" value="<?php echo htmlspecialchars($rowScout['AgeOutDate'] ?? ''); ?>" />
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label>Member ID</label>
             <input type="text" name="element_4_6" class="form-control" value="<?php echo htmlspecialchars($rowScout['MemberId'] ?? ''); ?>" />
           </div>
@@ -119,11 +119,11 @@ $ProjectName = $ProjectName ?? '';
             <label>Unit Leader Last</label>
             <input type="text" name="element_5_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['ULLast'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Unit Leader Phone</label>
             <input type="tel" name="element_5_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['ULPhone'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Unit Leader Email</label>
             <input type="email" name="element_5_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['ULEmail'] ?? ''); ?>" />
           </div>
@@ -138,11 +138,11 @@ $ProjectName = $ProjectName ?? '';
             <label>CC Last</label>
             <input type="text" name="element_6_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['CCLast'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>CC Phone</label>
             <input type="tel" name="element_6_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['CCPhone'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>CC Email</label>
             <input type="email" name="element_6_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['CCEmail'] ?? ''); ?>" />
           </div>
@@ -174,25 +174,25 @@ $ProjectName = $ProjectName ?? '';
         </div>
 
         <div class="form-row">
-          <div class="col-1 py-4">
+          <div class="col-2 py-2">
             <div class="form-check">
               <label class="form-check-label" for="element_7_2">Attended Preview</label>
               <input class="form-check-input" type="hidden" name="element_7_2" value="0" />
               <input class="form-check-reverse" type="checkbox" name="element_7_2" id="element_7_2" value="1" <?php if (($rowScout['AttendedPreview'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
-          <div class="col-1 py-4">
+          <div class="col-2 py-2">
             <div class="form-check">
               <label class="form-check-label" for="element_7_3">Project Approved</label>
               <input class="form-check-input" type="hidden" name="element_7_3" value="0" />
               <input class="form-check-reverse" type="checkbox" name="element_7_3" id="element_7_3" value="1" <?php if (($rowScout['ProjectApproved'] ?? 0) == 1) echo "checked"; ?> />
             </div>
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Proposal Approved Date</label>
             <input type="text" name="element_7_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['ProjectDate'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>Project Coach/Mentor</label>
             <?php $cEagle->DisplayCoach("element_7_5", $rowScout['Coach'] ?? ''); ?>
           </div>
@@ -218,7 +218,7 @@ $ProjectName = $ProjectName ?? '';
             <label>BOR</label>
             <input type="text" name="element_9_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['BOR'] ?? ''); ?>" />
           </div>
-          <div class="col-2">
+          <div class="col-3">
             <label>District BOR Member</label>
             <?php $cEagle->DisplayCoach("element_9_2", $rowScout['BOR_Member'] ?? ''); ?>
           </div>
