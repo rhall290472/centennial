@@ -13877,11 +13877,7 @@ footer {
 
 .EagleScoutimage {
   display: block;
-  /* Makes the image a block element */
   margin-left: auto;
-  /* Centers horizontally */
   margin-right: auto;
-  /* Centers horizontally */
-  max-width: 100%;
-  /* Ensures responsiveness */
+  padding-top: 9rem;
 }
