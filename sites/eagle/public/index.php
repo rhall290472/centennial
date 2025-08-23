@@ -109,6 +109,7 @@ $valid_pages = [
   'eagle-unit',
   'eagle-year',
   'coach-edit',
+  'edit-select-coach',
   'coach-active',
   'coach-inactive',
   'coach-ypt',
@@ -293,6 +294,7 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/ReportEagleYear.php');
           break;
         case 'coach-edit':
+        case 'edit-select-coach':
           include('../src/Pages/CoachPage.php');
           break;
         case 'coach-active':

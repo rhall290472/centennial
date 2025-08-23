@@ -94,7 +94,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
 
             echo "<tr><td>" .
-              "<a href=./CoachPage.php?Coachesid=" . $rowCoach['Coachesid'] . ">" . $FName . " " . $rowCoach['Last_Name'] . "</a> </td><td>" .
+              "<a href=index.php?page=edit-select-coach&Coachesid=" . $rowCoach['Coachesid'] . ">" . $FName . " " . $rowCoach['Last_Name'] . "</a> </td><td>" .
               $rowCoach["Member_ID"] . "</td><td>" .
               $cEagle->formatEmail($rowCoach["Email_Address"])  . "</td><td>" .
               $cEagle->formatPhoneNumber(null, $rowCoach["Phone_Home"])  . "</td><td>" .

@@ -79,7 +79,7 @@ if (!isset($_SESSION['csrf_token'])) {
       }
       while ($rowScout = $Scout->fetch_assoc()) {
         echo "<tr><td>" .
-          "<a href=./ScoutPageAll.php?Scoutid=" . $rowScout['Scoutid'] . ">" . $rowScout["FirstName"] . " " . $rowScout["LastName"] . "</a> </td><td>" .
+          "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $rowScout["FirstName"] . " " . $rowScout["LastName"] . "</a> </td><td>" .
           $rowScout['Eagled'] . "</td><td>" .
           $rowScout['AgedOut'] . "</td></tr>";
       }
