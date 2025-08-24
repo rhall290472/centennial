@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitForm'], $_POST[
 if (isset($_POST['SubmitScout'], $_POST['ScoutID'], $_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
 	$SelectedScout = filter_input(INPUT_POST, 'ScoutID', FILTER_VALIDATE_INT);
 	if ($SelectedScout === -1) {
-		// Create a new scout record
+		// Create a new scout record MUST use the same db conn for the insert and the insert_id functions !!!!!!!!!!
 		$dbConn = $cEagle->getDbConn();
 		if ($dbConn === null) {
 			error_log("Error: Database connection is null after insert in scouts table.");
