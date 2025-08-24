@@ -442,7 +442,7 @@ class CEagle
         Disclosing, copying, or making any inappropriate use of this information is strictly prohibited.</p>
     </div>
 
-<?php
+  <?php
     echo "<br>";
 
     $lastUpdated = self::GetLastUpdated($Table);
@@ -1597,5 +1597,50 @@ class CEagle
     // Excute the sql Statement
     $Result = self::doQuery($sql);
     return mysqli_num_rows($Result);
+  }
+  /*****************************************************************************
+   *
+   *
+   *****************************************************************************/
+  public static function SelectScout()
+  {
+    // Scout selection query
+    $queryScouts = "SELECT DISTINCT LastName, MiddleName, FirstName, Scoutid FROM scouts 
+                WHERE (`Scoutid` IS NOT NULL)
+                AND (`Eagled` IS NULL OR `Eagled` = 0) 
+                AND (`AgedOut` IS NULL OR `AgedOut` = 0)
+                AND (`is_deleted` IS NULL OR `is_deleted` = 0)
+                ORDER BY LastName, FirstName";
+    $result = self::doQuery($queryScouts);
+    if (!$result) {
+      self::function_alert("ERROR: Query failed: " . mysqli_error(self::getDbConn()));
+    }
+
+  ?>
+    <h4>Select Scout</h4>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+      <div class="form-row px-5 d-print-none">
+        <div class="col-3">
+          <label for="ScoutID">Choose a Scout: </label>
+          <select class="form-control" id="ScoutID" name="ScoutID">
+            <option value="">-- Select Scout --</option>
+            <?php while ($row = $result->fetch_assoc()): ?>
+              <?php if ($row['Scoutid'] != -1) { ?>
+                <option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
+                  <?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
+                </option>
+              <?php } ?>
+            <?php endwhile; ?>
+            <option value="-1">Add New Scout</option>
+          </select>
+        </div>
+        <div class="col-1 py-4">
+          <input class="btn btn-primary btn-sm" type="submit" name="SubmitScout" value="Select Scout" />
+        </div>
+      </div>
+    </form>
+<?php
+
   }
 }
