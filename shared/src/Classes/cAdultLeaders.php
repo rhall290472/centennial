@@ -185,9 +185,7 @@ class AdultLeaders
     $qryUL = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND (`Position`='Scoutmaster' OR
         `Position`='Venturing Crew Advisor')";
     $result_ul = self::doQuery($qryUL);
-    if ($result_ul) {
-      $row = $result_ul->fetch_assoc();
-      //if ($row) {
+    if ($result_ul && $row = $result_ul->fetch_assoc() !== null) {
       $UL['FirstName'] = $row['First_Name'];
       $UL['LastName'] = $row['Last_Name'];
       $UL['Email'] = $row['Email_Address'];
@@ -211,9 +209,7 @@ class AdultLeaders
 
     $qryCC = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND `Position`='Committee Chair'";
     $result_cc = self::doQuery($qryCC);
-    if ($result_cc) {
-      $row = $result_cc->fetch_assoc();
-      //if ($row) {
+    if ($result_cc && $row = $result_cc->fetch_assoc()) {
       $CC['FirstName'] = $row['First_Name'];
       $CC['LastName'] = $row['Last_Name'];
       $CC['Email'] = $row['Email_Address'];

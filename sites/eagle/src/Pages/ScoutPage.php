@@ -122,16 +122,17 @@ if (isset($_POST['SubmitScout'], $_POST['ScoutID'], $_POST['csrf_token']) && $_P
 	$SelectedScout = filter_input(INPUT_POST, 'ScoutID', FILTER_VALIDATE_INT);
 	if ($SelectedScout === -1) {
 		// Create a new scout record
+		$dbConn = $cEagle->getDbConn();
+		if ($dbConn === null) {
+			error_log("Error: Database connection is null after insert in scouts table.");
+			$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to connect to database after creating scout record.'];
+			$cEagle->GotoURL('index.php?page=edit-scout');
+			exit;
+		}
 		$queryInsert = "INSERT INTO scouts (is_deleted) VALUES (0)";
-		$result = $cEagle->doQuery($queryInsert);
+		$result = $dbConn->query($queryInsert);
 		if ($result) {
-			$dbConn = $cEagle->getDbConn();
-			if ($dbConn === null) {
-				error_log("Error: Database connection is null after insert in scouts table.");
-				$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to connect to database after creating scout record.'];
-				$cEagle->GotoURL('index.php?page=edit-scout');
-				exit;
-			}
+			
 			$SelectedScout = mysqli_insert_id($dbConn);
 			if ($SelectedScout === 0) {
 				error_log("Error: mysqli_insert_id returned 0 for query: $queryInsert. Connection ID: " . spl_object_id($dbConn));
