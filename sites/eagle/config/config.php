@@ -101,24 +101,6 @@ if ($is_localhost) {
 }
 
 
-// if (!strcmp($ip, "::1")) {
-//   $userdata['dbhost'] = "localhost";
-//   $userdata['dbuser'] = "root";
-//   $userdata['dbpass'] = "";
-//   $userdata['db']     = "eagle";
-// } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-//   $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-//   $userdata['dbuser'] = "eagleadmin";
-//   $userdata['dbpass'] = "w3frRWX^&q";
-//   $userdata['db']     = "eagle";
-// } else {
-//   $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-//   $userdata['dbuser'] = "webuser1";
-//   $userdata['dbpass'] = "webuser1";
-//   $userdata['db']     = "eagle";
-// }
-
-
 // File upload limits
 ini_set('upload_max_filesize', '4M');
 ini_set('post_max_size', '4M');

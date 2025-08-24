@@ -1,7 +1,4 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -188,20 +185,18 @@ class AdultLeaders
     $qryUL = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND (`Position`='Scoutmaster' OR
         `Position`='Venturing Crew Advisor')";
     $result_ul = self::doQuery($qryUL);
-    if($result_ul){
-      $row = $result_ul->fetch_assoc(); 
-    //if ($row) {
+    if ($result_ul) {
+      $row = $result_ul->fetch_assoc();
+      //if ($row) {
       $UL['FirstName'] = $row['First_Name'];
       $UL['LastName'] = $row['Last_Name'];
       $UL['Email'] = $row['Email_Address'];
       $UL['Phone'] = $row['Phone'];
-    }
-    else{
+    } else {
       $UL['FirstName'] = '';
       $UL['LastName'] = '';
       $UL['Email'] = '';
       $UL['Phone'] = '';
-
     }
     return $UL;
   }
@@ -216,19 +211,18 @@ class AdultLeaders
 
     $qryCC = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND `Position`='Committee Chair'";
     $result_cc = self::doQuery($qryCC);
-    if($result_cc){
+    if ($result_cc) {
       $row = $result_cc->fetch_assoc();
-    //if ($row) {
+      //if ($row) {
       $CC['FirstName'] = $row['First_Name'];
       $CC['LastName'] = $row['Last_Name'];
       $CC['Email'] = $row['Email_Address'];
       $CC['Phone'] = $row['Phone'];
-    }else{
+    } else {
       $CC['FirstName'] = '';
       $CC['LastName'] = '';
       $CC['Email'] = '';
       $CC['Phone'] = '';
-
     }
     return $CC;
   }
@@ -237,15 +231,6 @@ class AdultLeaders
    * Return YES if member is YPT Current
    * 
    *****************************************************************************/
-  //public static function IsTrained($FName, $LName, $Position)
-  //{
-  //  $qryTrained = "SELECT Trained FROM trainedleaders WHERE 
-  //    First_Name='$FName' AND Last_Name='$LName' AND Position='$Position'";
-  //  $result_trained = self::doQuery($qryTrained);
-  //  $row = $result_trained->fetch_assoc();
-//
-  //  return $row['Trained'];
-  //}
   public static function IsTrained($FName, $LName, $Position)
   {
     // Input validation
@@ -809,7 +794,7 @@ class AdultLeaders
    *****************************************************************************/
   public static function function_alert($msg)
   {
-   // echo "<script type='text/javascript'>alert('$msg');</script>";
+    // echo "<script type='text/javascript'>alert('$msg');</script>";
   }
   /******************************************************************************
    * 
@@ -893,7 +878,7 @@ class AdultLeaders
     $RecordsInError = 0;
     $row = 1;
     $filePath = $fileName;
-    if(!file_exists($filePath)) {
+    if (!file_exists($filePath)) {
       $strError = "ERROR: File not found: " . $filePath;
       error_log($strError, 0);
       self::function_alert($strError);
@@ -1009,9 +994,9 @@ class AdultLeaders
     $Datestr = "";
 
     if (!file_exists($filePath) || !is_readable($filePath)) {
-        error_log("Updateypt: File not found or unreadable at $filePath");
-        return ++$RecordsInError;
-      }
+      error_log("Updateypt: File not found or unreadable at $filePath");
+      return ++$RecordsInError;
+    }
 
     // Delete all of the Old data
     if (!self::doQuery("TRUNCATE TABLE `ypt`")) {
@@ -1091,9 +1076,6 @@ class AdultLeaders
     }
 
 ?>
-    <!-- <center> -->
-      <!-- </br><button class='RoundButton' style='width:220px' onclick="window.location.href ='UpdateTables.php';"' >Return </button></br> -->
-        <!-- </center> -->
         <?php
 
         return $RecordsInError;
