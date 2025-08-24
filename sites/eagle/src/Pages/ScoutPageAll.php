@@ -131,41 +131,23 @@ $cLeaders = AdultLeaders::getInstance();
     if (!$result_ByScout) {
       $cEagle->function_alert("ERROR: $cEagle->doQuery($queryScouts)");
     }
-    ?>
-    <form method=post>
-      <div class="form-row px-4">
-        <div class="col-2">
-          <label for='ScoutName'>Choose a Scout: </label>
-          <select class='form-control' id='ScoutName' name='ScoutName'>
-            <option value=""> </option>
-              <?php
-              while ($rowScouts = $result_ByScout->fetch_assoc()) {
-                echo "<option value=" . $rowScouts['Scoutid'] . ">" . $rowScouts['LastName'] . " " . $rowScouts['FirstName'] . "</option>";
-                echo "option value=" . $rowScouts['LastName'] . ">" . $rowScouts['LastName'] . "/option";
-              }
-              ?>
-          </select>
-          <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
-        </div>
-      </div>
-    </form>
-    <?php
+    $cEagle->SelectScout();
     //#####################################################
     //
     // Check to see if user as Submitted the form.
     //
     //#####################################################
-    if ((isset($_POST['SubmitScout']) && isset($_POST['ScoutName']) && $_POST['ScoutName'] !== '') ||
+    if ((isset($_POST['SubmitScout']) && isset($_POST['ScoutID']) && $_POST['ScoutID'] !== '') ||
       (isset($_GET['Scoutid']))
     ) {
 
-      if (isset($_POST['ScoutName']))
-        $SelectedScout = $_POST['ScoutName']; // Get id of Scout selected
+      if (isset($_POST['ScoutID']))
+        $SelectedScout = $_POST['ScoutID']; // Get id of Scout selected
       else if (isset($_GET['Scoutid']))
         $SelectedScout = $_GET['Scoutid']; // Get id of Scout selected
 
       // Go get the Scout data
-      $queryScout = "SELECT * FROM `scouts` WHERE Scoutid='$SelectedScout'";
+      $queryScout = "SELECT * FROM `scouts` WHERE `Scoutid`=$SelectedScout ";
 
       if (!$Scout = $cEagle->doQuery($queryScout)) {
         $msg = "Error: doQuery()";
