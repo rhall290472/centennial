@@ -58,6 +58,10 @@
                 <li><a class="dropdown-item" href="?page=report-ebor">Pending EBOR</a></li>
               </ul>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="?page=logout">Logout</a>
+            </li>
+
           <?php }
         else: { ?>
             <li class="nav-item">
