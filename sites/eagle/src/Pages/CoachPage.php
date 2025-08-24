@@ -98,7 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to update coach.'];
     }
     unset($_SESSION['selected_coach_id']);
-    header("Location: index.php?page=coach-edit");
+    $cEagle->GotoURL('index.php?page=coach-edit');
+
+    //header("Location: index.php?page=coach-edit");
     exit;
   }
 }
@@ -192,11 +194,11 @@ if ($SelectedCoach) {
           </div>
           <div class="col-2">
             <label for="element_2_2">Home Phone</label>
-            <input type="tel" name="element_2_2" class="form-control" pattern="[0-9]{10}" value="<?php echo htmlspecialchars($rowCoach['Phone_Home'] ?? ''); ?>">
+            <input type="tel" name="element_2_2" class="form-control" pattern="[0-9]" value="<?php echo htmlspecialchars($rowCoach['Phone_Home'] ?? ''); ?>">
           </div>
           <div class="col-2">
             <label for="element_2_3">Mobile Phone</label>
-            <input type="tel" name="element_2_3" class="form-control" pattern="[0-9]{10}" value="<?php echo htmlspecialchars($rowCoach['Phone_Mobile'] ?? ''); ?>">
+            <input type="tel" name="element_2_3" class="form-control" pattern="[0-9]" value="<?php echo htmlspecialchars($rowCoach['Phone_Mobile'] ?? ''); ?>">
           </div>
           <div class="col-2">
             <label for="element_1_4">BSA ID</label>

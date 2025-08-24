@@ -32,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitForm'], $_POST[
 
 	if ($_POST['SubmitForm'] === 'Cancel') {
 		$_SESSION['feedback'] = ['type' => 'info', 'message' => 'Form submission cancelled.'];
-		header("Location: index.php?page=edit-scout");
+		//header("Location: index.php?page=edit-scout");
+		$cEagle->GotoURL('index.php?page=edit-scout');
 		exit;
 	}
 
@@ -110,21 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitForm'], $_POST[
 		$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to update scout record.'];
 	}
 	$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-	header("Location: index.php?page=home");
+	$cEagle->GotoURL('index.php?page=edit-scout');
+	//header("Location: index.php?page=home");
 	exit;
 }
 
-// Scout selection query
-$queryScouts = "SELECT DISTINCT LastName, MiddleName, FirstName, Scoutid FROM scouts 
-                WHERE (`Scoutid` IS NOT NULL)
-                AND (`Eagled` IS NULL OR `Eagled` = 0) 
-                AND (`AgedOut` IS NULL OR `AgedOut` = 0)
-                AND (`is_deleted` IS NULL OR `is_deleted` = 0)
-                ORDER BY LastName, FirstName";
-$result = $cEagle->doQuery($queryScouts);
-if (!$result) {
-	$cEagle->function_alert("ERROR: Query failed: " . mysqli_error($cEagle->getDbConn()));
-}
 
 // Handle scout selection
 if (isset($_POST['SubmitScout'], $_POST['ScoutID'], $_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
@@ -132,15 +123,39 @@ if (isset($_POST['SubmitScout'], $_POST['ScoutID'], $_POST['csrf_token']) && $_P
 	if ($SelectedScout === -1) {
 		// Create a new scout record
 		$queryInsert = "INSERT INTO scouts (is_deleted) VALUES (0)";
-		if ($cEagle->doQuery($queryInsert)) {
-			$SelectedScout = mysqli_insert_id($cEagle->getDbConn());
+		$result = $cEagle->doQuery($queryInsert);
+		if ($result) {
+			$dbConn = $cEagle->getDbConn();
+			if ($dbConn === null) {
+				error_log("Error: Database connection is null after insert in scouts table.");
+				$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to connect to database after creating scout record.'];
+				$cEagle->GotoURL('index.php?page=edit-scout');
+				exit;
+			}
+			$SelectedScout = mysqli_insert_id($dbConn);
+			if ($SelectedScout === 0) {
+				error_log("Error: mysqli_insert_id returned 0 for query: $queryInsert. Connection ID: " . spl_object_id($dbConn));
+				// Check if record was actually inserted
+				$checkQuery = "SELECT Scoutid FROM scouts WHERE is_deleted = 0 ORDER BY Scoutid DESC LIMIT 1";
+				$checkResult = $cEagle->doQuery($checkQuery);
+				if ($checkResult && $row = $checkResult->fetch_assoc()) {
+					error_log("Found Scoutid: " . $row['Scoutid']);
+					$SelectedScout = $row['Scoutid'];
+				} else {
+					error_log("No record found for recent insert.");
+					$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'New scout record created, but failed to retrieve Scoutid. Check if Scoutid is set to AUTO_INCREMENT.'];
+					$cEagle->GotoURL('index.php?page=edit-scout');
+					exit;
+				}
+			}
 		} else {
-			$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to create new scout record.'];
-			header("Location: index.php?page=edit-scout");
+			$error = mysqli_error($cEagle->getDbConn());
+			error_log("Error: INSERT query failed: $queryInsert, Error: $error");
+			$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to create new scout record: ' . $error];
+			$cEagle->GotoURL('index.php?page=edit-scout');
 			exit;
 		}
 	}
-
 	$queryScout = "SELECT * FROM `scouts` WHERE Scoutid = ?";
 	$stmt = mysqli_prepare($cEagle->getDbConn(), $queryScout);
 	mysqli_stmt_bind_param($stmt, 'i', $SelectedScout);
@@ -193,31 +208,9 @@ unset($_SESSION['feedback']);
 			<?php echo htmlspecialchars($feedback['message']); ?>
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>
-	<?php endif; ?>
+	<?php endif; 
 
-	<h4>Select Scout to Edit</h4>
-	<form method="post">
-		<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-		<div class="form-row px-5 d-print-none">
-			<div class="col-3">
-				<label for="ScoutID">Choose a Scout: </label>
-				<select class="form-control" id="ScoutID" name="ScoutID">
-					<option value="">-- Select Scout --</option>
-					<?php while ($row = $result->fetch_assoc()): ?>
-						<?php if ($row['Scoutid'] != -1) { ?>
-							<option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
-								<?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
-							</option>
-						<?php } ?>
-					<?php endwhile; ?>
-					<option value="-1">Add New Scout</option>
-				</select>
-			</div>
-			<div class="col-1 py-4">
-				<input class="btn btn-primary btn-sm" type="submit" name="SubmitScout" value="Select Scout" />
-			</div>
-		</div>
-	</form>
+	$cEagle->SelectScout(); ?>
 
 	<?php if (!empty($rowScout)): ?>
 		<?php require('ScoutForm.php'); ?>
