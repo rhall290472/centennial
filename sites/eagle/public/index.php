@@ -1,6 +1,6 @@
 <?php
 /*
- * Main entry point for the Centennial District Advancement website.
+ * Main entry point for the Centennial District Eagle scout website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
 
@@ -23,79 +23,12 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 
 // Define SITE_URL fallback if not set
 if (!defined('SITE_URL')) {
-  define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/advancement');
+  define('SITE_URL', 'https://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/eagle/public');
 }
 
 // Load required classes for file uploads
 load_class(__DIR__ . '/../src/Classes/CEagle.php');
 
-// FileUploader class for secure file uploads
-class FileUploader
-{
-  private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
-  private $maxFileSize = MAX_FILE_SIZE;
-  private $uploadDir;
-
-  public function __construct($uploadDir)
-  {
-    $this->uploadDir = rtrim($uploadDir, '/') . '/';
-    if (!is_dir($this->uploadDir)) {
-      mkdir($this->uploadDir, 0755, true);
-    }
-  }
-
-  public function uploadFile($file, &$errors)
-  {
-    $uploadErrors = [
-      UPLOAD_ERR_INI_SIZE => "The uploaded file exceeds the maximum size allowed by the server.",
-      UPLOAD_ERR_FORM_SIZE => "The uploaded file exceeds the maximum size allowed by the form.",
-      UPLOAD_ERR_PARTIAL => "The file was only partially uploaded.",
-      UPLOAD_ERR_NO_FILE => "No file was uploaded.",
-      UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
-      UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
-      UPLOAD_ERR_EXTENSION => "A PHP extension stopped the file upload."
-    ];
-
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-      $errors[] = $uploadErrors[$file['error']] ?? "Unknown file upload error.";
-      return false;
-    }
-
-    $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($fileExtension, $this->allowedExtensions)) {
-      $errors[] = "Invalid file extension. Only CSV files are allowed.";
-      return false;
-    }
-
-    if ($file['size'] > $this->maxFileSize) {
-      $errors[] = "File exceeds maximum size (4MB).";
-      return false;
-    }
-
-    if ($file['type'] !== 'text/csv' && $file['type'] !== 'application/vnd.ms-excel') {
-      $errors[] = "Invalid file type. Only CSV files are allowed.";
-      return false;
-    }
-
-    $fileHandle = fopen($file['tmp_name'], 'r');
-    $firstLine = fgetcsv($fileHandle);
-    fclose($fileHandle);
-    if ($firstLine === false || empty($firstLine)) {
-      $errors[] = "File is not a valid CSV.";
-      return false;
-    }
-
-    $uniqueFileName = uniqid('upload_', true) . '.csv';
-    $uploadPath = $this->uploadDir . $uniqueFileName;
-
-    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-      return $uniqueFileName;
-    }
-
-    $errors[] = "Failed to move uploaded file.";
-    return false;
-  }
-}
 
 // Simple routing based on 'page' GET parameter
 $page = filter_input(INPUT_GET, 'page') ?? 'home';
@@ -130,24 +63,16 @@ if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
 }
 
+//// Process ScoutPage.php logic before output
+//if ($page === 'edit-scout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+//  include('../src/Pages/ScoutPage.php'); // Process logic without outputting
+//  exit; // Exit after handling redirects in ScoutPage.php
+//}
+
 // Handle POST form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    header("Location: index.php?page=$page");
-    exit;
-  }
-
-  // Year selection
-  if (isset($_POST['SubmitYear']) && in_array($page, $valid_pages)) {
-    $SelYear = filter_input(INPUT_POST, 'Year', FILTER_SANITIZE_NUMBER_INT);
-    if ($SelYear && is_numeric($SelYear) && $SelYear >= 2000 && $SelYear <= date("Y")) {
-      $_SESSION['year'] = $SelYear;
-      $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh token
-      $_SESSION['feedback'] = ['type' => 'success', 'message' => "Year set to $SelYear."];
-    } else {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid year selected. Please choose a year between 2000 and ' . date("Y") . '.'];
-    }
     header("Location: index.php?page=$page");
     exit;
   }

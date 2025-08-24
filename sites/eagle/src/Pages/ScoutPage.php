@@ -11,21 +11,6 @@ $cEagle = CEagle::getInstance();
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();
 
-// Session check
-if (!session_id()) {
-    session_start([
-        'cookie_httponly' => true,
-        'use_strict_mode' => true,
-        'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
-}
-
-// Authentication check
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("HTTP/1.0 403 Forbidden");
-    exit;
-}
-
 // Ensure CSRF token is set
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -111,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitForm'], $_POST[
         'BOR' => $cEagle->GetFormData('element_9_1'),
         'BOR_Member' => $cEagle->GetFormData('element_9_2'),
         'Eagled' => $cEagle->GetFormData('element_9_3'),
-        'Notes' => $cEagle->GetFormData('Notes'), // Fixed element ID
+        'Notes' => $cEagle->GetFormData('element_10_1'), // Fixed element ID
     ];
 
     if (strlen($FormData['ProjectDate']) > 1) {
@@ -203,39 +188,38 @@ unset($_SESSION['feedback']);
 <div class="container-fluid">
     <!-- Display Feedback -->
     <?php if (!empty($feedback)): ?>
-        <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">
-            <?php echo htmlspecialchars($feedback['message']); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show"
+        role="alert">
+        <?php echo htmlspecialchars($feedback['message']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <?php endif; ?>
 
-    <center>
-        <h4>Select Scout to Edit</h4>
-        <form method="post">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-            <div class="form-row px-5 d-print-none">
-                <div class="col-3">
-                    <label for="ScoutID">Choose a Scout: </label>
-                    <select class="form-control" id="ScoutID" name="ScoutID">
-                        <option value="">-- Select Scout --</option>
-                        <?php while ($row = $result->fetch_assoc()): ?>
-                          <?php if($row['Scoutid']!=-1){ ?>
-                            <option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
-                                <?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
-                            </option>
-                            <?php } ?>
-                        <?php endwhile; ?>
-                        <option value="-1">Add New Scout</option>
-                    </select>
-                </div>
-                <div class="col-1 py-4">
-                    <input class="btn btn-primary btn-sm" type="submit" name="SubmitScout" value="Select Scout" />
-                </div>
+    <h4>Select Scout to Edit</h4>
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <div class="form-row px-5 d-print-none">
+            <div class="col-3">
+                <label for="ScoutID">Choose a Scout: </label>
+                <select class="form-control" id="ScoutID" name="ScoutID">
+                    <option value="">-- Select Scout --</option>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                    <?php if($row['Scoutid']!=-1){ ?>
+                    <option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
+                        <?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
+                    </option>
+                    <?php } ?>
+                    <?php endwhile; ?>
+                    <option value="-1">Add New Scout</option>
+                </select>
             </div>
-        </form>
+            <div class="col-1 py-4">
+                <input class="btn btn-primary btn-sm" type="submit" name="SubmitScout" value="Select Scout" />
+            </div>
+        </div>
+    </form>
 
-        <?php if (!empty($rowScout)): ?>
-            <?php require('ScoutForm.php'); ?>
-        <?php endif; ?>
-    </center>
+    <?php if (!empty($rowScout)): ?>
+    <?php require('ScoutForm.php'); ?>
+    <?php endif; ?>
 </div>

@@ -188,12 +188,20 @@ class AdultLeaders
     $qryUL = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND (`Position`='Scoutmaster' OR
         `Position`='Venturing Crew Advisor')";
     $result_ul = self::doQuery($qryUL);
-    $row = $result_ul->fetch_assoc();
-    if ($row) {
+    if($result_ul){
+      $row = $result_ul->fetch_assoc(); 
+    //if ($row) {
       $UL['FirstName'] = $row['First_Name'];
       $UL['LastName'] = $row['Last_Name'];
       $UL['Email'] = $row['Email_Address'];
       $UL['Phone'] = $row['Phone'];
+    }
+    else{
+      $UL['FirstName'] = '';
+      $UL['LastName'] = '';
+      $UL['Email'] = '';
+      $UL['Phone'] = '';
+
     }
     return $UL;
   }
@@ -208,12 +216,19 @@ class AdultLeaders
 
     $qryCC = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND `Position`='Committee Chair'";
     $result_cc = self::doQuery($qryCC);
-    $row = $result_cc->fetch_assoc();
-    if ($row) {
+    if($result_cc){
+      $row = $result_cc->fetch_assoc();
+    //if ($row) {
       $CC['FirstName'] = $row['First_Name'];
       $CC['LastName'] = $row['Last_Name'];
       $CC['Email'] = $row['Email_Address'];
       $CC['Phone'] = $row['Phone'];
+    }else{
+      $CC['FirstName'] = '';
+      $CC['LastName'] = '';
+      $CC['Email'] = '';
+      $CC['Phone'] = '';
+
     }
     return $CC;
   }
