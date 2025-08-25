@@ -106,57 +106,59 @@ $csv_output = "";
 
   <center>
     <h4>Report of All Life Scouts in Database</h4>
-    <table class="table table-striped" style="width:1250px">
-      <thead>
-        <tr>
-          <th>Unit Type</th>
-          <th>Unit#</th>
-          <th>Gender</th>
-          <th>Name</th>
-          <th>Age Out Date</th>
-          <th>Project Approval</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        $queryScout = "SELECT * FROM `scouts` 
+    <div class="table-responsive">
+      <table id="lifeScoutsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Unit Type</th>
+            <th>Unit#</th>
+            <th>Gender</th>
+            <th>Name</th>
+            <th>Age Out Date</th>
+            <th>Project Approval</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          $queryScout = "SELECT * FROM `scouts` 
                                WHERE (`is_deleted` IS NULL OR `is_deleted`='0') 
                                AND (`Eagled` IS NULL OR `Eagled`='0') 
                                AND (`AgedOut` IS NULL OR `AgedOut`='0')";
-        if ($SelectedUnit && $SelectedNum) {
-          $queryScout .= " AND (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum')";
-        }
-        $queryScout .= " ORDER BY STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
+          if ($SelectedUnit && $SelectedNum) {
+            $queryScout .= " AND (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum')";
+          }
+          $queryScout .= " ORDER BY STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
 
-        if (!$Scout = $cEagle->doQuery($queryScout)) {
-          $msg = "Error: doQuery()";
-          $cEagle->function_alert($msg);
-        }
+          if (!$Scout = $cEagle->doQuery($queryScout)) {
+            $msg = "Error: doQuery()";
+            $cEagle->function_alert($msg);
+          }
 
-        while ($rowScout = $Scout->fetch_assoc()) {
-          $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-          echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
-            htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
-            htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
-            "<a href=index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . ">" .
-            htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
-            htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
-            htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
+          while ($rowScout = $Scout->fetch_assoc()) {
+            $FirstName = $cEagle->GetScoutPreferredName($rowScout);
+            echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
+              htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
+              htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
+              "<a href=index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . ">" .
+              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
+              htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
+              htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
 
-          $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
-            htmlspecialchars($rowScout["Gender"]) . "," .
-            htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "," .
-            htmlspecialchars($rowScout["AgeOutDate"]) . "," .
-            htmlspecialchars($rowScout["Email"] ?? '') . "," .
-            htmlspecialchars($rowScout["ULFirst"] . " " . $rowScout["ULLast"] ?? '') . "," .
-            htmlspecialchars($rowScout["ULEmail"] ?? '') . "," .
-            htmlspecialchars($rowScout["CCFirst"] . " " . $rowScout["CCLast"] ?? '') . "," .
-            htmlspecialchars($rowScout["CCEmail"] ?? '') . "," .
-            htmlspecialchars($rowScout["ProjectDate"] ?? '') . "\n";
-        }
-        ?>
-      </tbody>
-    </table>
+            $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
+              htmlspecialchars($rowScout["Gender"]) . "," .
+              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "," .
+              htmlspecialchars($rowScout["AgeOutDate"]) . "," .
+              htmlspecialchars($rowScout["Email"] ?? '') . "," .
+              htmlspecialchars($rowScout["ULFirst"] . " " . $rowScout["ULLast"] ?? '') . "," .
+              htmlspecialchars($rowScout["ULEmail"] ?? '') . "," .
+              htmlspecialchars($rowScout["CCFirst"] . " " . $rowScout["CCLast"] ?? '') . "," .
+              htmlspecialchars($rowScout["CCEmail"] ?? '') . "," .
+              htmlspecialchars($rowScout["ProjectDate"] ?? '') . "\n";
+          }
+          ?>
+        </tbody>
+      </table>
+    </div>
     <b>For a total of <?php echo mysqli_num_rows($Scout); ?> scouts</b>
 
     <form class="d-print-none" name="export" action="export.php" method="post" style="padding: 20px;">
@@ -166,4 +168,32 @@ $csv_output = "";
       <input type="hidden" value="<?php echo htmlspecialchars($csv_output); ?>" name="csv_output">
     </form>
   </center>
+
+
+  <script>
+    $(document).ready(function() {
+      $('#lifeScoutsTable').DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "columnDefs": [{
+            "type": "date",
+            "targets": 4, // AgeOutDate column
+            "render": function(data, type, row) {
+              if (type === 'sort') {
+                return moment(data, 'MM/DD/YYYY').format('YYYYMMDD');
+              }
+              return data;
+            }
+          },
+          {
+            "orderable": true,
+            "targets": "_all"
+          }
+        ]
+      });
+    });
+  </script>
 </div>
