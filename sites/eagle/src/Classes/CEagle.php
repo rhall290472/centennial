@@ -382,7 +382,7 @@ class CEagle
   public static function formatEmail($Email)
   {
 
-    $str = "<a href='mailto:" . strtolower($Email) . "?subject=Merit Badge College'>" . strtolower($Email) . "</a>";
+    $str = "<a href='mailto:" . strtolower($Email) . "?subject=Eagle Rank'>" . strtolower($Email) . "</a>";
 
     return $str;
   }
@@ -1089,76 +1089,76 @@ class CEagle
      * YPT_Centennial_02.csv file.
      * 
      *===========================================================================*/
-  public static function ImportYPT($fileName)
-  {
-    /* Defined the file columns, which change */
-    $colProgram = 1;
-    $colFirstName = 5;
-    $colMiddleName = 6;
-    $colLastName = 7;
-    $colMemberID = 8;
-    $colYPTCurrent = 10;
-    $colYPTExpires = 11;
-    $colStreet = 15;
-    $colCity = 16;
-    $colState = 17;
-    $colZip = 18;
-    $colEmail = 19;
-    $colPhone = 20;
-
-    $RecordsInError = 0;
-    $RecordsInserted = 0;
-    $RecordsUpdated = 0;
-    $SkippedRecords = 0;
-
-    $filePath = "Data/" . $fileName;
-    $UserName = $_SESSION['username'];
-    $row = 0;
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        if ($row < 8) {
-          $row++;
-          continue;
-        }
-        $Program = $data[$colProgram];
-        //if($Program != ""){$SkippedRecords++;continue;}
-
-        $FirstName  = addslashes(ucfirst(strtolower($data[$colFirstName])));
-        $MiddleName = addslashes(ucfirst(strtolower($data[$colMiddleName])));
-        $LastName   = addslashes(ucfirst(strtolower($data[$colLastName])));
-        $MemberID   = $data[$colMemberID];
-        $YPTStatus  = $data[$colYPTCurrent];
-        $YPTExpires = $data[$colYPTExpires];
-        $Street     = $data[$colStreet];
-        $City       = $data[$colCity];
-        $State      = $data[$colState];
-        $Zip        = $data[$colZip];
-        $Email      = $data[$colEmail];
-        $Phone      = self::CleanPhoneNumber($data[$colPhone]);
-
-        $sqlCoach = "UPDATE `coaches` SET `First_Name`=' $FirstName',`Middle_Name`='$MiddleName',`Last_Name`='$LastName',`Member_ID`='$MemberID',
-                    `Email_Address`='$Email',`Phone_Home`='$Phone',`Street_Address`='$Street ',
-                    `City`='$City',`State`='$State',`Zip`='$Zip',`YPT_Expires`='$YPTExpires',`updated_by`='$UserName'
-                    WHERE `Member_ID`='$MemberID'";
-
-        if (!self::doQuery($sqlCoach)) {
-          $RecordsInError++;
-          echo $sqlCoach;
-        } else {
-          $RecordsUpdated++;
-        }
-      }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
-      self::function_alert($Usermsg);
-      if ($RecordsInError == 0)
-        self::GotoURL('index.php');
-    } else {
-      $Usermsg = "Failed to open file";
-      self::function_alert($Usermsg);
-    }
-    return $RecordsInError;
-  }
+//  public static function ImportYPT($fileName)
+//  {
+//    /* Defined the file columns, which change */
+//    $colProgram = 1;
+//    $colFirstName = 5;
+//    $colMiddleName = 6;
+//    $colLastName = 7;
+//    $colMemberID = 8;
+//    $colYPTCurrent = 10;
+//    $colYPTExpires = 11;
+//    $colStreet = 15;
+//    $colCity = 16;
+//    $colState = 17;
+//    $colZip = 18;
+//    $colEmail = 19;
+//    $colPhone = 20;
+//
+//    $RecordsInError = 0;
+//    $RecordsInserted = 0;
+//    $RecordsUpdated = 0;
+//    $SkippedRecords = 0;
+//
+//    $filePath = "Data/" . $fileName;
+//    $UserName = $_SESSION['username'];
+//    $row = 0;
+//    if (($handle = fopen($filePath, "r")) !== FALSE) {
+//      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+//        if ($row < 8) {
+//          $row++;
+//          continue;
+//        }
+//        $Program = $data[$colProgram];
+//        //if($Program != ""){$SkippedRecords++;continue;}
+//
+//        $FirstName  = addslashes(ucfirst(strtolower($data[$colFirstName])));
+//        $MiddleName = addslashes(ucfirst(strtolower($data[$colMiddleName])));
+//        $LastName   = addslashes(ucfirst(strtolower($data[$colLastName])));
+//        $MemberID   = $data[$colMemberID];
+//        $YPTStatus  = $data[$colYPTCurrent];
+//        $YPTExpires = $data[$colYPTExpires];
+//        $Street     = $data[$colStreet];
+//        $City       = $data[$colCity];
+//        $State      = $data[$colState];
+//        $Zip        = $data[$colZip];
+//        $Email      = $data[$colEmail];
+//        $Phone      = self::CleanPhoneNumber($data[$colPhone]);
+//
+//        $sqlCoach = "UPDATE `coaches` SET `First_Name`=' $FirstName',`Middle_Name`='$MiddleName',`Last_Name`='$LastName',`Member_ID`='$MemberID',
+//                    `Email_Address`='$Email',`Phone_Home`='$Phone',`Street_Address`='$Street ',
+//                    `City`='$City',`State`='$State',`Zip`='$Zip',`YPT_Expires`='$YPTExpires',`updated_by`='$UserName'
+//                    WHERE `Member_ID`='$MemberID'";
+//
+//        if (!self::doQuery($sqlCoach)) {
+//          $RecordsInError++;
+//          echo $sqlCoach;
+//        } else {
+//          $RecordsUpdated++;
+//        }
+//      }
+//      fclose($handle);
+//      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
+//      self::function_alert($Usermsg);
+//      if ($RecordsInError == 0)
+//        self::GotoURL('index.php');
+//    } else {
+//      $Usermsg = "Failed to open file";
+//      self::function_alert($Usermsg);
+//    }
+//    return $RecordsInError;
+//  }
   /*=============================================================================
      *
      * Import Life scouts 
@@ -1245,66 +1245,66 @@ class CEagle
      * YPT report
      * 
      *===========================================================================*/
-  public static function ImportUnitLeaders($fileName)
-  {
-
-    $colDistrict = 0;
-    $colProgram = 1;
-    $colFirstName = 5;
-    $colMiddleName = 6;
-    $colLastName = 7;
-    $colMemberID = 8;
-    $colPosition = 9;
-    $colYPTCurrent = 10;
-    $colYPTExpires = 11;
-    $colStreet = 15;
-    $colCity = 16;
-    $colState = 17;
-    $colZip = 18;
-    $colEmail = 19;
-    $colPhone = 20;
-
-
-    $RecordsInError = 0;
-    $RecordsInserted = 0;
-    $RecordsUpdated = 0;
-    $SkippedRecords = 0;
-    $Unit = array();
-
-
-    $filePath = "Data/" . $fileName;
-    //$UserName = $_SESSION['username'];
-    $row = 0;
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        if (count($data) < 9) {
-          continue;
-        } // Skip until we get to data!
-        if ($data[$colProgram] == "Troop") {
-          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Troop")
-            self::UpdateCC($data);
-          else if ($data[$colPosition] == "Scoutmaster" && $data[$colProgram] == "Troop") {
-            self::UpdateUL($data);
-          }
-        } else if ($data[$colProgram] == "Crew") {
-          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Crew")
-            self::UpdateCC($data);
-          else if ($data[$colPosition] == "Venturing Crew Advisor" && $data[$colProgram] == "Crew") {
-            self::UpdateUL($data);
-          }
-        }
-      }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
-      self::function_alert($Usermsg);
-      if ($RecordsInError == 0)
-        self::GotoURL('index.php');
-    } else {
-      $Usermsg = "Failed to open file";
-      self::function_alert($Usermsg);
-    }
-    return $RecordsInError;
-  }
+//  public static function ImportUnitLeaders($fileName)
+//  {
+//
+//    $colDistrict = 0;
+//    $colProgram = 1;
+//    $colFirstName = 5;
+//    $colMiddleName = 6;
+//    $colLastName = 7;
+//    $colMemberID = 8;
+//    $colPosition = 9;
+//    $colYPTCurrent = 10;
+//    $colYPTExpires = 11;
+//    $colStreet = 15;
+//    $colCity = 16;
+//    $colState = 17;
+//    $colZip = 18;
+//    $colEmail = 19;
+//    $colPhone = 20;
+//
+//
+//    $RecordsInError = 0;
+//    $RecordsInserted = 0;
+//    $RecordsUpdated = 0;
+//    $SkippedRecords = 0;
+//    $Unit = array();
+//
+//
+//    $filePath = "Data/" . $fileName;
+//    //$UserName = $_SESSION['username'];
+//    $row = 0;
+//    if (($handle = fopen($filePath, "r")) !== FALSE) {
+//      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+//        if (count($data) < 9) {
+//          continue;
+//        } // Skip until we get to data!
+//        if ($data[$colProgram] == "Troop") {
+//          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Troop")
+//            self::UpdateCC($data);
+//          else if ($data[$colPosition] == "Scoutmaster" && $data[$colProgram] == "Troop") {
+//            self::UpdateUL($data);
+//          }
+//        } else if ($data[$colProgram] == "Crew") {
+//          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Crew")
+//            self::UpdateCC($data);
+//          else if ($data[$colPosition] == "Venturing Crew Advisor" && $data[$colProgram] == "Crew") {
+//            self::UpdateUL($data);
+//          }
+//        }
+//      }
+//      fclose($handle);
+//      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
+//      self::function_alert($Usermsg);
+//      if ($RecordsInError == 0)
+//        self::GotoURL('index.php');
+//    } else {
+//      $Usermsg = "Failed to open file";
+//      self::function_alert($Usermsg);
+//    }
+//    return $RecordsInError;
+//  }
   /******************************************************************************
    *
    *
@@ -1333,12 +1333,12 @@ class CEagle
    *****************************************************************************/
   public static function DisplayDistrict($District)
   {
+    $strSelected = (empty($District) || !in_array($District, ['Alpine', 'BlackFeather', 'Centennial', 'Frontier', 'MajesticMesas', 'ThreeRivers', 'Valley', 'Other', 'Unknow'])) ? "selected" : "";
+    echo sprintf("<option %s value='Centennial'>Centennial</option>", $strSelected);
     $strSelected = !strcmp("Alpine", $District) ? "selected" : "";
     echo sprintf("<option %s value='Alpine'>Alpine</option>", $strSelected);
     $strSelected = !strcmp("BlackFeather", $District) ? "selected" : "";
     echo sprintf("<option %s value='BlackFeather'>Black Feather</option>", $strSelected);
-    $strSelected = !strcmp("Centennial", $District) ? "selected" : "";
-    echo sprintf("<option %s value='Centennial'>Centennial</option>", $strSelected);
     $strSelected = !strcmp("Frontier", $District) ? "selected" : "";
     echo sprintf("<option %s value='Frontier'>Frontier</option>", $strSelected);
     $strSelected = !strcmp("MajesticMesas", $District) ? "selected" : "";
