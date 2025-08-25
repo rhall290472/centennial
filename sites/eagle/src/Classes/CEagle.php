@@ -30,7 +30,6 @@ class CEagle
    * see how this works in a moment.
    */
   private static $instances = [];
-  private static $year;
 
   /**
    * The Singleton's constructor should always be private to prevent direct
