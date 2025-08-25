@@ -9,7 +9,7 @@
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Life Scouts</span>
+          <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Life Scouts</span>
         </a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="?page=edit-scout">Edit/Update Scout</a></li>
@@ -19,7 +19,7 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Eagles</span>
+          <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Eagles</span>
         </a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="?page=eagle-unit">Eagle Scouts By Unit</a></li>
@@ -28,7 +28,7 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Coaches</span>
+          <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Coaches</span>
         </a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="?page=coach-edit">Edit/Update Coach</a></li>
@@ -41,7 +41,7 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
+          <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
         </a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="?page=report-allscouts">All Scouts</a></li>
