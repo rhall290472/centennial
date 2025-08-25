@@ -506,21 +506,7 @@ class CEagle
     $sqlFind = "SELECT * FROM `scouts` WHERE `MemberId`='$MemberID'";
     $Results = self::doQuery($sqlFind);
 
-    $NumFound = mysqli_num_rows($Results);
-    if ($NumFound >= 1) {
-      // Handle the fact the we have duplicates.
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID: ' . $MemberID . '. Please contact the system administrator.'];
-      exit;
-    }
-
-    if (mysqli_num_rows($Results))
-      $Found = true;
-    else
-      $Found = false;
-
-    return $Found;
-
-
+    return $NumFound = mysqli_num_rows($Results);
   }
   /******************************************************************************
    *
@@ -1491,8 +1477,10 @@ class CEagle
    *****************************************************************************/
   public static function CreateAudit($Old, $New, $IdKey)
   {
-    if ($New[$IdKey] == -1)
+    if ($New[$IdKey] == -1){
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit.'];
       return;
+    }
 
     $Index = 0;
     $Indexid = 'Coachesid';
@@ -1514,6 +1502,10 @@ class CEagle
                      VALUES ('$New[$Indexid]','$key','$Old[$key]','$New[$key]','$_SESSION[username]')";
         //Excute the sql Statement
         $Result = self::doQuery($sqlStmt);
+        if(!$Result){
+          $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit 2.'];
+          return;
+        }
       }
       $Index++;
     }
@@ -1529,7 +1521,7 @@ class CEagle
     $ProjectName = addslashes($Scout['ProjectName']);
 
       // TODO: Need to ensure that we do not have a duplicate scout
-      self::IsScoutIDinDB($Scout['MemberId']);
+      //self::IsScoutIDinDB($Scout['MemberId']);
 
 
       $sqlStmt = "UPDATE `scouts` SET `FirstName`='$Scout[FirstName]',`PreferredName`='$Scout[PreferredName]',`MiddleName`='$Scout[MiddleName]',`LastName`='$Scout[LastName]', `is_deleted`='$Scout[is_deleted]',
@@ -1548,6 +1540,9 @@ class CEagle
 
     // Excute the sql Statement
     $Result = self::doQuery($sqlStmt);
+    if(!$Result){
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID: ' . $MemberID . '. Please contact the system administrator.'];
+    }
     return $Result;
   }
   /*****************************************************************************
