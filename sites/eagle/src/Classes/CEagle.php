@@ -32,6 +32,13 @@ class CEagle
   private static $instances = [];
 
   /**
+   * Database connection instance.
+   *
+   * @var mysqli|null
+   */
+  private $dbConn = null;
+
+  /**
    * The Singleton's constructor should always be private to prevent direct
    * construction calls with the `new` operator.
    */
@@ -50,40 +57,6 @@ class CEagle
     throw new \Exception("Cannot unserialize a singleton.");
   }
 
-  public static function getConfigData()
-  {
-
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-      //ip from share internet
-      $ip = $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-      //ip pass from proxy
-      $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-      $ip = $_SERVER['REMOTE_ADDR'];
-    }
-
-    $userdata  = array();
-
-    if (!strcmp($ip, "::1")) {
-      $userdata['dbhost'] = "localhost";
-      $userdata['dbuser'] = "root";
-      $userdata['dbpass'] = "";
-      $userdata['db']     = "eagle";
-    } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-      $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-      $userdata['dbuser'] = "eagleadmin";
-      $userdata['dbpass'] = "w3frRWX^&q";
-      $userdata['db']     = "eagle";
-    } else {
-      $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-      $userdata['dbuser'] = "webuser1";
-      $userdata['dbpass'] = "webuser1";
-      $userdata['db']     = "eagle";
-    }
-
-    return $userdata;
-  }
   /**
    * This is the static method that controls the access to the singleton
    * instance. On the first run, it creates a singleton object and places it
@@ -110,9 +83,10 @@ class CEagle
   private static function initConnection()
   {
     $db = self::getInstance();
-    $connConf = self::getConfigData();
-    $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
-    $db->dbConn->set_charset('utf8');
+    if(!self::checkDatabaseConnection($db->dbConn)){
+      $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+      $db->dbConn->set_charset('utf8');
+    }
     return $db;
   }
 
@@ -129,6 +103,19 @@ class CEagle
       error_log($strError, 0);
       return null;
     }
+  }
+  private static function checkDatabaseConnection($mysqli) {
+    // Check if connection object exists and no connection error
+    if ($mysqli instanceof mysqli && !$mysqli->connect_error) {
+        try {
+            // Test the connection with a lightweight query
+            $mysqli->query("SELECT 1");
+            return true; // Connection is active
+        } catch (Exception $e) {
+            return false; // Query failed, connection is not active
+        }
+    }
+    return false; // No connection object or initial connection error
   }
   /**************************************************************************
    **
@@ -1431,7 +1418,6 @@ class CEagle
       $strSelected = ($rowCoach['Coachesid'] == $Coach) ? "selected" : "";
 
       echo sprintf("<option %s value=" . $rowCoach['Coachesid'] . ">" . $rowCoach['Last_Name'] . " " . $rowCoach['First_Name'] . "</option>", $strSelected);
-      //echo "option value=".$rowCoach['Last_Name'].">".$rowCoach['First_Name']."/option";
     }
     echo "</select>";
   }
