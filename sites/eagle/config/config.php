@@ -30,12 +30,12 @@ define('ENV', 'development'); // Set to 'production' on live server
 if (defined('ENV') && ENV === 'development') {
   ini_set('display_errors', 1);
   ini_set('log_errors', 1);
-  ini_set('error_log', 'https: //shared.centennialdistrict.co/logs/error.log');
+  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/php_errors.log');
   error_reporting(E_ALL);
 } else {
   ini_set('display_errors', 0);
   ini_set('log_errors', 1);
-  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/php_errors.log');
 }
 
 

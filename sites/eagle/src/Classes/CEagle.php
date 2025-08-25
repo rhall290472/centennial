@@ -497,6 +497,33 @@ class CEagle
   }
   /******************************************************************************
    *
+   * This function will search database for a scout.
+   * 
+   *****************************************************************************/
+
+  public static function IsScoutIDinDB($MemberID)
+  {
+    $sqlFind = "SELECT * FROM `scouts` WHERE `MemberId`='$MemberID'";
+    $Results = self::doQuery($sqlFind);
+
+    $NumFound = mysqli_num_rows($Results);
+    if ($NumFound >= 1) {
+      // Handle the fact the we have duplicates.
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID: ' . $MemberID . '. Please contact the system administrator.'];
+      exit;
+    }
+
+    if (mysqli_num_rows($Results))
+      $Found = true;
+    else
+      $Found = false;
+
+    return $Found;
+
+
+  }
+  /******************************************************************************
+   *
    * This function will insert a life scout into the database.
    * 
    *****************************************************************************/
@@ -1501,40 +1528,9 @@ class CEagle
     //Check to see if this is a new scout, 
     $ProjectName = addslashes($Scout['ProjectName']);
 
-    if ($Scout['Scoutid'] == -1) {
-      // It's a new scout so INSERT
-      // Text becomes to long have to split it for now.
-      $sqlStmt = "INSERT INTO `scouts`(`FirstName`, `PreferredName`, `MiddleName`, `LastName`,  `is_deleted`,
-                `Email`, `Phone_Home`, `Phone_Mobile`,
-                `Street_Address`, `City`, `State`, `Zip`,
-                `UnitType`, `UnitNumber`, `District`, `Gender`, `AgeOutDate`, `MemberId`,
-                `ULFirst`, `ULLast`, `ULPhone`, `ULEmail`,
-                `created_by` ) VALUES 
-                ('$Scout[FirstName]','$Scout[PreferredName]','$Scout[MiddleName]','$Scout[LastName]', '$Scout[is_deleted]',
-                '$Scout[Email]','$Scout[Phone_Home]','$Scout[Phone_Mobile]',
-                '$Scout[Street_Address]','$Scout[City]','$Scout[State]','$Scout[Zip]',
-                '$Scout[UnitType]','$Scout[UnitNumber]','$Scout[District]','$Scout[Gender]', '$Scout[AgeOutDate]', '$Scout[MemberId]',
-                '$Scout[ULFirst]','$Scout[ULLast]','$Scout[ULPhone]','$Scout[ULEmail]',
-                '$_SESSION[username]' )";
-
-      $Result = self::doQuery($sqlStmt);
-
-      // Now need to find the Scoutid for the new record just created.
-      $sqlGetId = "SELECT * FROM `scouts` WHERE `FirstName`='$Scout[FirstName]' AND `LastName`='$Scout[LastName]'";
-      $Result = self::doQuery($sqlGetId);
-      $rowScout = $Result->fetch_assoc();
-
-
-      $sqlStmt = "UPDATE `scouts` SET `CCFirst`='$Scout[CCFirst]',`CCLast`='$Scout[CCLast]',`CCPhone`='$Scout[CCPhone]',`CCEmail`='$Scout[CCEmail]',
-                `GuardianFirst`='$Scout[GuardianFirst]',`GuardianLast`='$Scout[GuardianLast]',`GuardianPhone`='$Scout[GuardianPhone]',
-                `GuardianEmail`='$Scout[GuardianEmail]', `GuardianRelationship`='$Scout[GuardianRelationship]', 
-                `AgedOut`='$Scout[AgedOut]',`AttendedPreview`='$Scout[AttendedPreview]',`ProjectApproved`='$Scout[ProjectApproved]',`ProjectDate`='$Scout[ProjectDate]',`Coach`='$Scout[Coach]',`ProjectHours`='$Scout[ProjectHours]',
-                `Beneficiary`='$Scout[Beneficiary]',`ProjectName`='$ProjectName',
-                `BOR`='$Scout[BOR]',`BOR_Member`='$Scout[BOR_Member]',`Eagled`='$Scout[Eagled]',
-                `Notes`='$Scout[Notes]' WHERE `Scoutid` = '$rowScout[Scoutid]' ";
-    } else {
-
       // TODO: Need to ensure that we do not have a duplicate scout
+      self::IsScoutIDinDB($Scout['MemberId']);
+
 
       $sqlStmt = "UPDATE `scouts` SET `FirstName`='$Scout[FirstName]',`PreferredName`='$Scout[PreferredName]',`MiddleName`='$Scout[MiddleName]',`LastName`='$Scout[LastName]', `is_deleted`='$Scout[is_deleted]',
             `Email`='$Scout[Email]', `Phone_Home`='$Scout[Phone_Home]',`Phone_Mobile`='$Scout[Phone_Mobile]',
@@ -1548,7 +1544,7 @@ class CEagle
             `Beneficiary`='$Scout[Beneficiary]',`ProjectName`='$ProjectName',
             `BOR`='$Scout[BOR]',`BOR_Member`='$Scout[BOR_Member]',`Eagled`='$Scout[Eagled]',
             `Notes`='$Scout[Notes]',`updated_by`='$_SESSION[username]' WHERE `Scoutid` = '$Scout[Scoutid]'";
-    }
+//    }
 
     // Excute the sql Statement
     $Result = self::doQuery($sqlStmt);
@@ -1599,6 +1595,7 @@ class CEagle
     return mysqli_num_rows($Result);
   }
   /*****************************************************************************
+   *
    *
    *
    *****************************************************************************/
