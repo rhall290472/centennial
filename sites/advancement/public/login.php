@@ -17,8 +17,8 @@
 !/                                                                            \!
 !==============================================================================!
 */
-
-load_template('/src/Classes/CAdvancement.php');
+load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
+//load_template('/src/Classes/CAdvancement.php');
 $CAdvancement = CAdvancement::getInstance();
 
 // Check if the user is already logged in, redirect to home page

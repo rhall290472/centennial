@@ -19,7 +19,7 @@
 !==============================================================================!
 */
 
-load_class(BASE_PATH . '/src/Classes/CAdvancement.php');
+load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 //load_class(BASE_PATH . '/src/Classes/cAdultLeaders.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 

@@ -37,7 +37,7 @@ if (!session_id()) {
   }
 }
 
-load_class(BASE_PATH.'/src/Classes/CAdvancement.php');
+load_class(SHARED_PATH.'/src/Classes/CAdvancement.php');
 $CAdvancement = CAdvancement::getInstance();
 ?>
 

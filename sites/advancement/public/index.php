@@ -31,7 +31,9 @@ load_class(__DIR__ . '/../src/Classes/CUnit.php');
 load_class(__DIR__ . '/../src/Classes/CPack.php');
 load_class(__DIR__ . '/../src/Classes/CTroop.php');
 load_class(__DIR__ . '/../src/Classes/CCrew.php');
-load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+//load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
+
 //load_class(__DIR__ . '/../src/Classes/cAdultLeaders.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
@@ -153,7 +155,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+    //load_class(__DIR__ . '/../src/Classes/CAdvancement.php');
+    load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
+
     $CAdvancement = CAdvancement::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);

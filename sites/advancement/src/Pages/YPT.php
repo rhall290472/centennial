@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_class(BASE_PATH . '/src/Classes/CAdvancement.php');
+load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 $SortBy = isset($_GET['btn']) ? $_GET['btn'] : 'ByLastName';

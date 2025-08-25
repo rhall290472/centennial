@@ -26,7 +26,8 @@ if (!session_id()) {
 !==============================================================================!
 */
 
-include_once('CAdvancement.php');
+//include_once('CAdvancement.php');
+load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 
 /**
  * The Singleton class defines the `GetInstance` method that serves as an
