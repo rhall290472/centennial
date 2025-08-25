@@ -71,7 +71,7 @@ $ProjectName = $ProjectName ?? '';
           </div>
           <div class="col-2">
             <label>State</label>
-            <input type="text" name="element_3_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['State'] ?? ''); ?>" />
+            <input type="text" name="element_3_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['State'] ?? 'CO'); ?>" />
           </div>
           <div class="col-2">
             <label>Zip</label>
