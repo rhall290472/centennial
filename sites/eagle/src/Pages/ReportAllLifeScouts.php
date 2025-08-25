@@ -104,96 +104,109 @@ $csv_output = "";
     </div>
   </form>
 
-  <center>
-    <h4>Report of All Life Scouts in Database</h4>
-    <div class="table-responsive">
-      <table id="lifeScoutsTable" class="table table-striped">
-        <thead>
-          <tr>
-            <th>Unit Type</th>
-            <th>Unit#</th>
-            <th>Gender</th>
-            <th>Name</th>
-            <th>Age Out Date</th>
-            <th>Project Approval</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          $queryScout = "SELECT * FROM `scouts` 
+  <h4 class="text-center">Report of All Life Scouts in Database</h4>
+  <div class="table-responsive">
+    <table id="lifeScoutsTable" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Unit Type</th>
+          <th>Unit#</th>
+          <th>Gender</th>
+          <th>Name</th>
+          <th>Age Out Date</th>
+          <th>Project Approval</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $queryScout = "SELECT * FROM `scouts` 
                                WHERE (`is_deleted` IS NULL OR `is_deleted`='0') 
                                AND (`Eagled` IS NULL OR `Eagled`='0') 
                                AND (`AgedOut` IS NULL OR `AgedOut`='0')";
-          if ($SelectedUnit && $SelectedNum) {
-            $queryScout .= " AND (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum')";
-          }
-          $queryScout .= " ORDER BY STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
+        if ($SelectedUnit && $SelectedNum) {
+          $queryScout .= " AND (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum')";
+        }
+        $queryScout .= " ORDER BY STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
 
-          if (!$Scout = $cEagle->doQuery($queryScout)) {
-            $msg = "Error: doQuery()";
-            $cEagle->function_alert($msg);
-          }
+        if (!$Scout = $cEagle->doQuery($queryScout)) {
+          $msg = "Error: doQuery()";
+          $cEagle->function_alert($msg);
+        }
 
-          while ($rowScout = $Scout->fetch_assoc()) {
-            $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-            echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
-              htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
-              htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
-              "<a href=index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . ">" .
-              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
-              htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
-              htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
+        while ($rowScout = $Scout->fetch_assoc()) {
+          $FirstName = $cEagle->GetScoutPreferredName($rowScout);
+          echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
+            htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
+            htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
+            "<a href=index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . ">" .
+            htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
+            htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
+            htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
 
-            $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
-              htmlspecialchars($rowScout["Gender"]) . "," .
-              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "," .
-              htmlspecialchars($rowScout["AgeOutDate"]) . "," .
-              htmlspecialchars($rowScout["Email"] ?? '') . "," .
-              htmlspecialchars($rowScout["ULFirst"] . " " . $rowScout["ULLast"] ?? '') . "," .
-              htmlspecialchars($rowScout["ULEmail"] ?? '') . "," .
-              htmlspecialchars($rowScout["CCFirst"] . " " . $rowScout["CCLast"] ?? '') . "," .
-              htmlspecialchars($rowScout["CCEmail"] ?? '') . "," .
-              htmlspecialchars($rowScout["ProjectDate"] ?? '') . "\n";
-          }
-          ?>
-        </tbody>
-      </table>
-    </div>
-    <b>For a total of <?php echo mysqli_num_rows($Scout); ?> scouts</b>
+          $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
+            htmlspecialchars($rowScout["Gender"]) . "," .
+            htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "," .
+            htmlspecialchars($rowScout["AgeOutDate"]) . "," .
+            htmlspecialchars($rowScout["Email"] ?? '') . "," .
+            htmlspecialchars($rowScout["ULFirst"] . " " . $rowScout["ULLast"] ?? '') . "," .
+            htmlspecialchars($rowScout["ULEmail"] ?? '') . "," .
+            htmlspecialchars($rowScout["CCFirst"] . " " . $rowScout["CCLast"] ?? '') . "," .
+            htmlspecialchars($rowScout["CCEmail"] ?? '') . "," .
+            htmlspecialchars($rowScout["ProjectDate"] ?? '') . "\n";
+        }
+        ?>
+      </tbody>
+    </table>
 
-    <form class="d-print-none" name="export" action="export.php" method="post" style="padding: 20px;">
-      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-      <input class="btn btn-primary btn-sm" style="width:220px" type="submit" value="Export table to CSV">
-      <input type="hidden" value="<?php echo htmlspecialchars($csv_hdr); ?>" name="csv_hdr">
-      <input type="hidden" value="<?php echo htmlspecialchars($csv_output); ?>" name="csv_output">
-    </form>
-  </center>
+  <form class="d-print-none d-flex justify-content-center" name="export" action="export.php" method="post" style="padding: 20px;">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+    <input class="btn btn-primary btn-sm" style="width:220px" type="submit" value="Export table to CSV">
+    <input type="hidden" value="<?php echo htmlspecialchars($csv_hdr); ?>" name="csv_hdr">
+    <input type="hidden" value="<?php echo htmlspecialchars($csv_output); ?>" name="csv_output">
+  </form>
 
 
   <script>
     $(document).ready(function() {
+      // Custom sorting for MM/DD/YYYY date format
+      $.fn.dataTable.ext.order['date-us'] = function(data) {
+        if (!data || data.trim() === '') {
+          return 0; // Handle empty or null dates
+        }
+        // Ensure date matches MM/DD/YYYY format
+        var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+        var match = data.match(datePattern);
+        if (!match) {
+          console.warn('Invalid date format for:', data);
+          return 0; // Treat invalid dates as lowest priority
+        }
+        var month = match[1].padStart(2, '0');
+        var day = match[2].padStart(2, '0');
+        var year = match[3];
+        return parseInt(year + month + day);
+      };
+
       $('#lifeScoutsTable').DataTable({
-        "paging": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
+        "paging": false, // Display all rows
+        "searching": true, // Enable search
+        "ordering": true, // Enable sorting
+        "info": true, // Show table info
+        "autoWidth": false, // Disable auto width for Bootstrap
         "columnDefs": [{
-            "type": "date",
-            "targets": 4, // AgeOutDate column
-            "render": function(data, type, row) {
-              if (type === 'sort') {
-                return moment(data, 'MM/DD/YYYY').format('YYYYMMDD');
-              }
-              return data;
-            }
+            "type": "date-us",
+            "targets": 4 // AgeOutDate column (0-based index)
           },
           {
             "orderable": true,
-            "targets": "_all"
+            "targets": "_all" // Ensure all columns are sortable
           }
         ]
       });
     });
   </script>
+  <!-- Moment.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+  <!-- DataTables DateTime Sorting Plugin -->
+  <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
 </div>
