@@ -65,37 +65,16 @@ if (!isset($_SESSION['csrf_token'])) {
 		if (!$result_ByScout) {
 			$cEagle->function_alert("ERROR: $cEagle->doQuery($queryScouts)");
 		}
-		?>
-		<form method=post>
-			<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-			<div class="form-row px-5">
-				<div class="col-2">
-					<label for='ScoutName'>Choose a Scout: </label>
-					<select class='form-control' id='ScoutName' name='ScoutName'>
-						<option value=\"\" </option>
-							<?php
-							while ($rowScouts = $result_ByScout->fetch_assoc()) {
-								echo "<option value=" . $rowScouts['Scoutid'] . ">" . $rowScouts['LastName'] . " " . $rowScouts['FirstName'] . "</option>";
-								echo "option value=" . $rowScouts['LastName'] . ">" . $rowScouts['LastName'] . "/option";
-							}
-							?>
-						<option value=-1>Add New</option>
-					</select>
-				</div>
-				<div class="col-2 py-4">
-					<input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
-				</div>
-			</div>
-			</div>
-		</form>
-		<?php
+
+		$cEagle->SelectScout(); 
+
 		//#####################################################
 		//
 		// Check to see if user as Submitted the form.
 		//
 		//#####################################################
-		if (isset($_POST['SubmitScout']) && isset($_POST['ScoutName']) && $_POST['ScoutName'] !== '') {
-			$SelectedScout = $_POST['ScoutName']; // Get name of Counselor selected
+		if (isset($_POST['SubmitScout']) && isset($_POST['ScoutID']) && $_POST['ScoutID'] !== '') {
+			$SelectedScout = $_POST['ScoutID']; // Get name of Scout selected
 
 			// If new scout selected must create a record in the database for them.
 			// There is a blank record in the database with Scoutid set to -1 for this.

@@ -13,37 +13,55 @@
         <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): { ?>
 
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Packs
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Life Scouts
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
-                <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
-                <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
+                <li><a class="dropdown-item" href="?page=edit-scout">Edit/Update Scout</a></li>
+                <li><a class="dropdown-item" href="?page=active-life">All Active Life Scouts</a></li>
+                <li><a class="dropdown-item" href="?page=audit-scout">Audit Scout</a></li>
               </ul>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle <?php echo in_array($page, ['troop-summary', 'troop-below-goal', 'troop-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Troops
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Eagles
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
-                <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
-                <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
+                <li><a class="dropdown-item" href="?page=eagle-unit">Eagle Scouts By Unit</a></li>
+                <li><a class="dropdown-item" href="?page=eagle-year">Eagle Scouts By Year</a></li>
               </ul>
             </li>
-            <li class="nav-item">
-              <a class="nav-link <?php echo $page === 'crew-summary' ? 'active' : ''; ?>" href="?page=crew-summary">Crews</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Coaches
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?page=coach-edit">Edit/Update Coach</a></li>
+                <li><a class="dropdown-item" href="?page=coach-active">Active Coaches</a></li>
+                <li><a class="dropdown-item" href="?page=coach-inactive">Inactive Coaches</a></li>
+                <li><a class="dropdown-item" href="?page=coach-ypt">YPT Report</a></li>
+                <li><a class="dropdown-item" href="?page=coach-report">Workload Report</a></li>
+                <li><a class="dropdown-item" href="?page=coach-history">Workload History</a></li>
+              </ul>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle <?php echo in_array($page, ['adv-report', 'membership-report']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Reports
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?page=adv-report">Advancement Report</a></li>
-                <li><a class="dropdown-item" href="?page=membership-report">Membership Report</a></li>
+                <li><a class="dropdown-item" href="?page=report-allscouts">All Scouts</a></li>
+                <li><a class="dropdown-item" href="?page=report-ageout">Age Out</a></li>
+                <li><a class="dropdown-item" href="?page=report-agedout">Aged Out</a></li>
+                <li><a class="dropdown-item" href="?page=report-nopreview">Did Not Attend Preview</a></li>
+                <li><a class="dropdown-item" href="?page=report-noproposal">Lacking Proposal Approval</a></li>
+                <li><a class="dropdown-item" href="?page=report-proposal">Approved Proposal</a></li>
+                <li><a class="dropdown-item" href="?page=report-ebor">Pending EBOR</a></li>
               </ul>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="?page=logout">Logout</a>
+            </li>
+
           <?php }
         else: { ?>
             <li class="nav-item">

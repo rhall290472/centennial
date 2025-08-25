@@ -207,7 +207,7 @@ $ProjectName = $ProjectName ?? '';
             <label>Beneficiary</label>
             <input type="text" name="element_8_1" class="form-control" value="<?php echo htmlspecialchars($Beneficiary); ?>" />
           </div>
-          <div class="col-4">
+          <div class="col-8">
             <label>Project Name</label>
             <input type="text" name="element_8_2" class="form-control" value="<?php echo htmlspecialchars($ProjectName); ?>" />
           </div>
@@ -222,7 +222,7 @@ $ProjectName = $ProjectName ?? '';
             <label>District BOR Member</label>
             <?php $cEagle->DisplayCoach("element_9_2", $rowScout['BOR_Member'] ?? ''); ?>
           </div>
-          <div class="col-1 py-4">
+          <div class="col-2 py-4">
             <div class="form-check">
               <label class="form-check-label" for="element_9_3">Eagled</label>
               <input class="form-check-input" type="hidden" name="element_9_3" value="0" />
@@ -239,7 +239,7 @@ $ProjectName = $ProjectName ?? '';
         </div>
 
         <div class="form-row">
-          <div class="col-8">
+          <div class="col-12">
             <label>Notes</label>
             <textarea name="element_10_1" class="form-control" id="Notes" rows="10"><?php echo htmlspecialchars($rowScout['Notes'] ?? ''); ?></textarea>
           </div>
