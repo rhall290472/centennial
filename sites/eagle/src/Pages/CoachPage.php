@@ -24,10 +24,10 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 // Handle POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
   if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    header("Location: index.php?page=coach-edit");
+    $cEagle->GotoURL("Location: index.php?page=coach-edit");
     exit;
   }
 
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   // Handle edit form submission
-  if (isset($_POST['SubmitForm'])) {
+  if (isset($_POST['SubmitForm']) || isset($_GET['Coachesid'])) {
     if ($_POST['SubmitForm'] === 'Cancel') {
       unset($_SESSION['selected_coach_id']);
       $_SESSION['feedback'] = ['type' => 'info', 'message' => 'Form submission cancelled.'];
@@ -141,6 +141,9 @@ $stmt->execute();
 $result_ByCoaches = $stmt->get_result();
 
 // Fetch selected coach data
+if(isset($_GET['Coachesid'])){
+  $SelectedCoach = $_GET['Coachesid'];
+}
 //$SelectedCoach = isset($_SESSION['selected_coach_id']) ? (int)$_SESSION['selected_coach_id'] : (isset($_GET['Coachesid']) ? (int)$_GET['Coachesid'] : null);
 $rowCoach = null;
 if ($SelectedCoach) {
