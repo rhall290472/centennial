@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_template('/src/Classes/CEagle.php');
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $CEagle = CEagle::getInstance();
 
 // Check if the user is already logged in, redirect to home page

@@ -27,7 +27,8 @@ if (!defined('SITE_URL')) {
 }
 
 // Load required classes for file uploads
-load_class(__DIR__ . '/../src/Classes/CEagle.php');
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
+
 
 
 // Simple routing based on 'page' GET parameter
@@ -80,7 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CEagle.php');
+    load_class(BASE_PATH . '/src/Classes/CEagle.php');
+
     $CEagle = CEagle::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);

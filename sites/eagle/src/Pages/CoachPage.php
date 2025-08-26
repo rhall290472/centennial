@@ -2,7 +2,7 @@
 /*
  * Copyright 2017-2025 - Richard Hall (Proprietary Software).
  */
-load_class(BASE_PATH . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 
 if (!session_id()) {
@@ -33,17 +33,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Handle coach selection
   if (isset($_POST['SubmitCoach'], $_POST['CoachName'])) {
     $SelectedCoach = (int)$_POST['CoachName'];
-    
+
     if ($SelectedCoach === -1) {
-      $stmt = $cEagle->getDbConn()->prepare("INSERT INTO coaches (Active) VALUES (0)");
-      $stmt->execute();
-      $SelectedCoach = $cEagle->getDbConn()->insert_id;
-      $stmt->close();
+      // Create a new scout record MUST use the same db conn for the insert and the insert_id functions !!!!!!!!!!
+      $dbConn = $cEagle->getDbConn();
+      if ($dbConn === null) {
+        error_log("Error: Database connection is null after insert in coach table.");
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to connect to database after creating coach record.'];
+        $cEagle->GotoURL('index.php?page=coach-edit');
+        exit;
+      }
+      $queryInsert = "INSERT INTO coaches (is_deleted) VALUES (0)";
+      $result = $dbConn->query($queryInsert);
+      if ($result) {
+
+        $SelectedCoach = mysqli_insert_id($dbConn);
+        $_SESSION['selected_coach_id'] = $SelectedCoach;
+        if ($SelectedCoach === 0) {
+          error_log("Error: mysqli_insert_id returned 0 for query: $queryInsert. Connection ID: " . spl_object_id($dbConn));
+          // Check if record was actually inserted
+          $checkQuery = "SELECT Coachesid  FROM coaches WHERE is_deleted = 0 ORDER BY Coachesid DESC LIMIT 1";
+          $checkResult = $cEagle->doQuery($checkQuery);
+          if ($checkResult && $row = $checkResult->fetch_assoc()) {
+            error_log("Found Coachesid: " . $row['Coachesid']);
+            $SelectedCoach = $row['Coachesid'];
+          } else {
+            error_log("No record found for recent insert.");
+            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'New coach record created, but failed to retrieve Scoutid. Check if Scoutid is set to AUTO_INCREMENT.'];
+            $cEagle->GotoURL('index.php?page=coach-edit');
+            exit;
+          }
+        }
+      } else {
+        $error = mysqli_error($cEagle->getDbConn());
+        error_log("Error: INSERT query failed: $queryInsert, Error: $error");
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to create new coach record: ' . $error];
+        $cEagle->GotoURL('index.php?page=coach-edit');
+        exit;
+      }
     }
-    $_SESSION['selected_coach_id'] = $SelectedCoach;
-    $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Coach selected successfully.'];
-    // header("Location: index.php?page=coach-edit");
-    // exit;
   }
 
   // Handle edit form submission

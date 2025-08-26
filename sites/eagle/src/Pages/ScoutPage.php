@@ -6,7 +6,7 @@
  */
 
 /// Load classes
-load_class(BASE_PATH . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 $cLeaders = AdultLeaders::getInstance();

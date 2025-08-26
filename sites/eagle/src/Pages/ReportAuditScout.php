@@ -19,7 +19,7 @@
 */
 
 // Load CEagle class (aligned with index.php's load_class)
-load_class(BASE_PATH . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 //load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');

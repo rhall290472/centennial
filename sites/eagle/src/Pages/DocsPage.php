@@ -2,7 +2,7 @@
 /*
  * Copyright 2017-2025 - Richard Hall (Proprietary Software).
  */
-require_once __DIR__ . '/../Classes/CEagle.php';
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 
 if (!session_id()) {
