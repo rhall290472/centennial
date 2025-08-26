@@ -29,7 +29,7 @@
 			$is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 			if ($is_localhost) {
 			?>
-	    	<link href="https://localhost/centennial/shared/assets/styles.css" rel="stylesheet" />
+	    	<link href= <?php echo SHARED_ASSETS_URL . '/styles.css'; ?> rel="stylesheet" />
 	    <?php
 			} else { ?>
 	    	<link href="https://shared.centennialdistrict.co/assets/styles.css" rel="stylesheet" />
