@@ -4,6 +4,7 @@
  */
 load_class(BASE_PATH . '/src/Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
+$SelectedCoach = null;
 
 if (!session_id()) {
   session_start([
@@ -31,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   // Handle coach selection
-  if (isset($_POST['SubmitCoach'], $_POST['CoachName'])) {
-    $SelectedCoach = (int)$_POST['CoachName'];
+  if (isset($_POST['SubmitCoach'], $_POST['Coachesid'])) {
+    $SelectedCoach = (int)$_POST['Coachesid'];
 
     if ($SelectedCoach === -1) {
       // Create a new scout record MUST use the same db conn for the insert and the insert_id functions !!!!!!!!!!
@@ -140,7 +141,7 @@ $stmt->execute();
 $result_ByCoaches = $stmt->get_result();
 
 // Fetch selected coach data
-$SelectedCoach = isset($_SESSION['selected_coach_id']) ? (int)$_SESSION['selected_coach_id'] : (isset($_GET['Coachesid']) ? (int)$_GET['Coachesid'] : null);
+//$SelectedCoach = isset($_SESSION['selected_coach_id']) ? (int)$_SESSION['selected_coach_id'] : (isset($_GET['Coachesid']) ? (int)$_GET['Coachesid'] : null);
 $rowCoach = null;
 if ($SelectedCoach) {
   $stmt = $cEagle->getDbConn()->prepare("SELECT * FROM coaches WHERE Coachesid = ?");
@@ -170,11 +171,10 @@ if ($SelectedCoach) {
   <?php endif; ?>
 
   <form action="index.php?page=coach-edit" method="post">
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
     <div class="form-row">
       <div class="col-3">
         <label for="CoachName">Choose a Coach:</label>
-        <select class="form-control" id="CoachName" name="CoachName">
+        <select class="form-control" id="Coachesid" name="Coachesid">
           <?php while ($row = $result_ByCoaches->fetch_assoc()): ?>
             <option value="<?php echo $row['Coachesid']; ?>" <?php echo ($row['Coachesid'] == $SelectedCoach) ? 'selected' : ''; ?>>
               <?php echo htmlspecialchars($row['Last_Name'] . " " . $row['First_Name']); ?>
@@ -185,6 +185,7 @@ if ($SelectedCoach) {
         </select>
       </div>
       <div class="col-3 py-4">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input class="btn btn-primary btn-sm" type="submit" name="SubmitCoach" value="Select Coach">
       </div>
     </div>
@@ -223,11 +224,11 @@ if ($SelectedCoach) {
           </div>
           <div class="col-2">
             <label for="element_2_2">Home Phone</label>
-            <input type="tel" name="element_2_2" class="form-control" pattern="[0-9]" value="<?php echo htmlspecialchars($rowCoach['Phone_Home'] ?? ''); ?>">
+            <input type="tel" name="element_2_2" class="form-control" value="<?php echo htmlspecialchars($rowCoach['Phone_Home'] ?? ''); ?>" />
           </div>
           <div class="col-2">
             <label for="element_2_3">Mobile Phone</label>
-            <input type="tel" name="element_2_3" class="form-control" pattern="[0-9]" value="<?php echo htmlspecialchars($rowCoach['Phone_Mobile'] ?? ''); ?>">
+            <input type="tel" name="element_2_3" class="form-control" value="<?php echo htmlspecialchars($rowCoach['Phone_Mobile'] ?? ''); ?>">
           </div>
           <div class="col-2">
             <label for="element_1_4">BSA ID</label>
@@ -250,7 +251,7 @@ if ($SelectedCoach) {
           </div>
           <div class="col-1">
             <label for="element_3_4">Zip</label>
-            <input type="text" name="element_3_4" class="form-control" pattern="[0-9]{5}" value="<?php echo htmlspecialchars($rowCoach['Zip'] ?? ''); ?>">
+            <input type="text" name="element_3_4" class="form-control" value="<?php echo htmlspecialchars($rowCoach['Zip'] ?? ''); ?>" />
           </div>
         </div>
 
