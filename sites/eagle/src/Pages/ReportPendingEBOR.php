@@ -5,7 +5,7 @@
  */
 
 // Load classes
-load_class(__DIR__ . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 
 // Session check
@@ -46,54 +46,59 @@ if (!isset($_SESSION['csrf_token'])) {
   <h4 class="text-center">Scouts with Pending EBOR's</h4>
   <div class="table-responsive">
     <table id="pendingEBORTable" class="table table-striped">
-      <tr>
-        <th>Unit Type</th>
-        <th>Unit#</th>
-        <th>Gender</th>
-        <th>Name</th>
-        <th>District Member</th>
-        <th>EBOR Date</th>
-        <th>District Board Member</th>
-      </tr>
+      <thead>
+        <tr>
+          <th>Unit Type</th>
+          <th>Unit#</th>
+          <th>Gender</th>
+          <th>Name</th>
+          <th>District Member</th>
+          <th>EBOR Date</th>
+          <th>District Board Member</th>
+        </tr>
+      </thead>
+      <tbody>
 
 
-      <?php
-      $queryScout = "SELECT * FROM `scouts`  WHERE 
+        <?php
+        $queryScout = "SELECT * FROM `scouts`  WHERE 
         (`BOR`<>'') AND
         (`Eagled` IS NULL OR `Eagled`='0') AND 
         (`AgedOut` IS NULL OR `AgedOut`='0') 
         ORDER BY `UnitType`, `UnitNumber`,`LastName`";
 
-      if (!$Scout = $cEagle->doQuery($queryScout)) {
-        $msg = "Error: doQuery(" . $queryScout . ") Returned an error";
-        error_log($msg);
-        exit();
-      }
-
-      while ($rowScout = $Scout->fetch_assoc()) {
-        $queryCoaches = "SELECT * FROM `coaches` WHERE `Coachesid`='$rowScout[BOR_Member]'";
-        $result_ByCoaches = $cEagle->doQuery($queryCoaches);
-        $rowCoach = $result_ByCoaches->fetch_assoc();
-        if ($rowCoach) {
-          $Coachid = $rowCoach['Coachesid'];
-          $CoachFirst = $cEagle->GetPreferredName($rowCoach);
-          $CoachLast = $rowCoach['Last_Name'];
-        } else {
-          $Coachid = -1;
-          $CoachFirst = "";
-          $CoachLast = "";
+        if (!$Scout = $cEagle->doQuery($queryScout)) {
+          $msg = "Error: doQuery(" . $queryScout . ") Returned an error";
+          error_log($msg);
+          exit();
         }
 
-        $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-        echo "<tr><td>" .
-          $rowScout["UnitType"] . "</td><td>" .
-          $rowScout["UnitNumber"] . "</td><td>" .
-          $rowScout["Gender"] . "</td><td>" .
-          "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
-          $rowCoach['Last_Name'] . " " . $rowCoach['First_Name']  . "</td><td>" .
-          $rowScout["BOR"] . "</td><td>" .
-          "<a href=./CoachPage.php?Coachesid=" . $Coachid . ">" . $CoachFirst . " " . $CoachLast . "</td></tr>";
-      } ?>
+        while ($rowScout = $Scout->fetch_assoc()) {
+          $queryCoaches = "SELECT * FROM `coaches` WHERE `Coachesid`='$rowScout[BOR_Member]'";
+          $result_ByCoaches = $cEagle->doQuery($queryCoaches);
+          $rowCoach = $result_ByCoaches->fetch_assoc();
+          if ($rowCoach) {
+            $Coachid = $rowCoach['Coachesid'];
+            $CoachFirst = $cEagle->GetPreferredName($rowCoach);
+            $CoachLast = $rowCoach['Last_Name'];
+          } else {
+            $Coachid = -1;
+            $CoachFirst = "";
+            $CoachLast = "";
+          }
+
+          $FirstName = $cEagle->GetScoutPreferredName($rowScout);
+          echo "<tr><td>" .
+            $rowScout["UnitType"] . "</td><td>" .
+            $rowScout["UnitNumber"] . "</td><td>" .
+            $rowScout["Gender"] . "</td><td>" .
+            "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
+            $rowCoach['Last_Name'] . " " . $rowCoach['First_Name']  . "</td><td>" .
+            $rowScout["BOR"] . "</td><td>" .
+            "<a href=./CoachPage.php?Coachesid=" . $Coachid . ">" . $CoachFirst . " " . $CoachLast . "</td></tr>";
+        } ?>
+
+      </tbody>
     </table>
 
 

@@ -2,7 +2,7 @@
 /*
  * Copyright 2017-2025 - Richard Hall (Proprietary Software).
  */
-load_class(__DIR__ . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 
 if (!session_id()) {
@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Handle coach selection
   if (isset($_POST['SubmitCoach'], $_POST['CoachName'])) {
     $SelectedCoach = (int)$_POST['CoachName'];
+    
     if ($SelectedCoach === -1) {
       $stmt = $cEagle->getDbConn()->prepare("INSERT INTO coaches (Active) VALUES (0)");
       $stmt->execute();

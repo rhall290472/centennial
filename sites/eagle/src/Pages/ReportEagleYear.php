@@ -5,7 +5,7 @@
  */
 
 /// Load classes
-load_class(__DIR__ . '/../Classes/CEagle.php');
+load_class(BASE_PATH . '/../Classes/CEagle.php');
 $cEagle = CEagle::getInstance();
 
 // Session check
