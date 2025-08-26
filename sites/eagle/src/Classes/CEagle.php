@@ -1321,7 +1321,7 @@ class CEagle
    *****************************************************************************/
   public static function DisplayDistrict($District)
   {
-    $strSelected = (empty($District) || !in_array($District, ['Alpine', 'BlackFeather', 'Centennial', 'Frontier', 'MajesticMesas', 'ThreeRivers', 'Valley', 'Other', 'Unknow'])) ? "selected" : "";
+    $strSelected = !strcmp('Centennial', $District) ? "selected" : "";
     echo sprintf("<option %s value='Centennial'>Centennial</option>", $strSelected);
     $strSelected = !strcmp("Alpine", $District) ? "selected" : "";
     echo sprintf("<option %s value='Alpine'>Alpine</option>", $strSelected);

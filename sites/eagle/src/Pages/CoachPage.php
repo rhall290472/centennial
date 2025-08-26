@@ -175,16 +175,18 @@ if ($SelectedCoach) {
       <div class="col-3">
         <label for="CoachName">Choose a Coach:</label>
         <select class="form-control" id="Coachesid" name="Coachesid">
+          <option value="">-- Select a Coach --</option>
+          <option value="-1">Add New</option>
           <?php while ($row = $result_ByCoaches->fetch_assoc()): ?>
             <option value="<?php echo $row['Coachesid']; ?>" <?php echo ($row['Coachesid'] == $SelectedCoach) ? 'selected' : ''; ?>>
               <?php echo htmlspecialchars($row['Last_Name'] . " " . $row['First_Name']); ?>
             </option>
           <?php endwhile;
           $result_ByCoaches->free(); ?>
-          <option value="-1">Add New</option>
+
         </select>
       </div>
-      <div class="col-3 py-4">
+      <div class="col-3 py-45">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input class="btn btn-primary btn-sm" type="submit" name="SubmitCoach" value="Select Coach">
       </div>
@@ -270,7 +272,7 @@ if ($SelectedCoach) {
               <?php $cEagle->DisplayDistrict($rowCoach['District'] ?? ''); ?>
             </select>
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <label for="element_4_3">YPT Expires</label>
             <input type="date" name="element_4_3" class="form-control" value="<?php echo htmlspecialchars($rowCoach['YPT_Expires'] ?? ''); ?>">
           </div>
@@ -281,7 +283,7 @@ if ($SelectedCoach) {
               <?php $cEagle->DisplayGender($rowCoach['Gender'] ?? ''); ?>
             </select>
           </div>
-          <div class="form-check py-4 px-3">
+          <div class="form-check py-4 px-4">
             <input type="checkbox" name="element_4_5" id="element_4_5" class="form-check-input" value="1" <?php echo ($rowCoach['Trained'] ?? 0) ? 'checked' : ''; ?>>
             <label class="form-check-label" for="element_4_5">Trained</label>
           </div>
