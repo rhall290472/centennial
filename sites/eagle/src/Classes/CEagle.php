@@ -271,8 +271,8 @@ class CEagle
     // Fill up the drop down with unit names
   ?>
     <form method=post>
-      <div class="form-row px-5">
-        <div class="col-1">
+      <div class="form-row">
+        <div class="col-2">
 
           <label for='Unit'>&nbsp;</label>
           <select class='form-control' id='Unit' name='Unit'>
