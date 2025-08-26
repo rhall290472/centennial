@@ -83,7 +83,7 @@ class CEagle
   private static function initConnection()
   {
     $db = self::getInstance();
-    if(!self::checkDatabaseConnection($db->dbConn)){
+    if (!self::checkDatabaseConnection($db->dbConn)) {
       $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
       $db->dbConn->set_charset('utf8');
     }
@@ -104,16 +104,17 @@ class CEagle
       return null;
     }
   }
-  private static function checkDatabaseConnection($mysqli) {
+  private static function checkDatabaseConnection($mysqli)
+  {
     // Check if connection object exists and no connection error
     if ($mysqli instanceof mysqli && !$mysqli->connect_error) {
-        try {
-            // Test the connection with a lightweight query
-            $mysqli->query("SELECT 1");
-            return true; // Connection is active
-        } catch (Exception $e) {
-            return false; // Query failed, connection is not active
-        }
+      try {
+        // Test the connection with a lightweight query
+        $mysqli->query("SELECT 1");
+        return true; // Connection is active
+      } catch (Exception $e) {
+        return false; // Query failed, connection is not active
+      }
     }
     return false; // No connection object or initial connection error
   }
@@ -267,24 +268,24 @@ class CEagle
       self::function_alert("ERROR: SelectUnit()");
       exit();
     }
-    // Fill up the drop down with merit badge names
+    // Fill up the drop down with unit names
   ?>
     <form method=post>
-      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <div class="form-row px-5">
         <div class="col-1">
 
           <label for='Unit'>&nbsp;</label>
           <select class='form-control' id='Unit' name='Unit'>
-            <option value=\"\" </option>
-              <?php
-              while ($rowUnit = $ResultUnits->fetch_assoc()) {
-                echo "<option value=" . $rowUnit['UnitType'] . "," . $rowUnit['UnitNumber'] . ">" . $rowUnit['UnitType'] . " " . $rowUnit['UnitNumber'] . "</option>";
-              }
-              ?>
+            <option value=""></option>
+            <?php
+            while ($rowUnit = $ResultUnits->fetch_assoc()) {
+              echo "<option value=" . $rowUnit['UnitType'] . "-" . $rowUnit['UnitNumber'] . ">" . $rowUnit['UnitType'] . " " . $rowUnit['UnitNumber'] . "</option>";
+            }
+            ?>
           </select>
         </div>
-        <div class="col-1 py-4">
+        <div class="col-1 py-45">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
           <input class='btn btn-primary btn-sm' type='submit' name='SubmitUnit' placeholder='Unit' value='SubmitUnit' />
         </div>
       </div>
@@ -1076,76 +1077,76 @@ class CEagle
      * YPT_Centennial_02.csv file.
      * 
      *===========================================================================*/
-//  public static function ImportYPT($fileName)
-//  {
-//    /* Defined the file columns, which change */
-//    $colProgram = 1;
-//    $colFirstName = 5;
-//    $colMiddleName = 6;
-//    $colLastName = 7;
-//    $colMemberID = 8;
-//    $colYPTCurrent = 10;
-//    $colYPTExpires = 11;
-//    $colStreet = 15;
-//    $colCity = 16;
-//    $colState = 17;
-//    $colZip = 18;
-//    $colEmail = 19;
-//    $colPhone = 20;
-//
-//    $RecordsInError = 0;
-//    $RecordsInserted = 0;
-//    $RecordsUpdated = 0;
-//    $SkippedRecords = 0;
-//
-//    $filePath = "Data/" . $fileName;
-//    $UserName = $_SESSION['username'];
-//    $row = 0;
-//    if (($handle = fopen($filePath, "r")) !== FALSE) {
-//      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-//        if ($row < 8) {
-//          $row++;
-//          continue;
-//        }
-//        $Program = $data[$colProgram];
-//        //if($Program != ""){$SkippedRecords++;continue;}
-//
-//        $FirstName  = addslashes(ucfirst(strtolower($data[$colFirstName])));
-//        $MiddleName = addslashes(ucfirst(strtolower($data[$colMiddleName])));
-//        $LastName   = addslashes(ucfirst(strtolower($data[$colLastName])));
-//        $MemberID   = $data[$colMemberID];
-//        $YPTStatus  = $data[$colYPTCurrent];
-//        $YPTExpires = $data[$colYPTExpires];
-//        $Street     = $data[$colStreet];
-//        $City       = $data[$colCity];
-//        $State      = $data[$colState];
-//        $Zip        = $data[$colZip];
-//        $Email      = $data[$colEmail];
-//        $Phone      = self::CleanPhoneNumber($data[$colPhone]);
-//
-//        $sqlCoach = "UPDATE `coaches` SET `First_Name`=' $FirstName',`Middle_Name`='$MiddleName',`Last_Name`='$LastName',`Member_ID`='$MemberID',
-//                    `Email_Address`='$Email',`Phone_Home`='$Phone',`Street_Address`='$Street ',
-//                    `City`='$City',`State`='$State',`Zip`='$Zip',`YPT_Expires`='$YPTExpires',`updated_by`='$UserName'
-//                    WHERE `Member_ID`='$MemberID'";
-//
-//        if (!self::doQuery($sqlCoach)) {
-//          $RecordsInError++;
-//          echo $sqlCoach;
-//        } else {
-//          $RecordsUpdated++;
-//        }
-//      }
-//      fclose($handle);
-//      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
-//      self::function_alert($Usermsg);
-//      if ($RecordsInError == 0)
-//        self::GotoURL('index.php');
-//    } else {
-//      $Usermsg = "Failed to open file";
-//      self::function_alert($Usermsg);
-//    }
-//    return $RecordsInError;
-//  }
+  //  public static function ImportYPT($fileName)
+  //  {
+  //    /* Defined the file columns, which change */
+  //    $colProgram = 1;
+  //    $colFirstName = 5;
+  //    $colMiddleName = 6;
+  //    $colLastName = 7;
+  //    $colMemberID = 8;
+  //    $colYPTCurrent = 10;
+  //    $colYPTExpires = 11;
+  //    $colStreet = 15;
+  //    $colCity = 16;
+  //    $colState = 17;
+  //    $colZip = 18;
+  //    $colEmail = 19;
+  //    $colPhone = 20;
+  //
+  //    $RecordsInError = 0;
+  //    $RecordsInserted = 0;
+  //    $RecordsUpdated = 0;
+  //    $SkippedRecords = 0;
+  //
+  //    $filePath = "Data/" . $fileName;
+  //    $UserName = $_SESSION['username'];
+  //    $row = 0;
+  //    if (($handle = fopen($filePath, "r")) !== FALSE) {
+  //      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+  //        if ($row < 8) {
+  //          $row++;
+  //          continue;
+  //        }
+  //        $Program = $data[$colProgram];
+  //        //if($Program != ""){$SkippedRecords++;continue;}
+  //
+  //        $FirstName  = addslashes(ucfirst(strtolower($data[$colFirstName])));
+  //        $MiddleName = addslashes(ucfirst(strtolower($data[$colMiddleName])));
+  //        $LastName   = addslashes(ucfirst(strtolower($data[$colLastName])));
+  //        $MemberID   = $data[$colMemberID];
+  //        $YPTStatus  = $data[$colYPTCurrent];
+  //        $YPTExpires = $data[$colYPTExpires];
+  //        $Street     = $data[$colStreet];
+  //        $City       = $data[$colCity];
+  //        $State      = $data[$colState];
+  //        $Zip        = $data[$colZip];
+  //        $Email      = $data[$colEmail];
+  //        $Phone      = self::CleanPhoneNumber($data[$colPhone]);
+  //
+  //        $sqlCoach = "UPDATE `coaches` SET `First_Name`=' $FirstName',`Middle_Name`='$MiddleName',`Last_Name`='$LastName',`Member_ID`='$MemberID',
+  //                    `Email_Address`='$Email',`Phone_Home`='$Phone',`Street_Address`='$Street ',
+  //                    `City`='$City',`State`='$State',`Zip`='$Zip',`YPT_Expires`='$YPTExpires',`updated_by`='$UserName'
+  //                    WHERE `Member_ID`='$MemberID'";
+  //
+  //        if (!self::doQuery($sqlCoach)) {
+  //          $RecordsInError++;
+  //          echo $sqlCoach;
+  //        } else {
+  //          $RecordsUpdated++;
+  //        }
+  //      }
+  //      fclose($handle);
+  //      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
+  //      self::function_alert($Usermsg);
+  //      if ($RecordsInError == 0)
+  //        self::GotoURL('index.php');
+  //    } else {
+  //      $Usermsg = "Failed to open file";
+  //      self::function_alert($Usermsg);
+  //    }
+  //    return $RecordsInError;
+  //  }
   /*=============================================================================
      *
      * Import Life scouts 
@@ -1232,66 +1233,66 @@ class CEagle
      * YPT report
      * 
      *===========================================================================*/
-//  public static function ImportUnitLeaders($fileName)
-//  {
-//
-//    $colDistrict = 0;
-//    $colProgram = 1;
-//    $colFirstName = 5;
-//    $colMiddleName = 6;
-//    $colLastName = 7;
-//    $colMemberID = 8;
-//    $colPosition = 9;
-//    $colYPTCurrent = 10;
-//    $colYPTExpires = 11;
-//    $colStreet = 15;
-//    $colCity = 16;
-//    $colState = 17;
-//    $colZip = 18;
-//    $colEmail = 19;
-//    $colPhone = 20;
-//
-//
-//    $RecordsInError = 0;
-//    $RecordsInserted = 0;
-//    $RecordsUpdated = 0;
-//    $SkippedRecords = 0;
-//    $Unit = array();
-//
-//
-//    $filePath = "Data/" . $fileName;
-//    //$UserName = $_SESSION['username'];
-//    $row = 0;
-//    if (($handle = fopen($filePath, "r")) !== FALSE) {
-//      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-//        if (count($data) < 9) {
-//          continue;
-//        } // Skip until we get to data!
-//        if ($data[$colProgram] == "Troop") {
-//          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Troop")
-//            self::UpdateCC($data);
-//          else if ($data[$colPosition] == "Scoutmaster" && $data[$colProgram] == "Troop") {
-//            self::UpdateUL($data);
-//          }
-//        } else if ($data[$colProgram] == "Crew") {
-//          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Crew")
-//            self::UpdateCC($data);
-//          else if ($data[$colPosition] == "Venturing Crew Advisor" && $data[$colProgram] == "Crew") {
-//            self::UpdateUL($data);
-//          }
-//        }
-//      }
-//      fclose($handle);
-//      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
-//      self::function_alert($Usermsg);
-//      if ($RecordsInError == 0)
-//        self::GotoURL('index.php');
-//    } else {
-//      $Usermsg = "Failed to open file";
-//      self::function_alert($Usermsg);
-//    }
-//    return $RecordsInError;
-//  }
+  //  public static function ImportUnitLeaders($fileName)
+  //  {
+  //
+  //    $colDistrict = 0;
+  //    $colProgram = 1;
+  //    $colFirstName = 5;
+  //    $colMiddleName = 6;
+  //    $colLastName = 7;
+  //    $colMemberID = 8;
+  //    $colPosition = 9;
+  //    $colYPTCurrent = 10;
+  //    $colYPTExpires = 11;
+  //    $colStreet = 15;
+  //    $colCity = 16;
+  //    $colState = 17;
+  //    $colZip = 18;
+  //    $colEmail = 19;
+  //    $colPhone = 20;
+  //
+  //
+  //    $RecordsInError = 0;
+  //    $RecordsInserted = 0;
+  //    $RecordsUpdated = 0;
+  //    $SkippedRecords = 0;
+  //    $Unit = array();
+  //
+  //
+  //    $filePath = "Data/" . $fileName;
+  //    //$UserName = $_SESSION['username'];
+  //    $row = 0;
+  //    if (($handle = fopen($filePath, "r")) !== FALSE) {
+  //      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+  //        if (count($data) < 9) {
+  //          continue;
+  //        } // Skip until we get to data!
+  //        if ($data[$colProgram] == "Troop") {
+  //          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Troop")
+  //            self::UpdateCC($data);
+  //          else if ($data[$colPosition] == "Scoutmaster" && $data[$colProgram] == "Troop") {
+  //            self::UpdateUL($data);
+  //          }
+  //        } else if ($data[$colProgram] == "Crew") {
+  //          if ($data[$colPosition] == "Committee Chair" && $data[$colProgram] == "Crew")
+  //            self::UpdateCC($data);
+  //          else if ($data[$colPosition] == "Venturing Crew Advisor" && $data[$colProgram] == "Crew") {
+  //            self::UpdateUL($data);
+  //          }
+  //        }
+  //      }
+  //      fclose($handle);
+  //      $Usermsg = "Records Updated Inserted: " . $RecordsInserted . " Updated: " . $RecordsUpdated . " Errors: " . $RecordsInError;
+  //      self::function_alert($Usermsg);
+  //      if ($RecordsInError == 0)
+  //        self::GotoURL('index.php');
+  //    } else {
+  //      $Usermsg = "Failed to open file";
+  //      self::function_alert($Usermsg);
+  //    }
+  //    return $RecordsInError;
+  //  }
   /******************************************************************************
    *
    *
@@ -1462,7 +1463,7 @@ class CEagle
    *****************************************************************************/
   public static function CreateAudit($Old, $New, $IdKey)
   {
-    if ($New[$IdKey] == -1){
+    if ($New[$IdKey] == -1) {
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit.'];
       return;
     }
@@ -1487,7 +1488,7 @@ class CEagle
                      VALUES ('$New[$Indexid]','$key','$Old[$key]','$New[$key]','$_SESSION[username]')";
         //Excute the sql Statement
         $Result = self::doQuery($sqlStmt);
-        if(!$Result){
+        if (!$Result) {
           $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit 2.'];
           return;
         }
@@ -1505,11 +1506,11 @@ class CEagle
     //Check to see if this is a new scout, 
     $ProjectName = addslashes($Scout['ProjectName']);
 
-      // TODO: Need to ensure that we do not have a duplicate scout
-      //self::IsScoutIDinDB($Scout['MemberId']);
+    // TODO: Need to ensure that we do not have a duplicate scout
+    //self::IsScoutIDinDB($Scout['MemberId']);
 
 
-      $sqlStmt = "UPDATE `scouts` SET `FirstName`='$Scout[FirstName]',`PreferredName`='$Scout[PreferredName]',`MiddleName`='$Scout[MiddleName]',`LastName`='$Scout[LastName]', `is_deleted`='$Scout[is_deleted]',
+    $sqlStmt = "UPDATE `scouts` SET `FirstName`='$Scout[FirstName]',`PreferredName`='$Scout[PreferredName]',`MiddleName`='$Scout[MiddleName]',`LastName`='$Scout[LastName]', `is_deleted`='$Scout[is_deleted]',
             `Email`='$Scout[Email]', `Phone_Home`='$Scout[Phone_Home]',`Phone_Mobile`='$Scout[Phone_Mobile]',
             `Street_Address`='$Scout[Street_Address]',`City`='$Scout[City]',`State`='$Scout[State]',`Zip`='$Scout[Zip]',
             `UnitType`='$Scout[UnitType]',`UnitNumber`='$Scout[UnitNumber]', `District`='$Scout[District]',`Gender`='$Scout[Gender]', `AgeOutDate`='$Scout[AgeOutDate]',`MemberId`='$Scout[MemberId]',
@@ -1521,12 +1522,12 @@ class CEagle
             `Beneficiary`='$Scout[Beneficiary]',`ProjectName`='$ProjectName',
             `BOR`='$Scout[BOR]',`BOR_Member`='$Scout[BOR_Member]',`Eagled`='$Scout[Eagled]',
             `Notes`='$Scout[Notes]',`updated_by`='$_SESSION[username]' WHERE `Scoutid` = '$Scout[Scoutid]'";
-//    }
+    //    }
 
     // Excute the sql Statement
     $Result = self::doQuery($sqlStmt);
-    if(!$Result){
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID: ' . $MemberID . '. Please contact the system administrator.'];
+    if (!$Result) {
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID:  Please contact the system administrator.'];
     }
     return $Result;
   }
