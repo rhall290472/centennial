@@ -108,55 +108,55 @@ if (!isset($_SESSION['csrf_token'])) {
       </tbody>
     </table>
 
-    <form name="export" action="../export.php" method="post" style="padding: 20px;">
+    <form class="d-print-none d-flex justify-content-center" name="export" action="../export.php" method="post" style="padding: 20px;">
       <input class='btn btn-primary btn-sm' style="width:220px" type="submit" value="Export table to CSV">
       <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
       <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
     </form>
 
-  <script>
-    $(document).ready(function() {
-      // Custom sorting for MM/DD/YYYY date format
-      $.fn.dataTable.ext.order['date-us'] = function(data) {
-        if (!data || data.trim() === '') {
-          return 0; // Handle empty or null dates
-        }
-        // Ensure date matches MM/DD/YYYY format
-        var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-        var match = data.match(datePattern);
-        if (!match) {
-          console.warn('Invalid date format for:', data);
-          return 0; // Treat invalid dates as lowest priority
-        }
-        var month = match[1].padStart(2, '0');
-        var day = match[2].padStart(2, '0');
-        var year = match[3];
-        return parseInt(year + month + day);
-      };
-
-      $('#yptCoachesTable').DataTable({
-        "paging": false, // Display all rows
-        "searching": true, // Enable search
-        "ordering": true, // Enable sorting
-        "info": true, // Show table info
-        "autoWidth": false, // Disable auto width for Bootstrap
-        "columnDefs": [{
-            "type": "date-us",
-            "targets": 5 // YPT column (0-based index)
-          },
-          {
-            "orderable": true,
-            "targets": "_all" // Ensure all columns are sortable
+    <script>
+      $(document).ready(function() {
+        // Custom sorting for MM/DD/YYYY date format
+        $.fn.dataTable.ext.order['date-us'] = function(data) {
+          if (!data || data.trim() === '') {
+            return 0; // Handle empty or null dates
           }
-        ]
-      });
-    });
-  </script>
-  <!-- Moment.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+          // Ensure date matches MM/DD/YYYY format
+          var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+          var match = data.match(datePattern);
+          if (!match) {
+            console.warn('Invalid date format for:', data);
+            return 0; // Treat invalid dates as lowest priority
+          }
+          var month = match[1].padStart(2, '0');
+          var day = match[2].padStart(2, '0');
+          var year = match[3];
+          return parseInt(year + month + day);
+        };
 
-  <!-- DataTables DateTime Sorting Plugin -->
-  <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+        $('#yptCoachesTable').DataTable({
+          "paging": false, // Display all rows
+          "searching": true, // Enable search
+          "ordering": true, // Enable sorting
+          "info": true, // Show table info
+          "autoWidth": false, // Disable auto width for Bootstrap
+          "columnDefs": [{
+              "type": "date-us",
+              "targets": 5 // YPT column (0-based index)
+            },
+            {
+              "orderable": true,
+              "targets": "_all" // Ensure all columns are sortable
+            }
+          ]
+        });
+      });
+    </script>
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+    <!-- DataTables DateTime Sorting Plugin -->
+    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
 
   </div>
 </body>

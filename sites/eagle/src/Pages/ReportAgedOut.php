@@ -44,35 +44,8 @@ if (!isset($_SESSION['csrf_token'])) {
   <?php   //Allow selection by Unit
   $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE `AgedOut`='1' AND (`is_deleted` IS NULL OR `is_deleted`='0') ORDER BY `UnitType` ASC, `UnitNumber` ASC";
 
-
-  // if (!$Units = $cEagle->doQuery($qryUnits)) {
-    // $msg = "Error: doQuery()";
-    // $cEagle->function_alert($msg); 
-  // }
-
   $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
   ?>
-
-  <!-- <form method=post> -->
-    <!-- <input type="hidden" name="csrf_token" value="<?php //echo htmlspecialchars($_SESSION['csrf_token']); ?>"> -->
-    <!-- <div class="form-row px-5"> -->
-      <!-- <div class="col-2"> -->
-        <!-- <label for='Unit'>Choose a Unit: </label> -->
-        <!-- <select class='form-control' id='Unit' name='Unit'> -->
-          <!-- <option value=\"\" </option> -->
-            <!-- <?php //-->
-            // while ($rowUnits = $Units->fetch_assoc()) {
-              // echo "<option value=" . $rowUnits['UnitType'] . "-" . $rowUnits['UnitNumber'] . ">" . $rowUnits['UnitType'] . " " . $rowUnits['UnitNumber'] . "</option>";
-            // }
-            // ?>
-        <!-- </select> -->
-      <!-- </div> -->
-      <!-- <div class="col-2 py-4"> -->
-        <!-- <input class='btn btn-primary btn-sm' type='submit' name='SubmitUnit' value='Select Unit' /> -->
-      <!-- </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
-  <!-- </form> -->
   <?php
 
   //#####################################################
@@ -138,7 +111,7 @@ if (!isset($_SESSION['csrf_token'])) {
       </tbody>
     </table>
 
-    <form name="export" action="../export.php" method="post" style="padding: 20px;">
+    <form class="d-print-none d-flex justify-content-center" name="export" action="../export.php" method="post" style="padding: 20px;">
       <input class='btn btn-primary btn-sm' style="width:220px" type="submit" value="Export table to CSV">
       <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
       <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
