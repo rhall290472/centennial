@@ -27,59 +27,46 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 if (!isset($_SESSION['csrf_token'])) {
   $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
 
-<body>
-  <?php
-  //Allow selection by Unit
-  $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
+//Allow selection by Unit
+$qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
         (`Eagled` IS NULL OR `Eagled`='0') AND (`AgedOut` IS NULL OR `AgedOut`='0') AND (`is_deleted` IS NULL OR `is_deleted`='0')
         ORDER BY `UnitType` ASC, `UnitNumber` ASC";
+?>
+<?php
+//#####################################################
+//
+// Check to see if user as Submitted the form.
+//
+//#####################################################
+$SelectedUnit = false;
+$SelectedNum = false;
+if (isset($_POST['SubmitUnit']) && isset($_POST['Unit']) && $_POST['Unit'] !== '-') {
+  $SelectedUnit = strtok($_POST['Unit'], '-'); // Get name of Counselor selected
+  $SelectedNum = strtok('-');
+  $_SESSION['feedback'] = ['type' => 'success', 'message' => "Unit {$SelectedUnit} {$SelectedNum} selected."];
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
+}elseif (isset($_POST['SubmitUnit']) && (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'])) {
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+}
 
+// Store and clear feedback
+$feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
+unset($_SESSION['feedback']);
 
-  if (!$Units = $cEagle->doQuery($qryUnits)) {
-    $msg = "Error: doQuery()";
-    $cEagle->function_alert($msg);
-  }
-  ?>
-  </br>
-  <form method=post>
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <div class="form-row px-4">
-      <div class="col-1">
-        <label for='Unit'>Choose a Unit: </label>
-        <select class='form-control' id='Unit' name='Unit'>
-          <?php
-          while ($rowUnits = $Units->fetch_assoc()) {
-            echo "<option value=" . $rowUnits['UnitType'] . "-" . $rowUnits['UnitNumber'] . ">" . $rowUnits['UnitType'] . " " . $rowUnits['UnitNumber'] . "</option>";
-            //echo "option value=".$rowUnits['UnitType'] . " " . $rowUnits['UnitNumber'] .">".$rowUnits['UnitNumber']."/option";
-          }
-          ?>
-        </select>
-      </div>
-      <div class="col-2 py-4">
-        <input class='btn btn-primary btn-sm' type='submit' name='SubmitUnit' value='Select Unit' />
-      </div>
+$csv_hdr = "Unit, Gender, Name, Age Out Date, Scout Email, ULName, ELEMail, CCName, CCEmail, Project Approval";
+$csv_output = "";
+
+?>
+<div class="container-fluid">
+  <!-- Display Feedback -->
+  <?php if (!empty($feedback)): ?>
+    <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">
+      <?php echo htmlspecialchars($feedback['message']); ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    </div>
-  </form>
-  <?php
-  //#####################################################
-  //
-  // Check to see if user as Submitted the form.
-  //
-  //#####################################################
-  $SelectedUnit = false;
-  $SelectedNum = false;
-  if (isset($_POST['SubmitUnit']) && isset($_POST['Unit']) && $_POST['Unit'] !== '-') {
-    $SelectedUnit = strtok($_POST['Unit'], '-'); // Get name of Counselor selected
-    $SelectedNum = strtok('-');
-  }
-
-  $csv_hdr = "Unit, Gender, Name, Age Out Date, Scout Email, ULName, ELEMail, CCName, CCEmail, Project Approval";
-  $csv_output = "";
+  <?php endif;
+  $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
 
   ?>
 
@@ -201,5 +188,3 @@ if (!isset($_SESSION['csrf_token'])) {
       <!-- DataTables DateTime Sorting Plugin -->
       <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
   </div>
-</body>
-</html>

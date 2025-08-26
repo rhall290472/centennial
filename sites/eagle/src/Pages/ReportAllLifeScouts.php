@@ -71,7 +71,7 @@ $csv_hdr = "Unit,Gender,Name,Age Out Date,Scout Email,ULName,ELEmail,CCName,CCEm
 $csv_output = "";
 ?>
 
-<div class="container-fluid mt-5 pt-3">
+<div class="container-fluid">
   <!-- Display Feedback -->
   <?php if (!empty($feedback)): ?>
     <div class="alert alert-<?php echo htmlspecialchars($feedback['type']); ?> alert-dismissible fade show" role="alert">

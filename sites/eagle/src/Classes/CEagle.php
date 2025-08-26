@@ -259,9 +259,9 @@ class CEagle
      * This function will allow the user to select the units to view by.
      * 
      *===========================================================================*/
-  public static function SelectUnit($csrf_token)
+  public static function SelectUnit($qry, $csrf_token)
   {
-    $sqlUnits = "SELECT DISTINCT `UnitType`, `UnitNumber` FROM `scouts` ORDER BY `UnitType`, `UnitNumber`";
+    $sqlUnits = $qry;
 
     $ResultUnits = self::doQuery($sqlUnits);
     if (!$ResultUnits) {
