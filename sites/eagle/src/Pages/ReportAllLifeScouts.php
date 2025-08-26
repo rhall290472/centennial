@@ -50,10 +50,6 @@ $qryUnits = "SELECT DISTINCT UnitType, UnitNumber FROM scouts
              AND (`is_deleted` IS NULL OR `is_deleted`='0')
              ORDER BY `UnitType` ASC, `UnitNumber` ASC";
 
-if (!$Units = $cEagle->doQuery($qryUnits)) {
-  $msg = "Error: doQuery()";
-  $cEagle->function_alert($msg);
-}
 
 // Check for form submission
 $SelectedUnit = false;
@@ -82,27 +78,11 @@ $csv_output = "";
       <?php echo htmlspecialchars($feedback['message']); ?>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-  <?php endif; ?>
+  <?php endif; 
+  $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
+  
+  ?>
 
-  <form method="post">
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <div class="form-row px-5 d-print-none">
-      <div class="col-2">
-        <label for="Unit">Choose a Unit: </label>
-        <select class="form-control" id="Unit" name="Unit">
-          <option value="-">All Units</option>
-          <?php
-          while ($rowUnits = $Units->fetch_assoc()) {
-            echo "<option value='{$rowUnits['UnitType']}-{$rowUnits['UnitNumber']}'>{$rowUnits['UnitType']} {$rowUnits['UnitNumber']}</option>";
-          }
-          ?>
-        </select>
-      </div>
-      <div class="col-2 py-4">
-        <input class="btn btn-primary btn-sm" type="submit" name="SubmitUnit" value="Select Unit" />
-      </div>
-    </div>
-  </form>
 
   <h4 class="text-center">Report of All Life Scouts in Database</h4>
   <div class="table-responsive">
