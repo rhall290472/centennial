@@ -60,10 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST[
         <?php echo htmlspecialchars($feedback['message']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-    <?php endif; ?>
+    <?php endif; 
 
-
-    <?php $cEagle->SelectUnit($_SESSION['csrf_token']); ?>
+    $sqlUnits = "SELECT DISTINCT `UnitType`, `UnitNumber` FROM `scouts` ORDER BY `UnitType`, `UnitNumber`";
+     $cEagle->SelectUnit($sqlUnits, $_SESSION['csrf_token']); ?>
 
     <h4 class="text-center">Scouts who have Eagled (since 2017)</h4>
     <div class="table-responsive">
