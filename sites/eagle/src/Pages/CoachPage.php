@@ -23,20 +23,26 @@ if (!isset($_SESSION['csrf_token'])) {
   $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Handle POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
-  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+// Determine Coachesid from either POST or GET
+$SelectedCoach = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Coachesid'])) {
+  // Validate CSRF token for POST requests
+  if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
     $cEagle->GotoURL("Location: index.php?page=coach-edit");
     exit;
   }
+  $SelectedCoach = (int)$_POST['Coachesid'];
+} elseif (isset($_GET['Coachesid'])) {
+  $SelectedCoach = (int)$_GET['Coachesid'];
+}
 
+// Handle POST requests for coach selection or form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Handle coach selection
   if (isset($_POST['SubmitCoach'], $_POST['Coachesid'])) {
-    $SelectedCoach = (int)$_POST['Coachesid'];
-
     if ($SelectedCoach === -1) {
-      // Create a new scout record MUST use the same db conn for the insert and the insert_id functions !!!!!!!!!!
+      // Create a new coach record
       $dbConn = $cEagle->getDbConn();
       if ($dbConn === null) {
         error_log("Error: Database connection is null after insert in coach table.");
@@ -47,20 +53,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
       $queryInsert = "INSERT INTO coaches (is_deleted) VALUES (0)";
       $result = $dbConn->query($queryInsert);
       if ($result) {
-
         $SelectedCoach = mysqli_insert_id($dbConn);
         $_SESSION['selected_coach_id'] = $SelectedCoach;
         if ($SelectedCoach === 0) {
           error_log("Error: mysqli_insert_id returned 0 for query: $queryInsert. Connection ID: " . spl_object_id($dbConn));
-          // Check if record was actually inserted
-          $checkQuery = "SELECT Coachesid  FROM coaches WHERE is_deleted = 0 ORDER BY Coachesid DESC LIMIT 1";
+          $checkQuery = "SELECT Coachesid FROM coaches WHERE is_deleted = 0 ORDER BY Coachesid DESC LIMIT 1";
           $checkResult = $cEagle->doQuery($checkQuery);
           if ($checkResult && $row = $checkResult->fetch_assoc()) {
             error_log("Found Coachesid: " . $row['Coachesid']);
             $SelectedCoach = $row['Coachesid'];
           } else {
             error_log("No record found for recent insert.");
-            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'New coach record created, but failed to retrieve Scoutid. Check if Scoutid is set to AUTO_INCREMENT.'];
+            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'New coach record created, but failed to retrieve Coachesid. Check if Coachesid is set to AUTO_INCREMENT.'];
             $cEagle->GotoURL('index.php?page=coach-edit');
             exit;
           }
@@ -73,10 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
         exit;
       }
     }
+    $_SESSION['selected_coach_id'] = $SelectedCoach;
   }
 
   // Handle edit form submission
-  if (isset($_POST['SubmitForm']) || isset($_GET['Coachesid'])) {
+  if (isset($_POST['SubmitForm'])) {
     if ($_POST['SubmitForm'] === 'Cancel') {
       unset($_SESSION['selected_coach_id']);
       $_SESSION['feedback'] = ['type' => 'info', 'message' => 'Form submission cancelled.'];
@@ -84,22 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
       exit;
     }
 
-    $SelectedCoach = (int)$_POST['Coachesid'];
-    $stmt = $cEagle->getDbConn()->prepare("SELECT * FROM coaches WHERE Coachesid = ?");
-    $stmt->bind_param("i", $SelectedCoach);
-    $stmt->execute();
-    $Coach = $stmt->get_result();
-    $rowCoach = $Coach->fetch_assoc();
-    $stmt->close();
-
-    if (!$rowCoach) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Coach not found.'];
-      header("Location: index.php?page=coach-edit");
-      exit;
-    }
-
     $FormData = [
-      'Coachesid' => $rowCoach['Coachesid'],
+      'Coachesid' => $SelectedCoach,
       'First_Name' => htmlspecialchars(trim($cEagle->GetFormData('element_1_1'))),
       'PreferredName' => htmlspecialchars(trim($cEagle->GetFormData('element_1_1a'))),
       'Middle_Name' => htmlspecialchars(trim($cEagle->GetFormData('element_1_2'))),
@@ -129,8 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
     unset($_SESSION['selected_coach_id']);
     $cEagle->GotoURL('index.php?page=coach-edit');
-
-    //header("Location: index.php?page=coach-edit");
     exit;
   }
 }
@@ -141,10 +130,6 @@ $stmt->execute();
 $result_ByCoaches = $stmt->get_result();
 
 // Fetch selected coach data
-if(isset($_GET['Coachesid'])){
-  $SelectedCoach = $_GET['Coachesid'];
-}
-//$SelectedCoach = isset($_SESSION['selected_coach_id']) ? (int)$_SESSION['selected_coach_id'] : (isset($_GET['Coachesid']) ? (int)$_GET['Coachesid'] : null);
 $rowCoach = null;
 if ($SelectedCoach) {
   $stmt = $cEagle->getDbConn()->prepare("SELECT * FROM coaches WHERE Coachesid = ?");
@@ -163,6 +148,7 @@ if ($SelectedCoach) {
 }
 ?>
 
+<!-- HTML remains unchanged -->
 <div class="container-fluid mt-5 pt-3">
   <!-- Display Feedback from index.php -->
   <?php if (!empty($_SESSION['feedback'])): ?>
@@ -173,8 +159,9 @@ if ($SelectedCoach) {
     <?php unset($_SESSION['feedback']); ?>
   <?php endif; ?>
 
+  <h4>Select Coach</h4>
   <form action="index.php?page=coach-edit" method="post">
-    <div class="form-row">
+    <div class="form-row  px-5 d-print-none">
       <div class="col-3">
         <label for="CoachName">Choose a Coach:</label>
         <select class="form-control" id="Coachesid" name="Coachesid">
@@ -186,7 +173,6 @@ if ($SelectedCoach) {
             </option>
           <?php endwhile;
           $result_ByCoaches->free(); ?>
-
         </select>
       </div>
       <div class="col-3 py-45">
@@ -203,6 +189,7 @@ if ($SelectedCoach) {
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input type="hidden" name="Coachesid" value="<?php echo htmlspecialchars($rowCoach['Coachesid']); ?>">
 
+        <!-- Rest of the form remains unchanged -->
         <div class="form-row mb-3">
           <div class="col-2">
             <label for="element_1_1">First Name</label>

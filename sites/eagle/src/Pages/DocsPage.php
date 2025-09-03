@@ -55,7 +55,8 @@ if (is_dir($uploadDirectory) && is_readable($uploadDirectory)) {
     <?php else: ?>
       <ul>
         <?php foreach ($arrFiles as $file): ?>
-          <li><a href="<?php echo htmlspecialchars('Policy/' . $file); ?>" target="_blank"><?php echo htmlspecialchars($file); ?></a></li>
+          <!-- <li><a href="<?php //echo htmlspecialchars('Policy/' . $file); ?>" target="_blank"><?php //echo htmlspecialchars($file); ?></a></li> -->
+          <li><a href="<?php echo htmlspecialchars('../src/Pages/Policy/' . $file); ?>" target="_blank"><?php echo htmlspecialchars($file); ?></a></li>
         <?php endforeach; ?>
       </ul>
     <?php endif; ?>
