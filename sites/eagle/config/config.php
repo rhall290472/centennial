@@ -53,8 +53,6 @@ define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
-define('POLICY_DIR', BASE_PATH . '/../src/Pages/Policy//');
-
 $pageHome = SITE_URL . '/centennial/sites/eagle/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/eagle/src/Pages/contact.php';
 // Navigation links
