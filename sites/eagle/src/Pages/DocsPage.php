@@ -22,7 +22,7 @@ if (!isset($_SESSION['csrf_token'])) {
   $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-$uploadDirectory = __DIR__ . '/Policy/';
+$uploadDirectory = BASE_PATH . '/public/Policy/';
 $arrFiles = [];
 
 if (is_dir($uploadDirectory) && is_readable($uploadDirectory)) {
@@ -34,6 +34,7 @@ if (is_dir($uploadDirectory) && is_readable($uploadDirectory)) {
   }
   closedir($handle);
 } else {
+  echo $uploadDirectory;
   $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Policy directory is inaccessible.'];
 }
 ?>
@@ -56,7 +57,7 @@ if (is_dir($uploadDirectory) && is_readable($uploadDirectory)) {
       <ul>
         <?php foreach ($arrFiles as $file): ?>
           <!-- <li><a href="<?php //echo htmlspecialchars('Policy/' . $file); ?>" target="_blank"><?php //echo htmlspecialchars($file); ?></a></li> -->
-          <li><a href="<?php echo htmlspecialchars('../src/Pages/Policy/' . $file); ?>" target="_blank"><?php echo htmlspecialchars($file); ?></a></li>
+          <li><a href="<?php echo '../Policy/'. $file; ?>" target="_blank"><?php echo htmlspecialchars($file); ?></a></li>
         <?php endforeach; ?>
       </ul>
     <?php endif; ?>
