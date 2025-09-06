@@ -27,7 +27,7 @@ if (!defined('SITE_URL')) {
 }
 
 // Load required classes for file uploads
-load_class(__DIR__ . '/../src/Classes/CUnit.php');
+load_class(SHARED_PATH . 'src/Classes/CUnit.php');
 load_class(__DIR__ . '/../src/Classes/CPack.php');
 load_class(__DIR__ . '/../src/Classes/CTroop.php');
 load_class(__DIR__ . '/../src/Classes/CCrew.php');
@@ -327,10 +327,10 @@ if (!isset($_SESSION['csrf_token'])) {
 
 <body>
   <!-- Navbar -->
-  <?php load_template("/src/Templates/navbar.php"); ?>
+  <?php load_template("/src/Templates/navbar.php", ['page' => $page]); ?>
 
   <!-- Sidebar -->
-  <?php load_template("/src/Templates/sidebar.php"); ?>
+  <?php load_template("/src/Templates/sidebar.php", ['page' => $page]); ?>
 
   <!-- Main Content -->
   <main class="main-content">

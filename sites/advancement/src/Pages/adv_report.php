@@ -20,7 +20,7 @@
 
 load_class(BASE_PATH . '/src/Classes/CPack.php');
 load_class(BASE_PATH . '/src/Classes/CTroop.php');
-load_class(BASE_PATH . '/src/Classes/CUnit.php');
+load_class(SHARED_PATH .'src/Classes/CUnit.php');
 
 $CPack = CPack::getInstance();
 $CTroop = CTroop::getInstance();

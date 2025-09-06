@@ -112,22 +112,23 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-    function load_template($file)
+    function load_template($file, $vars = [])
     {
         $path = BASE_PATH . $file;
         if (file_exists($path)) {
+            extract($vars); // Extract variables into the current scope
             require_once $path;
         } else {
             error_log("Template $file is missing.");
             if (defined('ENV') && ENV === 'development') {
                 echo 'Template ' . $path . ' is missing.</br>';
                 die('Template $file is missing.');
-            } else
+            } else {
                 die('An error occurred. Please try again later.');
+            }
         }
     }
-}
-// Class loader function
+}// Class loader function
 if (!function_exists('load_class')) {
     function load_class($file)
     {
