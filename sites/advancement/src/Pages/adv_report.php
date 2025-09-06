@@ -132,7 +132,6 @@ try {
     <div class="row">
       <div class="col-2">
         <form action="index.php?page=adv-report" method="POST">
-          <p class="mb-0">Select Year</p>
           <?php
           try {
             $CTroop->SelectYear();
