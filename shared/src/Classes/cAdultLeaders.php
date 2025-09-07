@@ -87,8 +87,8 @@ class AdultLeaders
 
     if (!strcmp($ip, "::1")) {
       $userdata['dbhost'] = "localhost";
-      $userdata['dbuser'] = "webuser";
-      $userdata['dbpass'] = "webuser";
+      $userdata['dbuser'] = "root";
+      $userdata['dbpass'] = "";
       $userdata['db']     = "centennial";
     } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
