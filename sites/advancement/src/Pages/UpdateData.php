@@ -56,7 +56,7 @@ $allowed_updates = [
 	'Updateypt' => [
 		'title' => 'Update YPT',
 		'description' => 'Lists all members whose YPT have expired or never taken under the selected org. This function will insert/update the YPT status Data.',
-		'file' => 'YPT_Centennial_02.csv'
+		'file' => 'SYT_Centennial_02.csv'
 	],
 	'UpdateVenturing' => [
 		'title' => 'Update Venturing',

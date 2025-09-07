@@ -376,7 +376,7 @@ class UNIT extends CAdvancement
             } else {
               // New Unit add it to database
               $sqlInsertTotal = "INSERT INTO `membershiptotals`(`DistrictName`, `SubDistrict`, `Unit`, `UnitID`, `Gender`, 
-              `Chartered_Org`, `Total_Youth`, `Total_Adults`, `Adults_Last_Year`, `Expire_Date` ) 
+              `Chartered_Org`, `Total_Youth`, `Total_Adults`, `Expire_Date` ) 
               VALUES ('$data[$col_districtname]','$data[$col_subdistrictname]','$Unit','$data[$col_unitid]','$data[$col_genderaccepted]',
               '$data[$col_communityorganization]', '$data[$col_qttyouth]','$data[$col_qttadultvolunteers]','$ReformattedDate')";
 
