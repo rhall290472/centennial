@@ -1111,12 +1111,6 @@ class AdultLeaders
             while (($data = fgetcsv($handle, 1000, ",")) !== false) {
               $row++;
               // Skip empty rows
-              if (empty($data) || count($data) < 7) {
-                $Error++;
-                $RecordsInError++;
-                error_log("UpdateFunctionalRole: Skipping empty or invalid row $row in $fileName");
-                continue;
-              }
 
               // Extract report date from row 5 (configurable if needed)
               if ($row === 5) {
@@ -1125,7 +1119,13 @@ class AdultLeaders
               }
 
               // Skip rows before data (e.g., headers, metadata)
-              if ($row < 9) {
+              if ($row < 8) {
+                continue;
+              }
+              if (empty($data) || count($data) < 7) {
+                $Error++;
+                $RecordsInError++;
+                error_log("UpdateFunctionalRole: Skipping empty or invalid row $row in $fileName");
                 continue;
               }
 
@@ -1144,7 +1144,7 @@ class AdultLeaders
               }
 
               // Find matching record
-              $sqlFind = "SELECT id FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+              $sqlFind = "SELECT idx FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
               $stmt = mysqli_prepare($dbConn, $sqlFind);
               if (!$stmt) {
                 throw new Exception("Failed to prepare SELECT statement: " . mysqli_error($dbConn));
@@ -1157,7 +1157,7 @@ class AdultLeaders
 
               if ($numRows === 1) {
                 // Update functional role
-                $sqlUpdate = "UPDATE  SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+                $sqlUpdate = "UPDATE  trainedleader SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
                 $stmt = mysqli_prepare($dbConn, $sqlUpdate);
                 if (!$stmt) {
                   throw new Exception("Failed to prepare UPDATE statement: " . mysqli_error($dbConn));
@@ -1171,11 +1171,15 @@ class AdultLeaders
                   error_log("UpdateFunctionalRole: Failed to update row $row: " . mysqli_error($dbConn));
                 }
                 mysqli_stmt_close($stmt);
+              } else if ($unit === null) {
+                // Will end up here is the FunctionalRoleAssignementReport has a displayedname is ==
+                // to Centennial 02
               } else {
-                // No match or multiple matches
-                $Error++;
-                $RecordsInError++;
-                error_log("UpdateFunctionalRole: Row $row - Found $numRows matches for FirstName: $firstName, LastName: $lastName, Unit: $unit");
+                // Found more than one role for this leader 
+                // Should just take the first onme but for now just skip
+                //$Error++;
+                //$RecordsInError++;
+                //error_log("UpdateFunctionalRole: Row $row - Found $numRows matches for FirstName: $firstName, LastName: $lastName, Unit: $unit");
               }
             }
             fclose($handle);
