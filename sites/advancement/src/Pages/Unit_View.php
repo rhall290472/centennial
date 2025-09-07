@@ -132,8 +132,8 @@ if (empty($unit_name)) {
   $Direct = $cAdultLeaders->DirectTrained($unit_name, "YES");
   $NonDirect = $cAdultLeaders->DirectTrained($unit_name, "NO");
 
-  $sql = sprintf("SELECT * FROM trainedleaders  WHERE Unit <> '' ORDER BY Unit ASC");
-  $sqlUnTrained  = sprintf("SELECT * FROM trainedleaders WHERE Unit <> '' AND Trained = 'NO' ORDER BY Direct_Contact_Leader");
+  $sql = sprintf("SELECT * FROM trainedleader  WHERE Unit <> '' ORDER BY Unit ASC");
+  $sqlUnTrained  = sprintf("SELECT * FROM trainedleader WHERE Unit <> '' AND Trained = 'NO' ORDER BY Direct_Contact_Leader");
   $sqlCO = sprintf('SELECT * FROM membershiptotals WHERE Unit = "%s" ;', $unit_name);
   $resultQueryCO = $UNIT->getDbConn()->query($sqlCO);
   $resultCO =  $resultQueryCO->fetch_assoc();
@@ -173,13 +173,13 @@ if (empty($unit_name)) {
   $UnitCommissioner = sprintf("Unit Commissioner: %s Last Contact: %s", $Commissioner, $Contact);
   // Get the Number of Trained vs. Untrained leaders
   $sqlDirectUnTrained  = sprintf(
-    'SELECT * FROM trainedleaders WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
+    'SELECT * FROM trainedleader WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
     $unit_name,
     'YES'
   );
 
   $sqlNonDirectUnTrained  = sprintf(
-    'SELECT * FROM trainedleaders WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
+    'SELECT * FROM trainedleader WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
     $unit_name,
     'NO'
   );
@@ -324,7 +324,7 @@ if (empty($unit_name)) {
       </tr>
 
       <?php
-      $sqlAdult = "SELECT * FROM trainedleaders WHERE Unit = '$unit_name' ORDER BY Direct_Contact_Leader DESC";
+      $sqlAdult = "SELECT * FROM trainedleader WHERE Unit = '$unit_name' ORDER BY Direct_Contact_Leader DESC";
       $result = $cAdultLeaders->doQuery($sqlAdult);
 
       while ($row = $result->fetch_assoc()) {
@@ -363,7 +363,7 @@ if (empty($unit_name)) {
 
 
   echo "<br>";
-  $lastTrainedUpdated = $UNIT->GetLastUpdated('trainedleaders');
+  $lastTrainedUpdated = $UNIT->GetLastUpdated('trainedleader');
   $lastYPTUpdated = $UNIT->GetLastUpdated('ypt');
   echo "<p style='text-align: center;'>Content last changed: Trained Leaders " . $lastTrainedUpdated . " YPT " . $lastYPTUpdated . "</p>";
   echo '<p style="page-break-before: always;">&nbsp;</p>';

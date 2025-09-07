@@ -252,7 +252,7 @@ class AdultLeaders
       }
 
       // Prepare SQL query with placeholders
-      $qryTrained = "SELECT Trained FROM trainedleaders WHERE First_Name = ? AND Last_Name = ? AND Position = ?";
+      $qryTrained = "SELECT Trained FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Position = ?";
       $stmt = mysqli_prepare($dbConn, $qryTrained);
       if (!$stmt) {
         error_log("IsTrained: Failed to prepare statement: " . mysqli_error($dbConn));
@@ -302,7 +302,7 @@ class AdultLeaders
    *****************************************************************************/
   public static function GetPositionUnTrained($Position)
   {
-    $qry = "SELECT * FROM trainedleaders WHERE Position='$Position' AND Trained = 'NO' ORDER BY Last_Name";
+    $qry = "SELECT * FROM trainedleader WHERE Position='$Position' AND Trained = 'NO' ORDER BY Last_Name";
     $result = self::doQuery($qry);
 
     return $result;
@@ -319,9 +319,9 @@ class AdultLeaders
     $Units = array();
 
     if (is_null($Unit2Type))
-      $qryUnits = "SELECT DISTINCT Unit FROM trainedleaders WHERE First_Name='$FName' AND Last_Name='$LName' AND Unit LIKE '%$Unit1Type%'";
+      $qryUnits = "SELECT DISTINCT Unit FROM trainedleader WHERE First_Name='$FName' AND Last_Name='$LName' AND Unit LIKE '%$Unit1Type%'";
     else
-      $qryUnits = "SELECT DISTINCT Unit FROM trainedleaders WHERE First_Name='$FName' AND Last_Name='$LName' AND (Unit LIKE '%$Unit1Type%' OR Unit LIKE '%$Unit2Type%')";
+      $qryUnits = "SELECT DISTINCT Unit FROM trainedleader WHERE First_Name='$FName' AND Last_Name='$LName' AND (Unit LIKE '%$Unit1Type%' OR Unit LIKE '%$Unit2Type%')";
 
     $result_units = self::doQuery($qryUnits);
     while ($row_unit = $result_units->fetch_assoc()) {
@@ -595,7 +595,7 @@ class AdultLeaders
    */
   public static function GetUntrainedName()
   {
-    $qry_name = "SELECT DISTINCT Last_Name, First_Name, MemberID FROM trainedleaders WHERE Trained = 'NO' ORDER BY Last_Name";
+    $qry_name = "SELECT DISTINCT Last_Name, First_Name, MemberID FROM trainedleader WHERE Trained = 'NO' ORDER BY Last_Name";
     $result_untrained_name = self::doQuery($qry_name);
     return  $result_untrained_name;
   }
@@ -605,7 +605,7 @@ class AdultLeaders
    */
   public static function GetUntrainedPosition()
   {
-    $qryposition = "SELECT DISTINCT Position FROM trainedleaders WHERE Trained = 'NO' ORDER BY Position";
+    $qryposition = "SELECT DISTINCT Position FROM trainedleader WHERE Trained = 'NO' ORDER BY Position";
     $result_untrained_position = self::doQuery($qryposition);
     return $result_untrained_position;
   }
@@ -615,7 +615,7 @@ class AdultLeaders
    */
   public static function GetUntrainedUnit()
   {
-    $qryunit = "SELECT DISTINCT Unit FROM trainedleaders WHERE Trained = 'NO' ORDER BY Unit";
+    $qryunit = "SELECT DISTINCT Unit FROM trainedleader WHERE Trained = 'NO' ORDER BY Unit";
     $result_untrained_unit = self::doQuery($qryunit);
     return $result_untrained_unit;
   }
@@ -628,9 +628,9 @@ class AdultLeaders
   public static function GetUnTrainedIDCount($ID)
   {
     if (!empty($ID)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC, Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC, Last_Name";
     }
     $UnTrained = -1;
     $Result = self::doQuery($SqlUnTrained);
@@ -646,9 +646,9 @@ class AdultLeaders
   public static function GetTotalIDCount($ID)
   {
     if (!empty($ID)) {
-      $SqlTotal = sprintf("SELECT * FROM trainedleaders WHERE `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
+      $SqlTotal = sprintf("SELECT * FROM  WHERE `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
     } else {
-      $SqlTotal =  "SELECT * FROM trainedleaders";
+      $SqlTotal =  "SELECT * FROM trainedleader";
     }
     $Total = -1;
     $Result = self::doQuery($SqlTotal);
@@ -664,9 +664,9 @@ class AdultLeaders
   public static function GetResultIDUnTrained($ID)
   {
     if (!empty($ID)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC, Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC, Last_Name";
     }
     $Result = self::doQuery($SqlUnTrained);
     return $Result;
@@ -681,11 +681,11 @@ class AdultLeaders
     //echo "<h1>Untrained Leaders by Positon ", $position, "</h1>";
     $sql = array();
     if (!empty($position)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
-      $SqlTotal = sprintf("SELECT * FROM trainedleaders WHERE `Position` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
+      $SqlTotal = sprintf("SELECT * FROM trainedleader WHERE `Position` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
-      $SqlTotal = "SELECT * FROM trainedleaders";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
+      $SqlTotal = "SELECT * FROM trainedleader";
     }
     $sql[0] = $SqlUnTrained;
     $sql[1] = $SqlTotal;
@@ -699,9 +699,9 @@ class AdultLeaders
   public static function GetUnTrainedPositionCount($position)
   {
     if (!empty($position)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
+      $SqlUnTrained = sprintf("SELECT * FROM  WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
     }
     $Result = self::doQuery($SqlUnTrained);
     $UnTrained = mysqli_num_rows($Result);
@@ -715,9 +715,9 @@ class AdultLeaders
   public static function GetTotalPositionCount($position)
   {
     if (!empty($position)) {
-      $SqlTotal = sprintf("SELECT * FROM trainedleaders WHERE `Position` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
+      $SqlTotal = sprintf("SELECT * FROM trainedleader WHERE `Position` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
     } else {
-      $SqlTotal = "SELECT * FROM trainedleaders";
+      $SqlTotal = "SELECT * FROM trainedleader";
     }
     $Result = self::doQuery($SqlTotal);
     $Total = mysqli_num_rows($Result);
@@ -731,9 +731,9 @@ class AdultLeaders
   public static function GetResultPositionUnTrained($position)
   {
     if (!empty($position)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
     }
     $Result = mysqli_query(self::getDbConn(), $SqlUnTrained);
     return $Result;
@@ -746,9 +746,9 @@ class AdultLeaders
   public static function GetUnTrainedUnitCount($unit)
   {
     if (!empty($unit)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Unit,Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Unit,Last_Name";
     }
     $Result = self::doQuery($SqlUnTrained);
     $UnTrained = mysqli_num_rows($Result);
@@ -762,9 +762,9 @@ class AdultLeaders
   public static function GetTotalUnitCount($unit)
   {
     if (!empty($unit)) {
-      $SqlTotal = sprintf("SELECT * FROM trainedleaders WHERE `Unit` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
+      $SqlTotal = sprintf("SELECT * FROM trainedleader WHERE `Unit` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
     } else {
-      $SqlTotal = "SELECT * FROM trainedleaders";
+      $SqlTotal = "SELECT * FROM trainedleader";
     }
     $Result = self::doQuery($SqlTotal);
     $Total = mysqli_num_rows($Result);
@@ -778,9 +778,9 @@ class AdultLeaders
   public static function GetResultUnitUnTrained($unit)
   {
     if (!empty($unit)) {
-      $SqlUnTrained = sprintf("SELECT * FROM trainedleaders WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
+      $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
     } else {
-      $SqlUnTrained = "SELECT * FROM trainedleaders WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Unit,Last_Name";
+      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Unit,Last_Name";
     }
     $Result = self::doQuery($SqlUnTrained);
     return $Result;
@@ -865,7 +865,7 @@ class AdultLeaders
     $colIncomClass      = 19;
     $colIncomOnline     = 20;
 
-    $sqlLeadersTrainedInsertSt = "INSERT INTO `trainedleaders`(`Council`, `Service_Area`, `District`, `Sub_District`, `Unit`, `Gender_Accepted`, `Chartered_Org_Name`, `First_Name`, 
+    $sqlLeadersTrainedInsertSt = "INSERT INTO `trainedleader`(`Council`, `Service_Area`, `District`, `Sub_District`, `Unit`, `Gender_Accepted`, `Chartered_Org_Name`, `First_Name`, 
     		`Middle_Name`, `Last_Name`, `Zip_Code`, `MemberID`, `Program`, `Email`, `Position`, `Direct_Contact_Leader`, `Trained`, `Registration_Expiration_Date`, 
     		`Incomplete_Mandatory`, `Incomplete_Classroom`, `Incomplete_Online`) VALUES (";
 
@@ -881,8 +881,8 @@ class AdultLeaders
       exit();
     }
     // Delete all of the Old data
-    if (!self::doQuery("TRUNCATE TABLE `trainedleaders`")) {
-      $strError = "see error log - TRUNCATE TABLE `trainedleaders`";
+    if (!self::doQuery("TRUNCATE TABLE `trainedleader`")) {
+      $strError = "see error log - TRUNCATE TABLE `trainedleader`";
       error_log($strError, 0);
       self::function_alert($strError);
       $RecordsInError = -1;
@@ -1144,7 +1144,7 @@ class AdultLeaders
               }
 
               // Find matching record
-              $sqlFind = "SELECT id FROM trainedleaders WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+              $sqlFind = "SELECT id FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
               $stmt = mysqli_prepare($dbConn, $sqlFind);
               if (!$stmt) {
                 throw new Exception("Failed to prepare SELECT statement: " . mysqli_error($dbConn));
@@ -1157,7 +1157,7 @@ class AdultLeaders
 
               if ($numRows === 1) {
                 // Update functional role
-                $sqlUpdate = "UPDATE trainedleaders SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+                $sqlUpdate = "UPDATE  SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
                 $stmt = mysqli_prepare($dbConn, $sqlUpdate);
                 if (!$stmt) {
                   throw new Exception("Failed to prepare UPDATE statement: " . mysqli_error($dbConn));
@@ -1208,8 +1208,8 @@ class AdultLeaders
           "Untrained" => 0
         );
 
-        $sqlDirect = "SELECT * FROM trainedleaders WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' ORDER BY Direct_Contact_Leader DESC ";
-        $sqlDirectUnTrained = "SELECT * FROM trainedleaders WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' AND Trained = 'NO' ";
+        $sqlDirect = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' ORDER BY Direct_Contact_Leader DESC ";
+        $sqlDirectUnTrained = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' AND Trained = 'NO' ";
 
         //Get Direct contact training status:
         $result = self::doQuery($sqlDirect);

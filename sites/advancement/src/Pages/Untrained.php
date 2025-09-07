@@ -23,7 +23,7 @@ load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 $SortBy = isset($_GET['btn']) ? $_GET['btn'] : 'ByLastName';
-$mID = isset($_GET['MemberID']) ? $_GET['MemberID'] : -1;
+$mID = isset($_GET['MemberID']) ? $_GET['MemberID'] : '';
 $position = isset($_GET['position_name']) ? $_GET['position_name'] : '';
 $unit = isset($_GET['Unit']) ? $_GET['Unit'] : '';
 
@@ -176,7 +176,7 @@ $Trained = $TotalCount - $UnTrainedCount;
               ?>
             </tbody>
           </table>
-          <p style="text-align: center;" class="px-lg-5">Data last updated: <?php echo htmlspecialchars($cAdvancement->GetLastUpdated("trainedleaders")); ?></p>
+          <p style="text-align: center;" class="px-lg-5">Data last updated: <?php echo htmlspecialchars($cAdvancement->GetLastUpdated("trainedleader")); ?></p>
         </div>
       </div>
     </div>

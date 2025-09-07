@@ -78,7 +78,7 @@ $Title = "Centennial District Crew Advancement - " . $_GET['unit_name'];
 
 		if (empty($var_value)) {
 			// Should never get here
-			//$sql = sprintf("SELECT * FROM trainedleadersleaders  WHERE District = 'Centennial - 02' AND Unit <> '' ORDER BY Unit ASC");
+			//$sql = sprintf("SELECT * FROM trainedleaderleaders  WHERE District = 'Centennial - 02' AND Unit <> '' ORDER BY Unit ASC");
 		} else {
 			$sql = sprintf('SELECT * FROM adv_crew WHERE Unit LIKE "%s%%"', $_GET['unit_name']);
 			//echo $sql;
