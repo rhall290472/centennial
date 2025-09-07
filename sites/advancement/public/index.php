@@ -350,7 +350,7 @@ if (!isset($_SESSION['csrf_token'])) {
           <div class="p-0 p-lg-0 bg-light rounded-3 text-center">
             <div class="m-4 m-lg-3">
               <h1 class="display-5 fw-bold">Centennial District Advancement</h1>
-              <p class="fs-4">Here you will be able to review advancement reports for the Centennial District</p>
+              <p class="fs-4">Here you will be able to review advancement data for the Centennial District</p>
               <hr>
               <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
             </div>
