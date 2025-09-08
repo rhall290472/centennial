@@ -59,6 +59,7 @@ class UNIT extends CAdvancement
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
+    $qry = $qry . " ORDER BY Unit";
     $resultunit = parent::doQuery($qry);
     return $resultunit;
   }
@@ -70,6 +71,7 @@ class UNIT extends CAdvancement
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
+    $qry = $qry . " ORDER BY Unit";
     $resultunit = parent::doQuery($qry);
     return $resultunit;
   }
@@ -81,6 +83,7 @@ class UNIT extends CAdvancement
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
+    $qry = $qry . " ORDER BY Unit";
     $resultunit = parent::doQuery($qry);
     return $resultunit;
   }

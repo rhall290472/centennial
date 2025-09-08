@@ -11,6 +11,8 @@ defined('IN_APP') or define('IN_APP', true);
 // Base path, only set once
 defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 
+define('GITHUB_TOKEN', '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'); // Replace with your new token
+// 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
 // Ensure upload directory exists
 $uploadDir = BASE_PATH . '/Uploads/';
 if (!is_dir($uploadDir)) {

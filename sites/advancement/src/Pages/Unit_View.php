@@ -169,8 +169,8 @@ if (empty($unit_name)) {
     $Commissioner = "";
     $Contact = "";
   }
-  $UnitCO = sprintf("%s, Expire Date: %s", $UnitCO, $UnitExpire);
-  $UnitCommissioner = sprintf("Unit Commissioner: %s Last Contact: %s", $Commissioner, $Contact);
+  $UnitCO = sprintf("%s</br>Expire Date: %s", $UnitCO, $UnitExpire);
+  $UnitCommissioner = sprintf("Unit Commissioner: %s</br> Last Contact: %s", $Commissioner, $Contact);
   // Get the Number of Trained vs. Untrained leaders
   $sqlDirectUnTrained  = sprintf(
     'SELECT * FROM trainedleader WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
