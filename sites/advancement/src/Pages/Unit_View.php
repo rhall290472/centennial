@@ -33,7 +33,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 }
 
 load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
-load_class(BASE_PATH . '/src/Classes/CUnit.php');
+load_class(SHARED_PATH . '/src/Classes/CUnit.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 
