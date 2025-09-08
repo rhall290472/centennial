@@ -321,7 +321,7 @@ if (isset($_GET['SubmitAward'])) {
             </div>
 
             <!-- save the Award IDX here is a hidden control -->
-            <div class="form-row">
+            <div class="form-row py-2">
               <div class="col-3">
                 <input type="hidden" name="element_16_1" class="form-control" value=<?php echo $AwardIDX; ?>>
               </div>
@@ -334,6 +334,7 @@ if (isset($_GET['SubmitAward'])) {
             ?>
             <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Save" />
             <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Cancel" />
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
           </form>
         </div>
