@@ -1,10 +1,10 @@
 <?php
-    // Load configuration
-    if (file_exists(__DIR__ . '/../../config/config.php')) {
-      require_once __DIR__ . '/../../config/config.php';
-    } else {
-      die('An error occurred. Please try again later.');
-    }
+// Load configuration
+if (file_exists(__DIR__ . '/../../config/config.php')) {
+  require_once __DIR__ . '/../../config/config.php';
+} else {
+  die('An error occurred. Please try again later.');
+}
 ?>
 <!-- Sidebar -->
 <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-light" id="sidebar">
@@ -157,5 +157,8 @@
       }
     }
     ?>
+
+    <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
+    
   </div>
 </div>
