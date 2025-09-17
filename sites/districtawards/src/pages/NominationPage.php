@@ -13,10 +13,10 @@ $AwardIDX;
 // Check to see if user as Submitted the form. If so, save the data..
 //
 //#####################################################
-if (isset($_GET['SubmitForm'])) {
-  if ($_GET['SubmitForm'] == "Cancel") {
-    $cDistrictAwards->GotoURL("./OnLineNomination.php");
-    exit();
+if (isset($_POST['SubmitForm'])) {
+  if ($_POST['SubmitForm'] == "Cancel") {
+    header("Location: index.php");
+    exit;
   }
   $FormData = array();
   $FormData['NomineeIDX'] = -1; // New recorded
@@ -93,7 +93,10 @@ if (isset($_GET['SubmitForm'])) {
     // Record has been updated in database now create a audit trail
     $cDistrictAwards->CreateAudit($rowNominee, $FormData, 'NomineeIDX');
   }
-  $cDistrictAwards->GotoURL('OnLineNomination.php');
+  $_SESSION['feedback'] = ['type' => 'success', 'message' => "Your Nomination has been recorded."];
+
+  header("Location: index.php");
+  exit;
 }
 
 
@@ -134,209 +137,208 @@ if (isset($_GET['SubmitAward'])) {
         <!-- Page Features-->
         <div class="form-nominee">
           <p style="text-align:Left"><b>Nominee Information</b></p>
-          <form action="<?php echo $_SERVER['PHP_SELF']; ?>" s id="add_nomination" method="post">
-
-            <div class="form-row">
-              <div class="col-3">
-                <input type="text" name="element_1_1" class="form-control" placeholder="First Name">
-              </div>
-              <div class="col-3">
-                <input type="text" name="element_1_2" class="form-control" placeholder="Preferred Name">
-              </div>
-              <div class="col">
-                <input type="text" name="element_1_3" class="form-control" placeholder="Middle">
-              </div>
-              <div class="col">
-                <input type="text" name="element_1_4" class="form-control" placeholder="Last">
-              </div>
-            </div>
-
-            <?php if ($AwardIDX  == $cAwards::$OutStandingLeaders) { ?>
+          <form action="index.php?page=<?php echo htmlspecialchars($page); ?>&SubmitAward=<?php echo htmlspecialchars($AwardIDX); ?>" id="add_nomination" method="post">
               <div class="form-row">
                 <div class="col-3">
-                  <input type="text" name="element_2_1" class="form-control" placeholder="First Name">
+                  <input type="text" name="element_1_1" class="form-control" placeholder="First Name">
                 </div>
                 <div class="col-3">
-                  <input type="text" name="element_2_2" class="form-control" placeholder="Preferred Name">
+                  <input type="text" name="element_1_2" class="form-control" placeholder="Preferred Name">
                 </div>
                 <div class="col">
-                  <input type="text" name="element_2_3" class="form-control" placeholder="Middle">
+                  <input type="text" name="element_1_3" class="form-control" placeholder="Middle">
                 </div>
                 <div class="col">
-                  <input type="text" name="element_2_4" class="form-control" placeholder="Last">
+                  <input type="text" name="element_1_4" class="form-control" placeholder="Last">
+                </div>
+              </div>
+
+              <?php if ($AwardIDX  == $cAwards::$OutStandingLeaders) { ?>
+                <div class="form-row">
+                  <div class="col-3">
+                    <input type="text" name="element_2_1" class="form-control" placeholder="First Name">
+                  </div>
+                  <div class="col-3">
+                    <input type="text" name="element_2_2" class="form-control" placeholder="Preferred Name">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_2_3" class="form-control" placeholder="Middle">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_2_4" class="form-control" placeholder="Last">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-3">
+                    <input type="text" name="element_3_1" class="form-control" placeholder="First Name">
+                  </div>
+                  <div class="col-3">
+                    <input type="text" name="element_3_2" class="form-control" placeholder="Preferred Name">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_3_3" class="form-control" placeholder="Middle">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_3_4" class="form-control" placeholder="Last">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-3">
+                    <input type="text" name="element_4_1" class="form-control" placeholder="First Name">
+                  </div>
+                  <div class="col-3">
+                    <input type="text" name="element_4_2" class="form-control" placeholder="Preferred Name">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_4_3" class="form-control" placeholder="Middle">
+                  </div>
+                  <div class="col">
+                    <input type="text" name="element_4_4" class="form-control" placeholder="Last">
+                  </div>
+                </div>
+
+              <?php } ?>
+
+
+              <div class="form-row">
+                <?php if ($AwardIDX  != $cAwards::$OutStandingLeaders) { ?>
+                  <div class="col-3">
+                    <?php
+                    $cDistrictAwards->GetScoutingPosition('element_6_1', null);
+                    ?>
+                    <!-- <input type="text" name="element_6_1" class="form-control" placeholder="Currently registered in Scouting as:"> -->
+                  </div>
+                <?php } ?>
+                <div class="col-4">
+                  <?php
+                  // Make Unit selection a dropdown of active units in the District.
+                  $cDistrictAwards->GetDistrictUnits('element_6_2', null);
+                  ?>
+                  <!-- <input type="text" name="element_6_2" class="form-control" placeholder="Unit Type & Number i.e Troop 0317-BT"> -->
+                </div>
+                <?php if ($AwardIDX != $cAwards::$OutStandingLeaders) { ?>
+                  <div class="col-3">
+                    <input type="text" name="element_6_3" class="form-control" placeholder="BSA ID if know">
+                  </div>
+                <?php } ?>
+              </div>
+
+              <?php if ($AwardIDX == $cAwards::$DistrictAwardofMerit) { ?>
+                <p style="text-align:Left"><b>If the nominee has earned the following (please provide dates):</b></p>
+                <div class="form-row">
+                  <div class="col-4">
+                    <input type="text" name="element_7_1" class="form-control" placeholder="Den Leader’s Training Award or Den Leader Award">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_7_2" class="form-control" placeholder="Scouter’s Religious Award:">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_7_3" class="form-control" placeholder="Scouter’s Training Award">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-4">
+                    <input type="text" name="element_8_1" class="form-control" placeholder="Den Leader Coach’s Training Award/Coach Award">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_8_2" class="form-control" placeholder="Silver Beaver">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_8_3" class="form-control" placeholder="Scouter’s Key">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-4">
+                    <input type="text" name="element_9_1" class="form-control" placeholder="Cubmaster Award">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_9_2" class="form-control" placeholder="Order of the Arrow">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_9_3" class="form-control" placeholder="Venturing Awards">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-4">
+                    <input type="text" name="element_10_1" class="form-control" placeholder="Cub Scouter Award">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_10_2" class="form-control" placeholder="Wood Badge">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_10_3" class="form-control" placeholder="Distinguished Commissioner Service Award">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-4">
+                    <input type="text" name="element_11_1" class="form-control" placeholder="Webelos Den Leader Award">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_11_2" class="form-control" placeholder="Other (specify)">
+                  </div>
+                  <div class="col-4">
+                    <input type="text" name="element_11_3" class="form-control" placeholder="Other (specify)">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                </div>
+              <?php } ?>
+
+              </br>
+              <p style="text-align:Left"><b>The noteworthy service upon which this nomination is based on:</b></p>
+              <p>(Furnish as much information as possible. For example: president, Rotary Club; vestryman, St. Paul’s Church; chairman, Red
+                Cross campaign; vice-president, PTA; medical director, hospital; Cubmaster, 3 years; Scoutmaster, 4 years; Venturing Advisor,
+                3 years; commissioner, etc.)</p>
+
+              <div class="form-row">
+                <div class="col">
+                  <textarea name="element_14_1" class="form-control" id="Notes" rows="10" placeholder="Notes"></textarea>
                 </div>
               </div>
 
               <div class="form-row">
-                <div class="col-3">
-                  <input type="text" name="element_3_1" class="form-control" placeholder="First Name">
+                <div class="col-5">
+                  <input type="text" name="element_15_1" class="form-control" placeholder="Your Name">
                 </div>
-                <div class="col-3">
-                  <input type="text" name="element_3_2" class="form-control" placeholder="Preferred Name">
-                </div>
-                <div class="col">
-                  <input type="text" name="element_3_3" class="form-control" placeholder="Middle">
-                </div>
-                <div class="col">
-                  <input type="text" name="element_3_4" class="form-control" placeholder="Last">
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="col-3">
-                  <input type="text" name="element_4_1" class="form-control" placeholder="First Name">
-                </div>
-                <div class="col-3">
-                  <input type="text" name="element_4_2" class="form-control" placeholder="Preferred Name">
-                </div>
-                <div class="col">
-                  <input type="text" name="element_4_3" class="form-control" placeholder="Middle">
-                </div>
-                <div class="col">
-                  <input type="text" name="element_4_4" class="form-control" placeholder="Last">
-                </div>
-              </div>
-
-            <?php } ?>
-
-
-            <div class="form-row">
-              <?php if ($AwardIDX  != $cAwards::$OutStandingLeaders) { ?>
                 <div class="col-3">
                   <?php
-                  $cDistrictAwards->GetScoutingPosition('element_6_1', null);
+                  // Make Unit selection a dropdown of active units in the District.
+                  $cDistrictAwards->GetDistrictUnits('element_15_2', null);
                   ?>
-                  <!-- <input type="text" name="element_6_1" class="form-control" placeholder="Currently registered in Scouting as:"> -->
+                  <!-- <input type="text" name="element_15_2" class="form-control" placeholder="Unit Type & Number"> -->
                 </div>
-              <?php } ?>
-              <div class="col-4">
-                <?php
-                // Make Unit selection a dropdown of active units in the District.
-                $cDistrictAwards->GetDistrictUnits('element_6_2', null);
-                ?>
-                <!-- <input type="text" name="element_6_2" class="form-control" placeholder="Unit Type & Number i.e Troop 0317-BT"> -->
-              </div>
-              <?php if ($AwardIDX != $cAwards::$OutStandingLeaders) { ?>
                 <div class="col-3">
-                  <input type="text" name="element_6_3" class="form-control" placeholder="BSA ID if know">
-                </div>
-              <?php } ?>
-            </div>
-
-            <?php if ($AwardIDX == $cAwards::$DistrictAwardofMerit) { ?>
-              <p style="text-align:Left"><b>If the nominee has earned the following (please provide dates):</b></p>
-              <div class="form-row">
-                <div class="col-4">
-                  <input type="text" name="element_7_1" class="form-control" placeholder="Den Leader’s Training Award or Den Leader Award">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_7_2" class="form-control" placeholder="Scouter’s Religious Award:">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_7_3" class="form-control" placeholder="Scouter’s Training Award">
+                  <?php
+                  $cDistrictAwards->GetScoutingPosition('element_15_3', null);
+                  ?>
+                  <!-- <input type="text" name="element_15_3" class="form-control" placeholder="Your Scouting Position"> -->
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="col-4">
-                  <input type="text" name="element_8_1" class="form-control" placeholder="Den Leader Coach’s Training Award/Coach Award">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_8_2" class="form-control" placeholder="Silver Beaver">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_8_3" class="form-control" placeholder="Scouter’s Key">
+              <!-- save the Award IDX here is a hidden control -->
+              <div class="form-row py-2">
+                <div class="col-3">
+                  <input type="hidden" name="element_16_1" class="form-control" value=<?php echo $AwardIDX; ?>>
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="col-4">
-                  <input type="text" name="element_9_1" class="form-control" placeholder="Cubmaster Award">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_9_2" class="form-control" placeholder="Order of the Arrow">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_9_3" class="form-control" placeholder="Venturing Awards">
-                </div>
-              </div>
 
-              <div class="form-row">
-                <div class="col-4">
-                  <input type="text" name="element_10_1" class="form-control" placeholder="Cub Scouter Award">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_10_2" class="form-control" placeholder="Wood Badge">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_10_3" class="form-control" placeholder="Distinguished Commissioner Service Award">
-                </div>
-              </div>
+              <?php
+              $ID = -1;   // New record
+              echo '<input type="hidden" name="AwardIDX" value="' . $AwardIDX . '"/>';
+              ?>
+              <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Save" />
+              <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Cancel" />
+              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
-              <div class="form-row">
-                <div class="col-4">
-                  <input type="text" name="element_11_1" class="form-control" placeholder="Webelos Den Leader Award">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_11_2" class="form-control" placeholder="Other (specify)">
-                </div>
-                <div class="col-4">
-                  <input type="text" name="element_11_3" class="form-control" placeholder="Other (specify)">
-                </div>
-              </div>
-
-              <div class="form-row">
-              </div>
-            <?php } ?>
-
-            </br>
-            <p style="text-align:Left"><b>The noteworthy service upon which this nomination is based on:</b></p>
-            <p>(Furnish as much information as possible. For example: president, Rotary Club; vestryman, St. Paul’s Church; chairman, Red
-              Cross campaign; vice-president, PTA; medical director, hospital; Cubmaster, 3 years; Scoutmaster, 4 years; Venturing Advisor,
-              3 years; commissioner, etc.)</p>
-
-            <div class="form-row">
-              <div class="col">
-                <textarea name="element_14_1" class="form-control" id="Notes" rows="10" placeholder="Notes"></textarea>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="col-5">
-                <input type="text" name="element_15_1" class="form-control" placeholder="Your Name">
-              </div>
-              <div class="col-3">
-                <?php
-                // Make Unit selection a dropdown of active units in the District.
-                $cDistrictAwards->GetDistrictUnits('element_15_2', null);
-                ?>
-                <!-- <input type="text" name="element_15_2" class="form-control" placeholder="Unit Type & Number"> -->
-              </div>
-              <div class="col-3">
-                <?php
-                $cDistrictAwards->GetScoutingPosition('element_15_3', null);
-                ?>
-                <!-- <input type="text" name="element_15_3" class="form-control" placeholder="Your Scouting Position"> -->
-              </div>
-            </div>
-
-            <!-- save the Award IDX here is a hidden control -->
-            <div class="form-row py-2">
-              <div class="col-3">
-                <input type="hidden" name="element_16_1" class="form-control" value=<?php echo $AwardIDX; ?>>
-              </div>
-            </div>
-
-
-            <?php
-            $ID = -1;   // New record
-            echo '<input type="hidden" name="AwardIDX" value="' . $AwardIDX . '"/>';
-            ?>
-            <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Save" />
-            <input id="saveForm2" class="btn btn-primary btn-lg" type="submit" name="SubmitForm" value="Cancel" />
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-
-          </form>
+            </form>
         </div>
       </div>
     </div>
