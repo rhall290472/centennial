@@ -14,12 +14,6 @@ defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 define('GITHUB_TOKEN', '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'); // Replace with your new token
 // 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
 
-// Ensure upload directory exists
-$uploadDir = BASE_PATH . '/Data/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
-
 // Create log directory if it doesn't exist
 $logDir = BASE_PATH . '/../../shared/logs';
 if (!is_dir($logDir)) {
@@ -102,16 +96,6 @@ if ($is_localhost) {
     define('DB_PASS', 'ZCSCA?yrW7}L');
     define('DB_NAME', 'meritbadges');
 }
-
-// Security headers
-//header('X-Content-Type-Options: nosniff');
-//header('X-Frame-Options: DENY');
-//header('X-XSS-Protection: 1; mode=block');
-
-// File upload limits
-ini_set('upload_max_filesize', '4M');
-ini_set('post_max_size', '4M');
-
 
 // Template loader function
 if (!function_exists('load_template')) {
