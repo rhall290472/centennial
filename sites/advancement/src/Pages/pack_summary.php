@@ -99,13 +99,15 @@ try {
                 while ($PackAdv = $PackDataResult->fetch_assoc()) {
                   $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
                   $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
-                  $Unit = $PackAdv['Unit'];
-                  //include('../src/Pages/adv_report.php');
-                  
-                  $URLPath = '../src/Pages/Unit_View.php?btn=Units&unit_name='.$Unit;
-                  $UnitURL = "<a href=$URLPath>";
-                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
-                  $Formatter = "";
+                  $Unit = $PackAdv['Unit']; // e.g., "Pack 0127-BP"
+
+                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
+                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
+                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
+
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
+                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));                  $Formatter = "";
                   if ($UnitRankScout == 0) {
                     $Formatter = "<b style='color:red;'>";
                   } elseif ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date'])) {

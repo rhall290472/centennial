@@ -83,8 +83,13 @@ try {
                   if (floatval($UnitRankScout) >= $CTroop->GetDistrictGoal($row["Date"])) {
                     continue;
                   }
-                  $Unit = $row['Unit'];
-                  $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                  $Unit = $row['Unit']; // e.g., "Pack 0127-BP"
+                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
+                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
+                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
+
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
+                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
                   $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $Formatter = "";
                   if ($UnitRankScout == 0) {

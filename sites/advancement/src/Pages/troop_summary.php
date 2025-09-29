@@ -104,8 +104,13 @@ try {
                 while ($row = $result->fetch_assoc()) {
                   $UnitYouth = $CTroop->GetUnitTotalYouth($row['Unit'], $row['Youth'], $row["Date"]);
                   $Rank_Scout = $CTroop->GetUnitRankperScout($UnitYouth, ($row["YTD"] + $row["MeritBadge"]), $row['Unit']);
-                  $Unit = $row['Unit'];
-                  $UnitURL = "<a href='Unit_View.php?btn=Units&unit_name=$Unit'>";
+                  $Unit = $row['Unit']; // e.g., "Pack 0127-BP"
+                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
+                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
+                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
+
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
+                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
                   $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $Formatter = "";
                   if ($Rank_Scout == 0) {
