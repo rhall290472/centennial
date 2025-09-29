@@ -744,22 +744,59 @@ class CDistrictAwards
     if ($Result && $NomineeData['Award'] == self::$DistrictAwardofMerit) {
 
       if ($bAdd) {
-        $sqlStmt = "INSERT INTO `AwardofMerit`(`NomineeIDX`, `DLAward`, `SRAward`, `STAward`, 
-                    `CoachAward`, `SilverBeaver`, `ScouterKey`, 
-                    `CSAward`, `WoodBadge`, `DCSA`, 
-                    `WDLAward`, `Other1`, `Other2`
-                    ) 
-                    VALUES 
-                    ('$MemberID', '$NomineeData[DLAward]','$NomineeData[SRAward]', '$NomineeData[STAward]',
-                    '$NomineeData[CoachAward]','$NomineeData[SilverBeaver]', '$NomineeData[ScouterKey]', 
-                    '$NomineeData[CSAward]', '$NomineeData[WoodBadge]','$NomineeData[DCSA]',
-                    '$NomineeData[WDLAward]', '$NomineeData[Other1]','$NomineeData[Other2]')";
+        $sqlStmt = "INSERT INTO `awardofmerit` (`NomineeIDX`";
+        $values = "'$MemberID'";
+
+        $fields = [
+          'DLAward',
+          'SRAward',
+          'STAward',
+          'CoachAward',
+          'SilverBeaver',
+          'ScouterKey',
+          'CSAward',
+          'WoodBadge',
+          'DCSA',
+          'WDLAward',
+          'Other1',
+          'Other2'
+        ];
+
+        foreach ($fields as $field) {
+          if (isset($NomineeData[$field])) {
+            $sqlStmt .= ", `$field`";
+            $values .= ", '" . addslashes($NomineeData[$field]) . "'";
+          }
+        }
+
+        $sqlStmt .= ") VALUES ($values)";
       } else {
-        $sqlStmt = "UPDATE `AwardofMerit` SET `DLAward`='$NomineeData[DLAward]'=, `SRAward`='$NomineeData[SRAward]', `STAward`='$NomineeData[STAward]', 
-                    `CoachAward`='$NomineeData[CoachAward]', `SilverBeaver`='$NomineeData[SilverBeaver]', `ScouterKey`='$NomineeData[ScouterKey]', 
-                    `CSAward`='$NomineeData[CSAward]', `WoodBadge`='$NomineeData[WoodBadge]', `DCSA`='$NomineeData[DCSA]', 
-                    `WDLAward`='$NomineeData[WDLAward]', `Other1`='$NomineeData[Other1]', `Other2`='$NomineeData[Other2]'
-                    WHERE NomineeIDX='$NomineeData[NomineeIDX]'";
+        $sqlStmt = "UPDATE `awardofmerit` SET ";
+        $updates = [];
+
+        $fields = [
+          'DLAward',
+          'SRAward',
+          'STAward',
+          'CoachAward',
+          'SilverBeaver',
+          'ScouterKey',
+          'CSAward',
+          'WoodBadge',
+          'DCSA',
+          'WDLAward',
+          'Other1',
+          'Other2'
+        ];
+
+        foreach ($fields as $field) {
+          if (isset($NomineeData[$field])) {
+            $updates[] = "`$field`='" . addslashes($NomineeData[$field]) . "'";
+          }
+        }
+
+        $sqlStmt .= implode(", ", $updates);
+        $sqlStmt .= " WHERE NomineeIDX='" . addslashes($NomineeData['NomineeIDX'] ?? $MemberID) . "'";
       }
       // Excute the sql Statement
       $Result = self::doQuery($sqlStmt);
