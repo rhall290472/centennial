@@ -198,9 +198,13 @@ class UNIT extends CAdvancement
               if ($result = parent::doQuery($sql)) {
                 $rowcount = mysqli_num_rows($result);
                 while ($row = $result->fetch_assoc()) {
-                  $Unit = $row['Unit'];
-                  $UnitURL = "<a href='https://centennialdistrict.co/Unit_View.php?btn=Units&unit_name=$Unit'";
-                  $UnitView = sprintf("%s%s>%s</a>", $UnitURL, $Unit, $Unit);
+                  $Unit = $row['Unit']; // e.g., "Pack 0127-BP"
+                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
+                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
+                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
+                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $CurrentDate = date_create("");
                   $LastContact = date_create($row["Last_Contact"]);
                   $Difference90 = date_sub($CurrentDate, date_interval_create_from_date_string("90 days"));
