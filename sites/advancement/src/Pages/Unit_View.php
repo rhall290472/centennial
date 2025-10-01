@@ -337,7 +337,7 @@ if (empty($unit_name)) {
         $Trained = $row["Trained"];
         $LastName = $row["MemberID"];
         if (!strcmp($Trained, "NO")) {
-          $TrainedURL = "<a href='Untrained.php?btn=MemberID&SortBy=MemberID&MemberID=$LastName'";
+          $TrainedURL = "<a href='index.php?page=untrained&btn=MemberID&SortBy=MemberID&MemberID=$LastName'";
           $Trained = sprintf("%s%s>%s</a>", $TrainedURL, $Trained, $Trained);
         }
 
