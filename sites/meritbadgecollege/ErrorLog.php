@@ -1,11 +1,11 @@
-<?php 
-	include_once('CMBCollege.php');
+<?php
+	include_once('CMBColle
 	$CMBCollege = CMBCollege::getInstance();
-	
-	if(!session_id()){
-		session_start();
-
-		require_once 'config/conn_inc.php';
+  
+    !session_id()){
+    ssion_start();
+    
+  req
 
 		if(   !(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)){
 			$CMBCollege->GotoURL("index.php");
@@ -29,8 +29,8 @@
     gtag('config', 'G-CPC23NSK6F');
     </script>
 
-	<title>Error log</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<
+
 	<link rel="stylesheet" href="./bootstrap-5.3.2/css/bootstrap.css">
 	<link rel="stylesheet" href="css/centennial.css">
 </head>

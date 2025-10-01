@@ -33,10 +33,15 @@ load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 
 $CAdvancement = CAdvancement::getInstance();
 
-if (!session_id()) {
-  session_start();
-}
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
+    // Secure session start
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start([
+        'cookie_httponly' => true,
+        'use_strict_mode' => true,
+        'cookie_secure' => isset($_SERVER['HTTPS'])
+      ]);
+    }
+    if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
   $CAdvancement->GotoURL("index.php");
   exit;
 }

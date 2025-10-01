@@ -1,8 +1,13 @@
 <?php
-if (!session_id()) {
-  session_start();
-}
-/*
+  // Secure session start
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start([
+      'cookie_httponly' => true,
+      'use_strict_mode' => true,
+      'cookie_secure' => isset($_SERVER['HTTPS'])
+    ]);
+  }
+  /*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -25,7 +30,7 @@ if (!session_id()) {
 !/                                                                            \!
 !==============================================================================!
 */
-include_once "CMeritBadges.php";
+  include_once "CMeritBadges.php";
 $CMeritBadges = CMeritBadges::getInstance();
 
 // Define variables and initialize with empty values

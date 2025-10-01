@@ -1,8 +1,13 @@
 <?php
-if (!session_id()) {
-	session_start();
-}
-/*
+		// Secure session start
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start([
+				'cookie_httponly' => true,
+				'use_strict_mode' => true,
+				'cookie_secure' => isset($_SERVER['HTTPS'])
+			]);
+		}
+		/*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -25,8 +30,8 @@ if (!session_id()) {
 !/                                                                            \!
 !==============================================================================!
 */
-// Load configuration
-if (file_exists(__DIR__ . '/../../config/config.php')) {
+		// Load configuration
+		if (file_exists(__DIR__ . '/../../config/config.php')) {
 	require_once __DIR__ . '/../../config/config.php';
 } else {
 	die('An error occurred. Please try again later.');
