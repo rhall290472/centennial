@@ -13,6 +13,9 @@ if (session_status() === PHP_SESSION_NONE) {
   ]);
 }
 
+// Start output buffering to prevent "headers already sent" errors
+ob_start();
+
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -234,6 +237,7 @@ if (!isset($_SESSION['csrf_token'])) {
       switch ($page) {
         case 'home':
       ?>
+    
             <?php
           $imagePath = defined('BASE_PATH') ? BASE_PATH . '/src/pages/img/DistrictAwards.png' : '/centennial/sites/districtawards/src/pages/img/DistrictAwards.png';
           $imagePath = "../src/pages/img/DistrictAwards.png";
@@ -387,3 +391,8 @@ if (!isset($_SESSION['csrf_token'])) {
 </body>
 
 </html>
+
+<?php
+// Flush the output buffer at the end
+ob_end_flush();
+?>

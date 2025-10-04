@@ -93,7 +93,7 @@ if (isset($_POST['SubmitForm'])) {
     // Record has been updated in database now create a audit trail
     $cDistrictAwards->CreateAudit($rowNominee, $FormData, 'NomineeIDX');
   }
-  $_SESSION['feedback'] = ['type' => 'success', 'message' => "Your Nomination has been recorded."];
+  //$_SESSION['feedback'] = ['type' => 'success', 'message' => "Your Nomination has been recorded."];
 
   header("Location: index.php");
   exit;

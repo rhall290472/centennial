@@ -86,6 +86,7 @@ class CDistrictAwards
    * see how this works in a moment.
    */
   private static $instances = [];
+  private $dbConn = null;
   private static $year;
   private static $nominee;
 
@@ -138,9 +139,17 @@ class CDistrictAwards
   {
     $db = self::getInstance();
     $connConf = getConfigData();
-    $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
-    $db->dbConn->set_charset('utf8');
-    return $db;
+// **FIX: Only create if not already connected**
+    if ($db->dbConn === null) {
+        $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+        if ($db->dbConn->connect_error) {
+            throw new Exception("Connection failed: " . $db->dbConn->connect_error);
+        }
+        $db->dbConn->set_charset('utf8');
+        error_log("New DB connection created (Thread ID: " . $db->dbConn->thread_id . ")");  // Optional: Log for debugging
+    } else {
+        error_log("Reusing existing DB connection (Thread ID: " . $db->dbConn->thread_id . ")");  // Optional: Confirm reuse
+    }    return $db;
   }
 
   /**
@@ -655,162 +664,177 @@ class CDistrictAwards
    * This function will add or update a Nominess record.
    *
    *****************************************************************************/
-  public static function UpdateNomineeRecord($NomineeData)
-  {
+public static function UpdateNomineeRecord($NomineeData)
+{
     $bAdd = false;
     $Result = true;
     // First fix up MemberID field.
     if (empty($NomineeData['MemberID'])) {
-      $MemberID = self::FindNomineeID($NomineeData);
+        $MemberID = self::FindNomineeID($NomineeData);
     } else
-      $MemberID = $NomineeData['MemberID'];
+        $MemberID = $NomineeData['MemberID'];
 
-
-    //Check to see if this is a new Nominee, 
+    // Check to see if this is a new Nominee, 
     if ($NomineeData['NomineeIDX'] == -1) {
-      $bAdd = true;
-      // It's a new Nominee so INSERT
-      $sqlStmt = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
-            `Year`, `Award`, `Status`, `MemberID`,  
-            `Position`, `Unit`, `Notes`, `IsDeleted`, `created_by`,
-            `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
-            ) 
-            VALUES 
-            ('$NomineeData[FirstName]','$NomineeData[PName]', '$NomineeData[MName]','$NomineeData[LastName]',
-            '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
-            '$NomineeData[Position]','$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
-            '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
+        $bAdd = true;
+        // It's a new Nominee so INSERT
+        $sqlStmt = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
+              `Year`, `Award`, `Status`, `MemberID`,  
+              `Position`, `Unit`, `Notes`, `IsDeleted`, `created_by`,
+              `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
+              ) 
+              VALUES 
+              ('$NomineeData[FirstName]','$NomineeData[PName]', '$NomineeData[MName]','$NomineeData[LastName]',
+              '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
+              '$NomineeData[Position]','$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
+              '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
 
-      if ($NomineeData['Award'] == self::$OutStandingLeaders) {
-        // Gather other three names 
-        if (isset($_POST['element_2_1'])) {
-          $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName2'], $NomineeData['LastName2']);
-          $sqlStmt2 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
-                    `Year`, `Award`, `Status`, `MemberID`,  
-                    `Unit`, `Notes`, `IsDeleted`, `created_by`,
-                    `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
-                    ) 
-                    VALUES 
-                    ('$NomineeData[FirstName2]','$NomineeData[PName2]', '$NomineeData[MName2]','$NomineeData[LastName2]',
-                    '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
-                    '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
-                    '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
+        // Execute the sql Statement (for main insert)
+        $Result &= self::doQuery($sqlStmt);
 
-          $Result &= self::doQuery($sqlStmt2);
+        // **FIX: Capture the new ID IMMEDIATELY after main INSERT (only for adds)**
+        $New_id = self::doQuery("SELECT LAST_INSERT_ID() AS new_id;");
+        $IDX = $New_id->fetch_assoc();
+        $newNomineeIdx = $IDX['new_id'];  // e.g., 123
+        $NomineeData['NomineeIDX'] = $newNomineeIdx;  // Update for downstream use (e.g., awardofmerit)
+
+        // If this is an Outstanding Leaders Award, we have to add the other three names.
+        if ($NomineeData['Award'] == self::$OutStandingLeaders) {
+            // Gather other three names 
+            if (isset($_POST['element_2_1'])) {
+                $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName2'], $NomineeData['LastName2']);
+                $sqlStmt2 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
+                          `Year`, `Award`, `Status`, `MemberID`,  
+                          `Unit`, `Notes`, `IsDeleted`, `created_by`,
+                          `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
+                          ) 
+                          VALUES 
+                          ('$NomineeData[FirstName2]','$NomineeData[PName2]', '$NomineeData[MName2]','$NomineeData[LastName2]',
+                          '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
+                          '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
+                          '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
+
+                $Result &= self::doQuery($sqlStmt2);
+                // Optional: Capture additional IDs if needed, e.g., $additionalId = self::doQuery("SELECT LAST_INSERT_ID() AS new_id;")->fetch_assoc()['new_id'];
+            }
+            if (isset($_POST['element_3_1'])) {
+                $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName3'], $NomineeData['LastName3']);
+                $sqlStmt3 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
+                          `Year`, `Award`, `Status`, `MemberID`,  
+                          `Unit`, `Notes`, `IsDeleted`, `created_by`,
+                          `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
+                          ) 
+                          VALUES 
+                          ('$NomineeData[FirstName3]','$NomineeData[PName3]', '$NomineeData[MName3]','$NomineeData[LastName3]',
+                          '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
+                          '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
+                          '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
+
+                $Result &= self::doQuery($sqlStmt3);
+            }
+            if (isset($_POST['element_4_1']) && !empty($_POST['element_4_1'])) {
+                $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName4'], $NomineeData['LastName4']);
+                $sqlStmt4 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
+                          `Year`, `Award`, `Status`, `MemberID`,  
+                          `Unit`, `Notes`, `IsDeleted`, `created_by`,
+                          `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
+                          ) 
+                          VALUES 
+                          ('$NomineeData[FirstName4]','$NomineeData[PName4]', '$NomineeData[MName4]','$NomineeData[LastName4]',
+                          '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
+                          '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
+                          '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
+
+                $Result &= self::doQuery($sqlStmt4);
+            }
         }
-        if (isset($_POST['element_3_1'])) {
-          $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName3'], $NomineeData['LastName3']);
-          $sqlStmt3 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
-                    `Year`, `Award`, `Status`, `MemberID`,  
-                    `Unit`, `Notes`, `IsDeleted`, `created_by`,
-                    `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
-                    ) 
-                    VALUES 
-                    ('$NomineeData[FirstName3]','$NomineeData[PName3]', '$NomineeData[MName3]','$NomineeData[LastName3]',
-                    '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
-                    '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
-                    '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
-
-          $Result &= self::doQuery($sqlStmt3);
-        }
-        if (isset($_POST['element_4_1']) && !empty($_POST['element_4_1'])) {
-          $MemberID = AdultLeaders::FindMemberID($NomineeData['FirstName4'], $NomineeData['LastName4']);
-          $sqlStmt4 = "INSERT INTO `district_awards`(`FirstName`, `PName`, `MName`, `LastName`, 
-                    `Year`, `Award`, `Status`, `MemberID`,  
-                    `Unit`, `Notes`, `IsDeleted`, `created_by`,
-                    `NominatedBy`, `NominatedByUnit`, `NominatedByPosition`
-                    ) 
-                    VALUES 
-                    ('$NomineeData[FirstName4]','$NomineeData[PName4]', '$NomineeData[MName4]','$NomineeData[LastName4]',
-                    '$NomineeData[Year]', '$NomineeData[Award]', '$NomineeData[Status]', '$MemberID', 
-                    '$NomineeData[Unit]','$NomineeData[Notes]','$NomineeData[IsDeleted]', '$NomineeData[created_by]',
-                    '$NomineeData[NominatedBy]','$NomineeData[NominatedByUnit]','$NomineeData[NominatedByPosition]')";
-
-
-          $Result &= self::doQuery($sqlStmt4);
-        }
-      }
     } else {
-      $sqlStmt = "UPDATE `district_awards` SET `FirstName`='$NomineeData[FirstName]',`PName`='$NomineeData[PName]', `MName`='$NomineeData[MName]',`LastName`='$NomineeData[LastName]',
-            `Year`='$NomineeData[Year]',`Award`='$NomineeData[Award]',`Status`='$NomineeData[Status]',`MemberID`='$MemberID',
-            `Position`='$NomineeData[Position]',`Unit`='$NomineeData[Unit]',`Notes`='$NomineeData[Notes]',`IsDeleted`='$NomineeData[IsDeleted]',`updated_by`='$_SESSION[username]',
-            `NominatedBy`='$NomineeData[NominatedBy]',`NominatedByUnit`='$NomineeData[NominatedByUnit]',`NominatedByPosition`='$NomineeData[NominatedByPosition]'
-            WHERE NomineeIDX='$NomineeData[NomineeIDX]'";
+        $sqlStmt = "UPDATE `district_awards` SET `FirstName`='$NomineeData[FirstName]',`PName`='$NomineeData[PName]', `MName`='$NomineeData[MName]',`LastName`='$NomineeData[LastName]',
+              `Year`='$NomineeData[Year]',`Award`='$NomineeData[Award]',`Status`='$NomineeData[Status]',`MemberID`='$MemberID',
+              `Position`='$NomineeData[Position]',`Unit`='$NomineeData[Unit]',`Notes`='$NomineeData[Notes]',`IsDeleted`='$NomineeData[IsDeleted]',`updated_by`='$_SESSION[username]',
+              `NominatedBy`='$NomineeData[NominatedBy]',`NominatedByUnit`='$NomineeData[NominatedByUnit]',`NominatedByPosition`='$NomineeData[NominatedByPosition]'
+              WHERE NomineeIDX='$NomineeData[NomineeIDX]'";
     }
 
-    // Excute the sql Statement
-    $Result &= self::doQuery($sqlStmt);
+    // Execute the sql Statement (for update, if applicable)
+    //$Result &= self::doQuery($sqlStmt);
+
+    // **REMOVED: The unconditional LAST_INSERT_ID() query—now handled only in insert branch above**
 
     if ($Result && $NomineeData['Award'] == self::$DistrictAwardofMerit) {
 
-      if ($bAdd) {
-        $sqlStmt = "INSERT INTO `awardofmerit` (`NomineeIDX`";
-        $values = "'$MemberID'";
+        if ($bAdd) {
+            // **FIX: Use $newNomineeIdx (the actual new NomineeIDX) instead of $MemberID**
+            $sqlStmt = "INSERT INTO `awardofmerit` (`NomineeIDX`";
+            $values = "'$newNomineeIdx'";  // Or better: use prepared stmt with ?
 
-        $fields = [
-          'DLAward',
-          'SRAward',
-          'STAward',
-          'CoachAward',
-          'SilverBeaver',
-          'ScouterKey',
-          'CSAward',
-          'WoodBadge',
-          'DCSA',
-          'WDLAward',
-          'Other1',
-          'Other2'
-        ];
+            $fields = [
+                'DLAward',
+                'SRAward',
+                'STAward',
+                'CoachAward',
+                'SilverBeaver',
+                'ScouterKey',
+                'CSAward',
+                'WoodBadge',
+                'DCSA',
+                'WDLAward',
+                'Other1',
+                'Other2'
+            ];
 
-        foreach ($fields as $field) {
-          if (isset($NomineeData[$field])) {
-            $sqlStmt .= ", `$field`";
-            $values .= ", '" . addslashes($NomineeData[$field]) . "'";
-          }
+            foreach ($fields as $field) {
+                if (isset($NomineeData[$field])) {
+                    $sqlStmt .= ", `$field`";
+                    $values .= ", '" . addslashes($NomineeData[$field]) . "'";
+                }
+            }
+
+            $sqlStmt .= ") VALUES ($values)";
+        } else {
+            $sqlStmt = "UPDATE `awardofmerit` SET ";
+            $updates = [];
+
+            $fields = [
+                'DLAward',
+                'SRAward',
+                'STAward',
+                'CoachAward',
+                'SilverBeaver',
+                'ScouterKey',
+                'CSAward',
+                'WoodBadge',
+                'DCSA',
+                'WDLAward',
+                'Other1',
+                'Other2'
+            ];
+
+            foreach ($fields as $field) {
+                if (isset($NomineeData[$field])) {
+                    $updates[] = "`$field`='" . addslashes($NomineeData[$field]) . "'";
+                }
+            }
+
+            $sqlStmt .= implode(", ", $updates);
+            // **FIX: Use existing NomineeIDX, not fallback to $MemberID**
+            $sqlStmt .= " WHERE NomineeIDX='" . addslashes($NomineeData['NomineeIDX']) . "'";
         }
-
-        $sqlStmt .= ") VALUES ($values)";
-      } else {
-        $sqlStmt = "UPDATE `awardofmerit` SET ";
-        $updates = [];
-
-        $fields = [
-          'DLAward',
-          'SRAward',
-          'STAward',
-          'CoachAward',
-          'SilverBeaver',
-          'ScouterKey',
-          'CSAward',
-          'WoodBadge',
-          'DCSA',
-          'WDLAward',
-          'Other1',
-          'Other2'
-        ];
-
-        foreach ($fields as $field) {
-          if (isset($NomineeData[$field])) {
-            $updates[] = "`$field`='" . addslashes($NomineeData[$field]) . "'";
-          }
-        }
-
-        $sqlStmt .= implode(", ", $updates);
-        $sqlStmt .= " WHERE NomineeIDX='" . addslashes($NomineeData['NomineeIDX'] ?? $MemberID) . "'";
-      }
-      // Excute the sql Statement
-      $Result = self::doQuery($sqlStmt);
+        // Execute the sql Statement
+        $Result = self::doQuery($sqlStmt);
     }
 
     if (!$Result) {
-      $strMsg = "ERROR: UpdateNomineeRecord(), doQuery(" . $sqlStmt . ") failed at " . __FILE__ . ", " . __LINE__;
-      error_log($strMsg);
+        $strMsg = "ERROR: UpdateNomineeRecord(), doQuery(" . $sqlStmt . ") failed at " . __FILE__ . ", " . __LINE__;
+        error_log($strMsg);
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to add Nominee record.'];
     }
 
+    // **OPTIONAL: Return the new ID for caller use, e.g., if needed elsewhere**
+    return $Result ? ['success' => true, 'new_nominee_idx' => $bAdd ? $newNomineeIdx : null] : ['success' => false];
 
-    return $Result;
-  }
-  /*****************************************************************************
+    // Or if you want to keep returning just $Result, echo/log $newNomineeIdx for debugging: error_log("New NomineeIDX: " . $newNomineeIdx);
+}  /*****************************************************************************
    *
    * We have to create an audit trail this way beacuse iPage does not support
    * the use of triggers in the database.

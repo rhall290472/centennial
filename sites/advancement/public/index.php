@@ -329,6 +329,7 @@ if (!isset($_SESSION['csrf_token'])) {
   <!-- Sidebar -->
   <?php load_template("/src/Templates/sidebar.php", ['page' => $page]); ?>
 
+  
   <!-- Main Content -->
   <main class="main-content">
     <div class="container-fluid mt-5 pt-3">
@@ -344,6 +345,7 @@ if (!isset($_SESSION['csrf_token'])) {
       switch ($page) {
         case 'home':
       ?>
+      
           <div class="p-0 p-lg-0 bg-light rounded-3 text-center">
             <div class="m-4 m-lg-3">
               <h1 class="display-5 fw-bold">Centennial District Advancement</h1>
