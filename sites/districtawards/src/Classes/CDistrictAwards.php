@@ -1089,7 +1089,7 @@ public static function UpdateNomineeRecord($NomineeData)
             <center><input type='checkbox' name='name1' />&nbsp;</center>
         <?php
               echo "</td><td style='width:100px'>" . $rowNominee["FirstName"] .
-                "</td><td style='width:100px'>" . "<a href=./NomineePage.php?NomineeIDX=" . $rowNominee['NomineeIDX'] . ">" . $rowNominee['LastName'] . "</a>" .
+                "</td><td style='width:100px'>" . "<a href=index.php?page=edit-nominee&NomineeIDX=" . $rowNominee['NomineeIDX'] . ">" . $rowNominee['LastName'] . "</a>" .
                 "</td><td style='width:150px'>" . $rowNominee['Unit'] .
                 "</td></tr>";
             }
