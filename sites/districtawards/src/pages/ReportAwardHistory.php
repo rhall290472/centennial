@@ -93,7 +93,7 @@ $cDistrictAwards = cDistrictAwards::getInstance();
                         $rowAward["Year"] . "</td><td style='width:150px'>" .
                         $rowAward["FirstName"] . "</td><td style='width:150px'>" .
                         $rowAward["PName"] . "</td><td style='width:150px'>" .
-                        "<a href=./NomineePage.php?NomineeIDX=" . $rowAward['NomineeIDX'] . ">" . $rowAward['LastName'] . "</a> </td><td  style='width:500px'>" .
+                        "<a href=index.php?page=edit-nominee&NomineeIDX=" . $rowAward['NomineeIDX'] . ">" . $rowAward['LastName'] . "</a> </td><td  style='width:500px'>" .
                         $AwardName . "</td><td style='width:50px'>" .
                         $Status . "</td><td style='width:150px'>" .
                         $rowAward['MemberID'] . "</td><td style='width:500px'>" .
