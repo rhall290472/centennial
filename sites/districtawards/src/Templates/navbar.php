@@ -50,10 +50,10 @@
                         <li><a class="dropdown-item" href="?page=sm-year&SubmitAward=2">Scoutmaster of the Year</a></li>
                         <li><a class="dropdown-item" href="?page=rsm-year&SubmitAward=3">Rookie Scoutmaster of the
                                 Year</a></li>
-                        <li><a class="dropdown-item" href="?page=tcm-year&SubmitAward=8">Troop Committee Member of teh
+                        <li><a class="dropdown-item" href="?page=tcm-year&SubmitAward=8">Troop Committee Member of the
                                 Year</a></li>
                         <li><a class="dropdown-item" href="?page=rtcm-year&SubmitAward=9">Rookie Troop Committee Member
-                                of teh Year</a></li>
+                                of the Year</a></li>
                         <li><a class="dropdown-item" href="?page=outleader&SubmitAward=14">Outstanding Leaders</a></li>
                         <li><a class="dropdown-item" href="?page=keyscout&SubmitAward=15">Key Scouters</a></li>
                     </ul>
