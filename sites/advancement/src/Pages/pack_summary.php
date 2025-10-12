@@ -22,7 +22,6 @@ load_class(BASE_PATH . '/src/Classes/CPack.php');
 
 $CPack = CPack::getInstance();
 
-
 try {
   $SelYear = isset($_SESSION['year']) ? $_SESSION['year'] : date("Y");
   $CPack->SetYear($SelYear);
@@ -49,7 +48,6 @@ try {
         <form action="index.php?page=home" method="POST">
           <p class="mb-0 d-print-none">Select Year</p>
           <?php
-          // Assuming SelectYear() returns a dropdown or year options
           try {
             $CPack->SelectYear();
           } catch (Exception $e) {
@@ -79,7 +77,6 @@ try {
       </div>
     </div>
 
-
     <div class="row">
       <div class="col-12">
         <div class="py-5">
@@ -89,25 +86,21 @@ try {
             <?php
             try {
               $CPack->DisplayAdvancmenetDescription();
-              //$CPack->DisplayUnitAdvancement();
               echo "<p style='text-align: center;'>Number of Packs in District: " . $CPack->GetNumofPacks() . "</p>";
 
               if ($CPack->GetNumofPacks() > 0) {
-                echo '<table class="table table-striped"><tbody>' .
-                  '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
+                echo '<table id="packTable" class="table table-striped"><thead>' .
+                  '<tr><th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Adventure</th><th>Date</th></tr></thead><tbody>';
                 $PackDataResult = $CPack->GetPack();
                 while ($PackAdv = $PackDataResult->fetch_assoc()) {
                   $UnitYouth = $CPack->GetUnitTotalYouth($PackAdv['Unit'], $PackAdv['Youth'], $SelYear);
                   $UnitRankScout = $CPack->GetUnitRankperScout($UnitYouth, $PackAdv["YTD"] + $PackAdv["adventure"], $PackAdv["Unit"]);
-                  $Unit = $PackAdv['Unit']; // e.g., "Pack 0127-BP"
-
-                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
-                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
-                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
-
-                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
-                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
-                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));                  $Formatter = "";
+                  $Unit = $PackAdv['Unit'];
+                  $UnitDisplay = explode(' ', $Unit)[0];
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                  $UnitURL = "<a href=\"$URLPath\">";
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+                  $Formatter = "";
                   if ($UnitRankScout == 0) {
                     $Formatter = "<b style='color:red;'>";
                   } elseif ($UnitRankScout >= $CPack->GetDistrictGoal($PackAdv['Date']) && $UnitRankScout < $CPack->GetIdealGoal($PackAdv['Date'])) {
@@ -141,6 +134,52 @@ try {
   </div>
 </sort_options>
 
+<!-- jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+<!-- Custom CSS for button styling and spinner -->
+<style>
+  .dt-button.btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #fff !important;
+  }
+
+  .dt-button.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+  }
+
+  /* Spinner styles */
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+<!-- DataTables JS and Buttons -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <!-- Google Charts for Bar and Pie Charts -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
@@ -199,4 +238,49 @@ try {
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
   }
+
+  // Initialize DataTables with export buttons and custom spinner
+  $(document).ready(function() {
+    console.log('Starting DataTable initialization for packTable');
+
+    // Show custom loading overlay
+    $('#loadingOverlay').show();
+    console.log('Loading overlay shown');
+
+    $('#packTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: [{
+          extend: 'copy',
+          className: 'btn btn-primary btn-sm d-print-none mt-2'
+        },
+        {
+          extend: 'csv',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Pack Summary'
+        },
+        {
+          extend: 'excel',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Pack Summary'
+        },
+        {
+          extend: 'pdf',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Pack Summary'
+        }
+      ],
+      pageLength: -1, // Show all rows
+      paging: false, // Disable pagination controls
+      ordering: true, // Ensure sorting is enabled
+      responsive: true,
+      initComplete: function() {
+        console.log('DataTable initialization complete');
+        // Hide loading overlay after a minimum duration (e.g., 2 seconds)
+        setTimeout(function() {
+          $('#loadingOverlay').hide();
+          console.log('Loading overlay hidden');
+        }, 2000);
+      }
+    });
+  });
 </script>
