@@ -137,7 +137,12 @@ $TotalCount = $ValidyptCount - $ExpiredyptCount;
         ?>
         <p style="text-align: center;">Sorted by: <?php echo htmlspecialchars($sort); ?>. Number of Leaders: <?php echo $ValidyptCount; ?></p>
         <div class="px-5 py-5">
-          <table class="table table-striped">
+          <!-- Custom loading overlay -->
+          <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+            <div class="spinner"></div>
+            <span style="color: #fff; font-size: 16px;">Loading...</span>
+          </div>
+          <table id="yptTable" class="table table-striped">
             <thead>
               <tr>
                 <th>Unit</th>
@@ -174,6 +179,52 @@ $TotalCount = $ValidyptCount - $ExpiredyptCount;
   </div>
 </sort_options>
 
+<!-- jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+<!-- Custom CSS for button styling and spinner -->
+<style>
+  .dt-button.btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #fff !important;
+  }
+
+  .dt-button.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+  }
+
+  /* Spinner styles */
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+<!-- DataTables JS and Buttons -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <!-- Google Charts for Pie Chart -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
@@ -204,4 +255,49 @@ $TotalCount = $ValidyptCount - $ExpiredyptCount;
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
   }
+
+  // Initialize DataTables with export buttons and custom spinner
+  $(document).ready(function() {
+    console.log('Starting DataTable initialization for yptTable');
+
+    // Show custom loading overlay
+    $('#loadingOverlay').show();
+    console.log('Loading overlay shown');
+
+    $('#yptTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: [{
+          extend: 'copy',
+          className: 'btn btn-primary btn-sm d-print-none mt-2'
+        },
+        {
+          extend: 'csv',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'YPT_Leaders_Report'
+        },
+        {
+          extend: 'excel',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'YPT_Leaders_Report'
+        },
+        {
+          extend: 'pdf',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'YPT_Leaders_Report'
+        }
+      ],
+      pageLength: -1, // Show all rows
+      paging: false, // Disable pagination controls
+      ordering: true, // Ensure sorting is enabled
+      responsive: true,
+      initComplete: function() {
+        console.log('DataTable initialization complete');
+        // Hide loading overlay after a minimum duration (e.g., 2 seconds)
+        setTimeout(function() {
+          $('#loadingOverlay').hide();
+          console.log('Loading overlay hidden');
+        }, 2000);
+      }
+    });
+  });
 </script>
