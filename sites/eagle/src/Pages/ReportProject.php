@@ -32,7 +32,55 @@ if (!isset($_SESSION['csrf_token'])) {
 <html lang="en">
 
 <head>
+  <!-- Bootstrap CSS -->
+  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+  <!-- jQuery (required for DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+  <!-- Custom CSS for button styling, spinner, and layout -->
   <style>
+    .dt-button.btn-primary {
+      background-color: #007bff !important;
+      border-color: #007bff !important;
+      color: #fff !important;
+      margin-right: 5px !important;
+      padding: 0.25rem 0.5rem !important;
+      font-size: 0.875rem !important;
+      border-radius: 0.2rem !important;
+    }
+
+    .dt-button.btn-primary:hover {
+      background-color: #0056b3 !important;
+      border-color: #004085 !important;
+    }
+
+    /* Spinner styles */
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .table-responsive {
+      position: relative;
+    }
+
     .wrapper {
       width: 360px;
       padding: 20px;
@@ -41,106 +89,134 @@ if (!isset($_SESSION['csrf_token'])) {
 </head>
 
 <body>
-  <?php
-  //Allow selection by Unit
-  $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
+  <div class="container-fluid">
+    <?php
+    // Allow selection by Unit
+    $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
         (`Eagled` IS NULL OR `Eagled`='0') AND (`AgedOut` IS NULL OR `AgedOut`='0') AND (`is_deleted` IS NULL OR `is_deleted`='0')
         ORDER BY `UnitType` ASC, `UnitNumber` ASC";
 
-  $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
+    $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
+    ?>
+    <?php
+    // Check if user has submitted the form
+    $SelectedUnit = false;
+    $SelectedNum = false;
+    if (isset($_POST['SubmitUnit']) && isset($_POST['Unit']) && $_POST['Unit'] !== '-') {
+      $SelectedUnit = strtok($_POST['Unit'], '-'); // Get UnitType
+      $SelectedNum = strtok('-'); // Get UnitNumber
+    }
+    ?>
 
-  ?>
-  <?php
-  //#####################################################
-  //
-  // Check to see if user as Submitted the form.
-  //
-  //#####################################################
-  $SelectedUnit = false;
-  $SelectedNum = false;
-  if (isset($_POST['SubmitUnit']) && isset($_POST['Unit']) && $_POST['Unit'] !== '-') {
-    $SelectedUnit = strtok($_POST['Unit'], '-'); // Get name of Counselor selected
-    $SelectedNum = strtok('-');
-  }
+    <h4 class="text-center">Scouts who have not received Project Approval</h4>
+    <div class="table-responsive">
+      <!-- Custom loading overlay -->
+      <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner"></div>
+        <span style="color: #fff; font-size: 16px;">Loading...</span>
+      </div>
+      <table id="projectTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Unit Type</th>
+            <th>Unit#</th>
+            <th>Gender</th>
+            <th>Name</th>
+            <th>Age out date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          if ($SelectedUnit && $SelectedNum) {
+            $queryScout = "SELECT * FROM `scouts` 
+                         WHERE (`ProjectApproved` IS NULL OR `ProjectApproved`='0') AND 
+                               (`Eagled` IS NULL OR `Eagled`='0') AND 
+                               (`AgedOut` IS NULL OR `AgedOut`='0') AND
+                               (`is_deleted` IS NULL OR `is_deleted`='0') AND
+                               (`UnitType`=?) AND (`UnitNumber`=?) 
+                         ORDER BY `UnitType` ASC, `Gender` ASC, `LastName` ASC";
+            $stmt = mysqli_prepare($cEagle->getDbConn(), $queryScout);
+            mysqli_stmt_bind_param($stmt, "ss", $SelectedUnit, $SelectedNum);
+            mysqli_stmt_execute($stmt);
+            $Scout = mysqli_stmt_get_result($stmt);
+          } else {
+            $queryScout = "SELECT * FROM `scouts` 
+                         WHERE (`ProjectApproved` IS NULL OR `ProjectApproved`='0') AND 
+                               (`Eagled` IS NULL OR `Eagled`='0') AND 
+                               (`AgedOut` IS NULL OR `AgedOut`='0') AND
+                               (`is_deleted` IS NULL OR `is_deleted`='0')
+                         ORDER BY `UnitType` ASC, `Gender` ASC, `LastName` ASC";
+            $Scout = $cEagle->doQuery($queryScout);
+          }
 
+          if (!$Scout) {
+            $msg = "Error: doQuery()";
+            $cEagle->function_alert($msg);
+          }
 
-  $csv_hdr = "Unit Type, Unit#,  Gender, Name, Age Out Date";
-  $csv_output = "";
-  ?>
+          while ($rowScout = $Scout->fetch_assoc()) {
+            $FirstName = $cEagle->GetScoutPreferredName($rowScout);
+            echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
+              htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
+              htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
+              "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . "'>" .
+              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
+              htmlspecialchars($rowScout["AgeOutDate"]) . "</td></tr>";
+          }
 
-  <h4 class="text-center">Scouts who have not received Project Approval</h4>
-  <div class="table-responsive">
-    <table id="projectTable" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Unit Type</th>
-          <th>Unit#</th>
-          <th>Gender</th>
-          <th>Name</th>
-          <th>Age out date</th>
-        </tr>
-      </thead>
-      <?php
+          if ($SelectedUnit && $SelectedNum) {
+            mysqli_stmt_close($stmt);
+          } else {
+            mysqli_free_result($Scout);
+          }
+          ?>
+        </tbody>
+      </table>
+    </div>
 
-      if ($SelectedUnit & $SelectedNum) {
-        $queryScout = "SELECT * FROM `scouts` 
-        WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
-        (`Eagled` IS NULL OR `Eagled`='0') AND 
-        (`AgedOut` IS NULL OR `AgedOut`='0') AND
-        (`is_deleted` IS NULL OR `is_deleted`='0') AND
-        (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum') 
-        ORDER BY `UnitType` ASC, `Gender` ASC,`LastName` ASC";
-      } else {
-        $queryScout = "SELECT * FROM `scouts` 
-        WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
-        (`Eagled` IS NULL OR `Eagled`='0') AND 
-        (`AgedOut` IS NULL OR `AgedOut`='0') AND
-        (`is_deleted` IS NULL OR `is_deleted`='0')
-        ORDER BY `UnitType` ASC, `UnitNumber` ASC, `Gender` ASC,`LastName` ASC";
-      }
-
-      if (!$Scout = $cEagle->doQuery($queryScout)) {
-        $msg = "Error: doQuery()";
-        $cEagle->function_alert($msg);
-      }
-
-      echo "<tbody>";
-      while ($rowScout = $Scout->fetch_assoc()) {
-        $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-        echo "<tr><td>" .
-          $rowScout["UnitType"] . "</td><td>" .
-          $rowScout["UnitNumber"] . "</td><td>" .
-          $rowScout["Gender"] . "</td><td>" .
-          "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
-          $rowScout["AgeOutDate"] . "</td></tr>";
-
-        $csv_output .= $rowScout["UnitType"] . ",";
-        $csv_output .= $rowScout["UnitNumber"] . ",";
-        $csv_output .= $rowScout["Gender"] . ", ";
-        $csv_output .= $FirstName . " " . $rowScout["LastName"] . ", ";
-        $csv_output .= $rowScout["AgeOutDate"] . "\n";
-      } ?>
-      </tbody>
-    </table>
-
-    <form class="d-print-none d-flex justify-content-center" name="export" action="../export.php" method="post" style="padding: 20px;">
-      <input class='btn btn-primary btn-sm' style="width:220px" type="submit" value="Export table to CSV">
-      <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-      <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-    </form>
+    <!-- DataTables JS and Buttons -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <!-- Moment.js and DataTables DateTime Sorting Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
 
     <script>
       $(document).ready(function() {
+        console.log('Starting DataTable initialization for projectTable');
+
+        // Verify Bootstrap CSS is loaded
+        if (typeof $.fn.tooltip === 'undefined') {
+          console.warn('Bootstrap JS not loaded; button styling may be affected');
+        } else {
+          console.log('Bootstrap JS detected');
+        }
+
+        // Show custom loading overlay
+        $('#loadingOverlay').show();
+        console.log('Loading overlay shown');
+
+        // Destroy existing DataTable instance if it exists
+        if ($.fn.DataTable.isDataTable('#projectTable')) {
+          $('#projectTable').DataTable().destroy();
+          console.log('Previous DataTable instance destroyed');
+        }
+
         // Custom sorting for MM/DD/YYYY date format
         $.fn.dataTable.ext.order['date-us'] = function(data) {
           if (!data || data.trim() === '') {
             return 0; // Handle empty or null dates
           }
-          // Ensure date matches MM/DD/YYYY format
+          // Remove any HTML tags if present
+          var cleanData = data.replace(/<[^>]+>/g, '');
           var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-          var match = data.match(datePattern);
+          var match = cleanData.match(datePattern);
           if (!match) {
-            console.warn('Invalid date format for:', data);
+            console.warn('Invalid date format for:', cleanData);
             return 0; // Treat invalid dates as lowest priority
           }
           var month = match[1].padStart(2, '0');
@@ -149,30 +225,59 @@ if (!isset($_SESSION['csrf_token'])) {
           return parseInt(year + month + day);
         };
 
+        // Initialize DataTable with export buttons and custom sorting
         $('#projectTable').DataTable({
-          "paging": false, // Display all rows
-          "searching": true, // Enable search
-          "ordering": true, // Enable sorting
-          "info": true, // Show table info
-          "autoWidth": false, // Disable auto width for Bootstrap
-          "columnDefs": [{
-              "type": "date-us",
-              "targets": 4 // AgeOutDate column (0-based index)
+          dom: 'Bfrtip',
+          buttons: [{
+              extend: 'copy',
+              className: 'btn btn-primary btn-sm d-print-none mt-2',
+              title: 'Centennial District Scouts Not Received Project Approval Report'
             },
             {
-              "orderable": true,
-              "targets": "_all" // Ensure all columns are sortable
+              extend: 'csv',
+              className: 'btn btn-primary btn-sm d-print-none mt-2',
+              filename: 'Centennial District Scouts Not Received Project Approval Report'
+            },
+            {
+              extend: 'excel',
+              className: 'btn btn-primary btn-sm d-print-none mt-2',
+              filename: 'Centennial District Scouts Not Received Project Approval Report'
+            },
+            {
+              extend: 'pdf',
+              className: 'btn btn-primary btn-sm d-print-none mt-2',
+              filename: 'Centennial District Scouts Not Received Project Approval Report'
             }
-          ]
+          ],
+          paging: false, // Display all rows
+          searching: true, // Enable search
+          ordering: true, // Enable sorting
+          info: true, // Show table info
+          autoWidth: false, // Disable auto width for Bootstrap
+          columnDefs: [{
+              type: 'date-us',
+              targets: 4 // Age out date column (0-based index)
+            },
+            {
+              orderable: true,
+              targets: '_all' // Ensure all columns are sortable
+            }
+          ],
+          initComplete: function() {
+            console.log('DataTable initialization complete');
+            // Verify button styling
+            $('.dt-button.btn-primary').each(function() {
+              console.log('Button initialized with classes:', $(this).attr('class'));
+            });
+            // Hide loading overlay after a minimum duration (2 seconds)
+            setTimeout(function() {
+              $('#loadingOverlay').hide();
+              console.log('Loading overlay hidden');
+            }, 2000);
+          }
         });
       });
     </script>
-    <!-- Moment.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
-    <!-- DataTables DateTime Sorting Plugin -->
-    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
-
   </div>
 </body>
 

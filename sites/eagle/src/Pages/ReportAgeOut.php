@@ -31,11 +31,52 @@ if (!isset($_SESSION['csrf_token'])) {
 <!DOCTYPE html>
 <html lang="en">
 
+<head>
+  <!-- jQuery (required for DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+  <!-- Custom CSS for button styling and spinner -->
+  <style>
+    .dt-button.btn-primary {
+      background-color: #007bff !important;
+      border-color: #007bff !important;
+      color: #fff !important;
+    }
+
+    .dt-button.btn-primary:hover {
+      background-color: #0056b3 !important;
+      border-color: #004085 !important;
+    }
+
+    /* Spinner styles */
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
 <body>
   <?php
-
-  //Allow selection by Unit
-  $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved`IS NULL OR `ProjectApproved`='0') AND 
+  // Allow selection by Unit
+  $qryUnits = "SELECT DISTINCTROW UnitType, UnitNumber FROM scouts WHERE (`ProjectApproved` IS NULL OR `ProjectApproved`='0') AND 
         (`Eagled` IS NULL OR `Eagled`='0') AND (`AgedOut` IS NULL OR `AgedOut`='0') AND (`is_deleted` IS NULL OR `is_deleted`='0') AND
         (`MemberId` > '0')
         ORDER BY `UnitType` ASC, `UnitNumber` ASC";
@@ -43,152 +84,185 @@ if (!isset($_SESSION['csrf_token'])) {
   $cEagle->SelectUnit($qryUnits, $_SESSION['csrf_token']);
   ?>
   <?php
-  //#####################################################
-  //
-  // Check to see if user as Submitted the form.
-  //
-  //#####################################################
+  // Check if user has submitted the form
   $SelectedUnit = false;
   $SelectedNum = false;
   if (isset($_POST['SubmitUnit']) && isset($_POST['Unit']) && $_POST['Unit'] !== '-') {
-    $SelectedUnit = strtok($_POST['Unit'], '-'); // Get name of Counselor selected
-    $SelectedNum = strtok('-');
+    $SelectedUnit = strtok($_POST['Unit'], '-'); // Get UnitType
+    $SelectedNum = strtok('-'); // Get UnitNumber
   }
-
-  $csv_hdr = "Unit, Gender, Name, Age Out Date, Scout Email, ULName, ELEMail, CCName, CCEmail, Project Approval";
-  $csv_output = "";
-
   ?>
 
-  <h4 class="text-center">Scouts, and thier age out dates</h4>
+  <h4 class="text-center">Scouts, and their age out dates</h4>
   <div class="table-responsive">
+    <!-- Custom loading overlay -->
+    <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+      <div class="spinner"></div>
+      <span style="color: #fff; font-size: 16px;">Loading...</span>
+    </div>
     <table id="ageOutTable" class="table table-striped">
       <thead>
         <tr>
-          <th> Unit Type </th>
-          <th> Unit# </th>
-          <th> Gender </th>
-          <th style="width:250px"> Name </th>
+          <th>Unit Type</th>
+          <th>Unit#</th>
+          <th>Gender</th>
+          <th style="width:250px">Name</th>
           <th>BSA ID</th>
-          <th> Age Out Date </th>
-          <th> Project Approval </th>
+          <th>Age Out Date</th>
+          <th>Project Approval</th>
         </tr>
       </thead>
-      <?php
-
-      if ($SelectedUnit & $SelectedNum) {
-        $queryScout = "SELECT * FROM `scouts` 
+      <tbody>
+        <?php
+        if ($SelectedUnit && $SelectedNum) {
+          $queryScout = "SELECT * FROM `scouts` 
         WHERE (`Eagled` IS NULL OR `Eagled`='0') AND 
         (`AgedOut` IS NULL OR `AgedOut`='0') AND
         (`is_deleted` IS NULL OR `is_deleted`='0') AND
-        (`UnitType`='$SelectedUnit') AND (`UnitNumber`='$SelectedNum') AND
+        (`UnitType`=?) AND (`UnitNumber`=?) AND
         (`MemberId` > '0')
-        ORDER BY  `Gender`, LastName ASC";
-      } else {
-        $queryScout = "SELECT * FROM `scouts` 
+        ORDER BY `Gender`, LastName ASC";
+          $stmt = mysqli_prepare($cEagle->getDbConn(), $queryScout);
+          mysqli_stmt_bind_param($stmt, "ss", $SelectedUnit, $SelectedNum);
+          mysqli_stmt_execute($stmt);
+          $Scout = mysqli_stmt_get_result($stmt);
+        } else {
+          $queryScout = "SELECT * FROM `scouts` 
         WHERE (`Eagled` IS NULL OR `Eagled`='0') AND 
         (`AgedOut` IS NULL OR `AgedOut`='0') AND
         (`is_deleted` IS NULL OR `is_deleted`='0') AND
-         (`MemberId` > '0')
-        ORDER BY  STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
-      }
-
-      if (!$Scout = $cEagle->doQuery($queryScout)) {
-        $msg = "Error: doQuery()";
-        $cEagle->function_alert($msg);
-      }
-
-      echo "<tbody>";
-      while ($rowScout = $Scout->fetch_assoc()) {
-        $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-
-        $AgeOut_Date = date($rowScout["AgeOutDate"]);
-        $ToDate = date("m/d/Y");
-        if (strtotime($ToDate) > strtotime($AgeOut_Date)) {
-          $Formatter = "<b style='color:red;'>";
-        } else {
-          $Formatter = "";
+        (`MemberId` > '0')
+        ORDER BY STR_TO_DATE(`AgeOutDate`, '%m/%d/%Y') ASC, `Gender`";
+          $Scout = $cEagle->doQuery($queryScout);
         }
 
+        if (!$Scout) {
+          $msg = "Error: doQuery()";
+          $cEagle->function_alert($msg);
+        }
 
-        echo "<tr><td>" .
-          $rowScout["UnitType"] . "</td><td>" .
-          $rowScout["UnitNumber"] . "</td><td>" .
-          $rowScout["Gender"] . "</td><td style='width:250px'>" .
-          "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
-          $rowScout["MemberId"] . "</td><td>" .
-          $Formatter . $rowScout["AgeOutDate"] . "</td><td>" .
-          $rowScout["ProjectDate"] . "</td></tr>";
+        while ($rowScout = $Scout->fetch_assoc()) {
+          $FirstName = $cEagle->GetScoutPreferredName($rowScout);
 
-        $csv_output .= $rowScout["UnitType"] . " " . $rowScout["UnitNumber"] . ", ";
-        $csv_output .= $rowScout["Gender"] . ", ";
-        $csv_output .= $FirstName . " " . $rowScout["LastName"] . ", ";
-        $csv_output .= $rowScout["MemberId"] . ", ";
-        $csv_output .= $rowScout["AgeOutDate"] . ", ";
-        $csv_output .= $rowScout["Email"] . ", ";
-        $csv_output .= $rowScout["ULFirst"] . " " . $rowScout["ULLast"] . ", ";
-        $csv_output .= $rowScout["ULEmail"] . ", ";
-        $csv_output .= $rowScout["CCFirst"] . " " . $rowScout["CCLast"] . ", ";
-        $csv_output .= $rowScout["CCEmail"] . ", ";
-        $csv_output .= $rowScout["ProjectDate"] . "\n";
-      }
-      $csv_output .= "\n";
-      ?>
+          $AgeOut_Date = $rowScout["AgeOutDate"];
+          $ToDate = date("m/d/Y");
+          if (strtotime($AgeOut_Date) <= strtotime($ToDate)) {
+            $Formatter = "<b style='color:red;'>";
+          } else {
+            $Formatter = "";
+          }
+
+          echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
+            htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
+            htmlspecialchars($rowScout["Gender"]) . "</td><td style='width:250px'>" .
+            "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . "'>" . htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
+            htmlspecialchars($rowScout["MemberId"]) . "</td><td>" .
+            $Formatter . htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
+            htmlspecialchars($rowScout["ProjectDate"]) . "</td></tr>";
+        }
+        if ($SelectedUnit && $SelectedNum) {
+          mysqli_stmt_close($stmt);
+        } else {
+          mysqli_free_result($Scout);
+        }
+        ?>
       </tbody>
     </table>
-
-    <form class="d-print-none d-flex justify-content-center" name="export" action="../export.php" method="post" style="padding: 20px;">
-      <input class='btn btn-primary btn-sm' style="width:220px" type="submit" value="Export table to CSV">
-      <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-      <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-    </form>
-
-
-    <script>
-      $(document).ready(function() {
-        // Custom sorting for MM/DD/YYYY date format
-        $.fn.dataTable.ext.order['date-us'] = function(data) {
-          if (!data || data.trim() === '') {
-            return 0; // Handle empty or null dates
-          }
-          // Ensure date matches MM/DD/YYYY format
-          var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-          var match = data.match(datePattern);
-          if (!match) {
-            console.warn('Invalid date format for:', data);
-            return 0; // Treat invalid dates as lowest priority
-          }
-          var month = match[1].padStart(2, '0');
-          var day = match[2].padStart(2, '0');
-          var year = match[3];
-          return parseInt(year + month + day);
-        };
-
-        $('#ageOutTable').DataTable({
-          "paging": false, // Display all rows
-          "searching": true, // Enable search
-          "ordering": true, // Enable sorting
-          "info": true, // Show table info
-          "autoWidth": false, // Disable auto width for Bootstrap
-          "columnDefs": [{
-              "type": "date-us",
-              "targets": 4 // AgeOutDate column (0-based index)
-            },
-            {
-              "orderable": true,
-              "targets": "_all" // Ensure all columns are sortable
-            }
-          ]
-        });
-      });
-    </script>
-    <!-- Moment.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
-    <!-- DataTables DateTime Sorting Plugin -->
-    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
-
   </div>
+
+  <!-- DataTables JS and Buttons -->
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <!-- Moment.js and DataTables DateTime Sorting Plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      console.log('Starting DataTable initialization for ageOutTable');
+
+      // Show custom loading overlay
+      $('#loadingOverlay').show();
+      console.log('Loading overlay shown');
+
+      // Destroy existing DataTable instance if it exists
+      if ($.fn.DataTable.isDataTable('#ageOutTable')) {
+        $('#ageOutTable').DataTable().destroy();
+        console.log('Previous DataTable instance destroyed');
+      }
+
+      // Custom sorting for MM/DD/YYYY date format
+      $.fn.dataTable.ext.order['date-us'] = function(data) {
+        if (!data || data.trim() === '') {
+          return 0; // Handle empty or null dates
+        }
+        // Remove any HTML tags (e.g., <b style='color:red;'>)
+        var cleanData = data.replace(/<[^>]+>/g, '');
+        var datePattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+        var match = cleanData.match(datePattern);
+        if (!match) {
+          console.warn('Invalid date format for:', cleanData);
+          return 0; // Treat invalid dates as lowest priority
+        }
+        var month = match[1].padStart(2, '0');
+        var day = match[2].padStart(2, '0');
+        var year = match[3];
+        return parseInt(year + month + day);
+      };
+
+      // Initialize DataTable with export buttons and custom sorting
+      $('#ageOutTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [{
+            extend: 'copy',
+            className: 'btn btn-primary btn-sm d-print-none mt-2',
+            title: 'Centennial District Age Out Report'
+          },
+          {
+            extend: 'csv',
+            className: 'btn btn-primary btn-sm d-print-none mt-2',
+            filename: 'Centennial District Age Out Report'
+          },
+          {
+            extend: 'excel',
+            className: 'btn btn-primary btn-sm d-print-none mt-2',
+            filename: 'Centennial District Age Out Report'
+          },
+          {
+            extend: 'pdf',
+            className: 'btn btn-primary btn-sm d-print-none mt-2',
+            filename: 'Centennial District Age Out Report'
+          }
+        ],
+        paging: false, // Display all rows
+        searching: true, // Enable search
+        ordering: true, // Enable sorting
+        info: true, // Show table info
+        autoWidth: false, // Disable auto width for Bootstrap
+        columnDefs: [{
+            type: 'date-us',
+            targets: 5 // Age Out Date column (0-based index)
+          },
+          {
+            orderable: true,
+            targets: '_all' // Ensure all columns are sortable
+          }
+        ],
+        initComplete: function() {
+          console.log('DataTable initialization complete');
+          // Hide loading overlay after a minimum duration (2 seconds)
+          setTimeout(function() {
+            $('#loadingOverlay').hide();
+            console.log('Loading overlay hidden');
+          }, 2000);
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
