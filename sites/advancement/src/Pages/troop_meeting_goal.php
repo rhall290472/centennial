@@ -67,11 +67,14 @@ try {
           <?php
           try {
             $CTroop->DisplayAdvancmenetDescription();
-            //$CTroop->DisplayUnitAdvancement();
             echo "<p style='text-align: center;'>Number of units meeting goal: $TroopAbove Out of: $NumofTroops Troops</p>";
 
             if ($NumofTroops > 0) {
-              echo '<table class="table table-striped"><tbody>' .
+              echo '<div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">' .
+                '<div class="spinner"></div>' .
+                '<span style="color: #fff; font-size: 16px;">Loading...</span>' .
+                '</div>' .
+                '<table id="troopsMeetingGoalTable" class="table table-striped"><thead><tr>' .
                 '<th>Unit</th><th>Scout</th><th>Tenderfoot</th><th>Second Class</th><th>First Class</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>Total Rank</th><th>Youth</th><th>Rank/Scout</th><th>Date</th></tr></thead><tbody>';
               $sql = sprintf("SELECT * FROM adv_troop WHERE Date=%d ORDER BY Unit ASC", $CTroop->GetYear());
               $result = $CTroop->doQuery($sql);
@@ -82,13 +85,10 @@ try {
                   if (floatval($UnitRankScout) < $CTroop->GetDistrictGoal($row["Date"])) {
                     continue;
                   }
-                  $Unit = $row['Unit']; // e.g., "Pack 0127-BP"
-                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
-                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
-                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
-
-                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
-                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
+                  $Unit = $row['Unit'];
+                  $UnitDisplay = explode(' ', $Unit)[0];
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                  $UnitURL = "<a href=\"$URLPath\">";
                   $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $Formatter = "";
                   if ($UnitRankScout == 0) {
@@ -127,6 +127,52 @@ try {
   </div>
 </sort_options>
 
+<!-- jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+<!-- Custom CSS for button styling and spinner -->
+<style>
+  .dt-button.btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #fff !important;
+  }
+
+  .dt-button.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+  }
+
+  /* Spinner styles */
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+<!-- DataTables JS and Buttons -->
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <!-- Google Charts for Pie Chart -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
@@ -158,4 +204,49 @@ try {
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
   }
+
+  // Initialize DataTables with export buttons and custom spinner
+  $(document).ready(function() {
+    console.log('Starting DataTable initialization for troopsMeetingGoalTable');
+
+    // Show custom loading overlay
+    $('#loadingOverlay').show();
+    console.log('Loading overlay shown');
+
+    $('#troopsMeetingGoalTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: [{
+          extend: 'copy',
+          className: 'btn btn-primary btn-sm d-print-none mt-2'
+        },
+        {
+          extend: 'csv',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Troops Meeting Goal'
+        },
+        {
+          extend: 'excel',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Troops Meeting Goal'
+        },
+        {
+          extend: 'pdf',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          filename: 'Centennial District Troops Meeting Goal'
+        }
+      ],
+      pageLength: -1, // Show all rows
+      paging: false, // Disable pagination controls
+      ordering: true, // Ensure sorting is enabled
+      responsive: true,
+      initComplete: function() {
+        console.log('DataTable initialization complete');
+        // Hide loading overlay after a minimum duration (e.g., 2 seconds)
+        setTimeout(function() {
+          $('#loadingOverlay').hide();
+          console.log('Loading overlay hidden');
+        }, 2000);
+      }
+    });
+  });
 </script>
