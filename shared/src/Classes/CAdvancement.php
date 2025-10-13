@@ -243,7 +243,7 @@ class CAdvancement
           ?>
         </select>
         </div>
-        <div class="col-1 py-6">
+        <div class="col-1 py-45">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
           <input class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='Set Year' />
         </div>

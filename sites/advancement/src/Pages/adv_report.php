@@ -20,7 +20,7 @@
 
 load_class(BASE_PATH . '/src/Classes/CPack.php');
 load_class(BASE_PATH . '/src/Classes/CTroop.php');
-load_class(SHARED_PATH .'src/Classes/CUnit.php');
+load_class(SHARED_PATH . 'src/Classes/CUnit.php');
 
 $CPack = CPack::getInstance();
 $CTroop = CTroop::getInstance();
@@ -140,12 +140,10 @@ try {
             echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
           }
           ?>
-          <!-- <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>"> -->
-          <!-- <input class="btn btn-primary btn-sm mt-2" type="submit" name="SubmitYear" value="Set Year"> -->
         </form>
       </div>
     </div>
-    <!-- CSS for chart containers -->
+    <!-- Spinner and CSS -->
     <style>
       #PackChart,
       #Packpiechart,
@@ -155,7 +153,49 @@ try {
         width: 100%;
         display: block;
       }
+
+      .dt-button.btn-primary {
+        background-color: #007bff !important;
+        border-color: #007bff !important;
+        color: #fff !important;
+      }
+
+      .dt-button.btn-primary:hover {
+        background-color: #0056b3 !important;
+        border-color: #004085 !important;
+      }
+
+      .spinner-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+      }
+
+      .spinner-border {
+        width: 3rem;
+        height: 3rem;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
     </style>
+    <div class="overlay" id="overlay"></div>
+    <div class="spinner-container" id="spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <!-- Pack Section -->
     <div class="row mt-4">
       <div class="col-12">
@@ -184,7 +224,7 @@ try {
           $resultPack = mysqli_stmt_get_result($stmt);
           if ($resultPack) {
             if (mysqli_num_rows($resultPack) > 0) {
-              echo '<table class="table table-striped"><thead><tr>' .
+              echo '<table id="packTable" class="table table-striped"><thead><tr>' .
                 '<th>Unit</th><th>Lion</th><th>Tiger</th><th>Wolf</th><th>Bear</th><th>Webelos</th><th>AOL</th><th>Total Rank</th><th>Total Youth</th><th>Rank/Scout</th><th>Adventures</th><th>Date</th></tr></thead><tbody>';
               while ($row = $resultPack->fetch_assoc()) {
                 $UnitYouth = $CPack->GetUnitTotalYouth($row['Unit'], $row['Youth'], $CPack->GetYear());
@@ -248,7 +288,7 @@ try {
           $resultTroop = mysqli_stmt_get_result($stmt);
           if ($resultTroop) {
             if (mysqli_num_rows($resultTroop) > 0) {
-              echo '<table class="table table-striped"><thead><tr>' .
+              echo '<table id="troopTable" class="table table-striped"><thead><tr>' .
                 '<th>Unit</th><th>Scout</th><th>Tenderfoot</th><th>Second Class</th><th>First Class</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>Total Rank</th><th>Total Youth</th><th>Rank/Scout</th><th>Date</th></tr></thead><tbody>';
               while ($row = $resultTroop->fetch_assoc()) {
                 $UnitYouth = $CTroop->GetUnitTotalYouth($row['Unit'], $row['Youth'], $CTroop->GetYear());
@@ -291,6 +331,7 @@ try {
         <h2>Membership Report</h2>
         <?php
         try {
+          // Assuming DisplayMembershipTable generates a table with id="membershipTable"
           $CUnit->DisplayMembershipTable();
         } catch (Exception $e) {
           $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying membership data: ' . $e->getMessage()];
@@ -312,7 +353,7 @@ try {
           $resultEagle = mysqli_stmt_get_result($stmt);
           if ($resultEagle) {
             if (mysqli_num_rows($resultEagle) > 0) {
-              echo '<table class="table table-striped"><thead><tr>' .
+              echo '<table id="eagleTable" class="table table-striped"><thead><tr>' .
                 '<th>Unit-Troop</th><th>Eagle</th><th>Palms</th><th>Date</th></tr></thead><tbody>';
               while ($row = $resultEagle->fetch_assoc()) {
                 $Unit = $row['Unit'];
@@ -340,205 +381,282 @@ try {
   </div>
 </sort_options>
 
+<!-- Libraries for DataTables and Export -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+
 <!-- Google Charts for Bar and Pie Charts -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-  if (typeof google === 'undefined' || typeof google.charts === 'undefined') {
-    console.error('Google Charts library failed to load.');
-    <?php error_log('Google Charts library failed to load.'); ?>
-    document.getElementById('PackChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
-    document.getElementById('Packpiechart').innerHTML = '<p>Error: Unable to load chart library.</p>';
-    document.getElementById('TroopChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
-    document.getElementById('Trooppiechart').innerHTML = '<p>Error: Unable to load chart library.</p>';
-  } else {
-    google.charts.load('current', {
-      packages: ['corechart']
-    });
-    google.charts.setOnLoadCallback(drawCharts);
+  // Show spinner
+  function showSpinner() {
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('spinner').style.display = 'block';
   }
 
+  // Hide spinner
+  function hideSpinner() {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('spinner').style.display = 'none';
+  }
 
-  function drawCharts() {
-    try {
-      // Verify chart containers exist
-      const containers = ['PackChart', 'Packpiechart', 'TroopChart', 'Trooppiechart'];
-      for (let id of containers) {
-        if (!document.getElementById(id)) {
-          console.error(`Chart container ${id} not found.`);
-          return;
+  // Initialize DataTables with export buttons
+  $(document).ready(function() {
+    showSpinner();
+    const tableOptions = {
+      dom: 'Bfrtip',
+      buttons: [{
+          extend: 'csv',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          title: 'Advancement_Report'
+        },
+        {
+          extend: 'excel',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          title: 'Advancement_Report'
+        },
+        {
+          extend: 'pdf',
+          className: 'btn btn-primary btn-sm d-print-none mt-2',
+          title: 'Advancement_Report'
         }
-      }
+      ],
+      pageLength: -1,
+      paging: false, // Disable pagination controls
+      order: [
+        [0, 'asc']
+      ],
+      columnDefs: [{
+          type: 'num',
+          targets: '_all'
+        } // Treat all columns as numeric where applicable
+      ]
+    };
 
-      // Check if Pack data is all zeros
-      const packValues = [
-        <?php echo (int)$PackTotals['lion']; ?>,
-        <?php echo (int)$PackTotals['tiger']; ?>,
-        <?php echo (int)$PackTotals['wolf']; ?>,
-        <?php echo (int)$PackTotals['bear']; ?>,
-        <?php echo (int)$PackTotals['webelos']; ?>,
-        <?php echo (int)$PackTotals['aol']; ?>
-      ];
-      if (packValues.every(val => val === 0)) {
-        <?php error_log("PackTotals: " . print_r($PackTotals, true)); ?>
-        document.getElementById('PackChart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
-        document.getElementById('Packpiechart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
-      } else {
-        // Pack Bar Chart
-        var Packdata = google.visualization.arrayToDataTable([
-          ['Rank', 'Awarded', {
-            role: 'style'
-          }],
-          ['Lion', <?php echo (int)$PackTotals['lion']; ?>, 'yellow'],
-          ['Tiger', <?php echo (int)$PackTotals['tiger']; ?>, 'orange'],
-          ['Wolf', <?php echo (int)$PackTotals['wolf']; ?>, 'red'],
-          ['Bear', <?php echo (int)$PackTotals['bear']; ?>, 'lightblue'],
-          ['Webelos', <?php echo (int)$PackTotals['webelos']; ?>, 'green'],
-          ['AOL', <?php echo (int)$PackTotals['aol']; ?>, 'lightgreen']
-        ]);
-
-        var Packview = new google.visualization.DataView(Packdata);
-        Packview.setColumns([0, 1, {
-          calc: 'stringify',
-          sourceColumn: 1,
-          type: 'string',
-          role: 'annotation'
-        }, 2]);
-        var Packoptions = {
-          title: 'District wide Pack Advancement Data',
-          width: '100%',
-          height: 400,
-          bar: {
-            groupWidth: '95%'
-          },
-          legend: {
-            position: 'none'
-          },
-          bars: 'vertical'
-        };
-
-        var Packchart = new google.visualization.BarChart(document.getElementById('PackChart'));
-        Packchart.draw(Packview, Packoptions);
-
-        // Pack Pie Chart
-        var piePackdata = google.visualization.arrayToDataTable([
-          ['Category', 'Count'],
-          ['Ranks', <?php echo (int)$PackTotals['YTD']; ?>],
-          ['Adventures', <?php echo (int)$PackTotals['adventure']; ?>],
-          ['Scouts', <?php echo (int)$PackTotals['youth']; ?>]
-        ]);
-
-        var piePackchart_options = {
-          title: 'Ranks Earned vs. Scouts',
-          slices: {
-            0: {
-              color: 'green'
-            },
-            1: {
-              color: 'blue'
-            },
-            2: {
-              color: 'red'
-            }
-          },
-          pieSliceText: 'value',
-          width: '100%',
-          height: 400
-        };
-
-        var piePackchart = new google.visualization.PieChart(document.getElementById('Packpiechart'));
-        piePackchart.draw(piePackdata, piePackchart_options);
-      }
-
-      // Check if Troop data is all zeros
-      const troopValues = [
-        <?php echo (int)$TroopTotals['Scout']; ?>,
-        <?php echo (int)$TroopTotals['Tenderfoot']; ?>,
-        <?php echo (int)$TroopTotals['SecondClass']; ?>,
-        <?php echo (int)$TroopTotals['FirstClass']; ?>,
-        <?php echo (int)$TroopTotals['Star']; ?>,
-        <?php echo (int)$TroopTotals['Life']; ?>,
-        <?php echo (int)$TroopTotals['Eagle']; ?>,
-        <?php echo (int)$TroopTotals['Palms']; ?>
-      ];
-      if (troopValues.every(val => val === 0)) {
-        <?php error_log("TroopTotals: " . print_r($TroopTotals, true)); ?>
-        document.getElementById('TroopChart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
-        document.getElementById('Trooppiechart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
-      } else {
-        // Troop Bar Chart
-        var Troopdata = google.visualization.arrayToDataTable([
-          ['Rank', 'Awarded', {
-            role: 'style'
-          }],
-          ['Scout', <?php echo (int)$TroopTotals['Scout']; ?>, 'lightgray'],
-          ['Tenderfoot', <?php echo (int)$TroopTotals['Tenderfoot']; ?>, 'blue'],
-          ['Second Class', <?php echo (int)$TroopTotals['SecondClass']; ?>, 'lightgray'],
-          ['First Class', <?php echo (int)$TroopTotals['FirstClass']; ?>, 'blue'],
-          ['Star', <?php echo (int)$TroopTotals['Star']; ?>, 'lightgray'],
-          ['Life', <?php echo (int)$TroopTotals['Life']; ?>, 'blue'],
-          ['Eagle', <?php echo (int)$TroopTotals['Eagle']; ?>, 'lightgray'],
-          ['Palms', <?php echo (int)$TroopTotals['Palms']; ?>, 'blue']
-        ]);
-
-        var Troopview = new google.visualization.DataView(Troopdata);
-        Troopview.setColumns([0, 1, {
-          calc: 'stringify',
-          sourceColumn: 1,
-          type: 'string',
-          role: 'annotation'
-        }, 2]);
-        var Troopoptions = {
-          title: 'District wide Troop Advancement Data',
-          width: '100%',
-          height: 400,
-          bar: {
-            groupWidth: '95%'
-          },
-          legend: {
-            position: 'none'
-          },
-          bars: 'vertical'
-        };
-
-        var Troopchart = new google.visualization.BarChart(document.getElementById('TroopChart'));
-        Troopchart.draw(Troopview, Troopoptions);
-
-        // Troop Pie Chart
-        var pieTroopdata = google.visualization.arrayToDataTable([
-          ['Category', 'Count'],
-          ['Ranks', <?php echo (int)$TroopTotals['YTD']; ?>],
-          ['Merit Badges', <?php echo (int)$TroopTotals['MeritBadge']; ?>],
-          ['Scouts', <?php echo (int)$TroopTotals['Youth']; ?>]
-        ]);
-
-        var pieTroopchart_options = {
-          title: 'Ranks Earned vs. Scouts',
-          slices: {
-            0: {
-              color: 'green'
-            },
-            1: {
-              color: 'blue'
-            },
-            2: {
-              color: 'red'
-            }
-          },
-          pieSliceText: 'value',
-          width: '100%',
-          height: 400
-        };
-
-        var Trooppiechart = new google.visualization.PieChart(document.getElementById('Trooppiechart'));
-        Trooppiechart.draw(pieTroopdata, pieTroopchart_options);
-      }
-    } catch (e) {
-      console.error('Error drawing charts: ', e);
-      <?php error_log('Error drawing charts:'); ?>
-      document.getElementById('PackChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
-      document.getElementById('Packpiechart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
-      document.getElementById('TroopChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
-      document.getElementById('Trooppiechart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
+    // Initialize tables
+    if ($('#packTable').length) {
+      $('#packTable').DataTable(tableOptions);
     }
-  }
+    if ($('#troopTable').length) {
+      $('#troopTable').DataTable(tableOptions);
+    }
+    // if ($('#membershipTable').length) {
+    //   $('#membershipTable').DataTable(tableOptions);
+    // }
+    if ($('#eagleTable').length) {
+      $('#eagleTable').DataTable(tableOptions);
+    }
+
+    // Load Google Charts
+    if (typeof google === 'undefined' || typeof google.charts === 'undefined') {
+      console.error('Google Charts library failed to load.');
+      <?php error_log('Google Charts library failed to load.'); ?>
+      document.getElementById('PackChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
+      document.getElementById('Packpiechart').innerHTML = '<p>Error: Unable to load chart library.</p>';
+      document.getElementById('TroopChart').innerHTML = '<p>Error: Unable to load chart library.</p>';
+      document.getElementById('Trooppiechart').innerHTML = '<p>Error: Unable to load chart library.</p>';
+      hideSpinner();
+    } else {
+      google.charts.load('current', {
+        packages: ['corechart']
+      });
+      google.charts.setOnLoadCallback(drawCharts);
+    }
+
+    function drawCharts() {
+      try {
+        // Verify chart containers exist
+        const containers = ['PackChart', 'Packpiechart', 'TroopChart', 'Trooppiechart'];
+        for (let id of containers) {
+          if (!document.getElementById(id)) {
+            console.error(`Chart container ${id} not found.`);
+            hideSpinner();
+            return;
+          }
+        }
+
+        // Check if Pack data is all zeros
+        const packValues = [
+          <?php echo (int)$PackTotals['lion']; ?>,
+          <?php echo (int)$PackTotals['tiger']; ?>,
+          <?php echo (int)$PackTotals['wolf']; ?>,
+          <?php echo (int)$PackTotals['bear']; ?>,
+          <?php echo (int)$PackTotals['webelos']; ?>,
+          <?php echo (int)$PackTotals['aol']; ?>
+        ];
+        if (packValues.every(val => val === 0)) {
+          <?php error_log("PackTotals: " . print_r($PackTotals, true)); ?>
+          document.getElementById('PackChart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
+          document.getElementById('Packpiechart').innerHTML = '<p>No Pack data available for <?php echo $SelYear; ?>.</p>';
+        } else {
+          // Pack Bar Chart
+          var Packdata = google.visualization.arrayToDataTable([
+            ['Rank', 'Awarded', {
+              role: 'style'
+            }],
+            ['Lion', <?php echo (int)$PackTotals['lion']; ?>, 'yellow'],
+            ['Tiger', <?php echo (int)$PackTotals['tiger']; ?>, 'orange'],
+            ['Wolf', <?php echo (int)$PackTotals['wolf']; ?>, 'red'],
+            ['Bear', <?php echo (int)$PackTotals['bear']; ?>, 'lightblue'],
+            ['Webelos', <?php echo (int)$PackTotals['webelos']; ?>, 'green'],
+            ['AOL', <?php echo (int)$PackTotals['aol']; ?>, 'lightgreen']
+          ]);
+
+          var Packview = new google.visualization.DataView(Packdata);
+          Packview.setColumns([0, 1, {
+            calc: 'stringify',
+            sourceColumn: 1,
+            type: 'string',
+            role: 'annotation'
+          }, 2]);
+          var Packoptions = {
+            title: 'District wide Pack Advancement Data',
+            width: '100%',
+            height: 400,
+            bar: {
+              groupWidth: '95%'
+            },
+            legend: {
+              position: 'none'
+            },
+            bars: 'vertical'
+          };
+
+          var Packchart = new google.visualization.BarChart(document.getElementById('PackChart'));
+          Packchart.draw(Packview, Packoptions);
+
+          // Pack Pie Chart
+          var piePackdata = google.visualization.arrayToDataTable([
+            ['Category', 'Count'],
+            ['Ranks', <?php echo (int)$PackTotals['YTD']; ?>],
+            ['Adventures', <?php echo (int)$PackTotals['adventure']; ?>],
+            ['Scouts', <?php echo (int)$PackTotals['youth']; ?>]
+          ]);
+
+          var piePackchart_options = {
+            title: 'Ranks Earned vs. Scouts',
+            slices: {
+              0: {
+                color: 'green'
+              },
+              1: {
+                color: 'blue'
+              },
+              2: {
+                color: 'red'
+              }
+            },
+            pieSliceText: 'value',
+            width: '100%',
+            height: 400
+          };
+
+          var piePackchart = new google.visualization.PieChart(document.getElementById('Packpiechart'));
+          piePackchart.draw(piePackdata, piePackchart_options);
+        }
+
+        // Check if Troop data is all zeros
+        const troopValues = [
+          <?php echo (int)$TroopTotals['Scout']; ?>,
+          <?php echo (int)$TroopTotals['Tenderfoot']; ?>,
+          <?php echo (int)$TroopTotals['SecondClass']; ?>,
+          <?php echo (int)$TroopTotals['FirstClass']; ?>,
+          <?php echo (int)$TroopTotals['Star']; ?>,
+          <?php echo (int)$TroopTotals['Life']; ?>,
+          <?php echo (int)$TroopTotals['Eagle']; ?>,
+          <?php echo (int)$TroopTotals['Palms']; ?>
+        ];
+        if (troopValues.every(val => val === 0)) {
+          <?php error_log("TroopTotals: " . print_r($TroopTotals, true)); ?>
+          document.getElementById('TroopChart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
+          document.getElementById('Trooppiechart').innerHTML = '<p>No Troop data available for <?php echo $SelYear; ?>.</p>';
+        } else {
+          // Troop Bar Chart
+          var Troopdata = google.visualization.arrayToDataTable([
+            ['Rank', 'Awarded', {
+              role: 'style'
+            }],
+            ['Scout', <?php echo (int)$TroopTotals['Scout']; ?>, 'lightgray'],
+            ['Tenderfoot', <?php echo (int)$TroopTotals['Tenderfoot']; ?>, 'blue'],
+            ['Second Class', <?php echo (int)$TroopTotals['SecondClass']; ?>, 'lightgray'],
+            ['First Class', <?php echo (int)$TroopTotals['FirstClass']; ?>, 'blue'],
+            ['Star', <?php echo (int)$TroopTotals['Star']; ?>, 'lightgray'],
+            ['Life', <?php echo (int)$TroopTotals['Life']; ?>, 'blue'],
+            ['Eagle', <?php echo (int)$TroopTotals['Eagle']; ?>, 'lightgray'],
+            ['Palms', <?php echo (int)$TroopTotals['Palms']; ?>, 'blue']
+          ]);
+
+          var Troopview = new google.visualization.DataView(Troopdata);
+          Troopview.setColumns([0, 1, {
+            calc: 'stringify',
+            sourceColumn: 1,
+            type: 'string',
+            role: 'annotation'
+          }, 2]);
+          var Troopoptions = {
+            title: 'District wide Troop Advancement Data',
+            width: '100%',
+            height: 400,
+            bar: {
+              groupWidth: '95%'
+            },
+            legend: {
+              position: 'none'
+            },
+            bars: 'vertical'
+          };
+
+          var Troopchart = new google.visualization.BarChart(document.getElementById('TroopChart'));
+          Troopchart.draw(Troopview, Troopoptions);
+
+          // Troop Pie Chart
+          var pieTroopdata = google.visualization.arrayToDataTable([
+            ['Category', 'Count'],
+            ['Ranks', <?php echo (int)$TroopTotals['YTD']; ?>],
+            ['Merit Badges', <?php echo (int)$TroopTotals['MeritBadge']; ?>],
+            ['Scouts', <?php echo (int)$TroopTotals['Youth']; ?>]
+          ]);
+
+          var pieTroopchart_options = {
+            title: 'Ranks Earned vs. Scouts',
+            slices: {
+              0: {
+                color: 'green'
+              },
+              1: {
+                color: 'blue'
+              },
+              2: {
+                color: 'red'
+              }
+            },
+            pieSliceText: 'value',
+            width: '100%',
+            height: 400
+          };
+
+          var Trooppiechart = new google.visualization.PieChart(document.getElementById('Trooppiechart'));
+          Trooppiechart.draw(pieTroopdata, pieTroopchart_options);
+        }
+        hideSpinner();
+      } catch (e) {
+        console.error('Error drawing charts: ', e);
+        <?php error_log('Error drawing charts:'); ?>
+        document.getElementById('PackChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
+        document.getElementById('Packpiechart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
+        document.getElementById('TroopChart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
+        document.getElementById('Trooppiechart').innerHTML = '<p>Error rendering chart: ' + e.message + '</p>';
+        hideSpinner();
+      }
+    }
+  });
 </script>

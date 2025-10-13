@@ -14,7 +14,6 @@ if (session_status() === PHP_SESSION_NONE) {
 ! \##########################################################################/ !
 !  #         This is Proprietary Software of Richard Hall                   #  !
 !  ##########################################################################  !
-!  ##########################################################################  !
 !  #                                                                        #  !
 !  #                                                                        #  !
 !  #   Copyright 2017-2024 - Richard Hall                                   #  !
@@ -31,7 +30,6 @@ if (session_status() === PHP_SESSION_NONE) {
 !==============================================================================!
 */
 
-//include_once('CAdvancement.php');
 load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 
 /******************************************************************************
@@ -45,11 +43,9 @@ load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
  */
 class UNIT extends CAdvancement
 {
-
   public static function GetUnits()
   {
     $qryunit = "SELECT DISTINCT Unit FROM membershiptotals WHERE Expire_Date LIKE '%";
-
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%' ORDER BY UNIT";
@@ -60,7 +56,6 @@ class UNIT extends CAdvancement
   public static function GetPackUnits()
   {
     $qryunit = "SELECT DISTINCT Unit FROM membershiptotals WHERE Unit Like '%Pack%' AND (Expire_Date LIKE '%";
-
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
@@ -72,7 +67,6 @@ class UNIT extends CAdvancement
   public static function GetTroopUnits()
   {
     $qryunit = "SELECT DISTINCT Unit FROM membershiptotals WHERE Unit Like '%Troop%' AND (Expire_Date LIKE '%";
-
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
@@ -84,7 +78,6 @@ class UNIT extends CAdvancement
   public static function GetCrewUnits()
   {
     $qryunit = "SELECT DISTINCT Unit FROM membershiptotals WHERE Unit Like '%Crew%' AND (Expire_Date LIKE '%";
-
     $CurrentYear = parent::GetYear();
     $NextYear = $CurrentYear + 1;
     $qry = $qryunit . $CurrentYear . "%' OR Expire_Date LIKE '%$NextYear%')";
@@ -117,15 +110,12 @@ class UNIT extends CAdvancement
           <th>Trained</th>
           <th>YPT</th>
         </tr>
-
         <?php
         if ($rowcount > 0) {
           while ($row = $result->fetch_assoc()) {
             $sql = sprintf('SELECT * FROM ypt Where Member_ID = "%s"', $row["MemberID"]);
             $result_ypt = parent::doQuery($sql);
             $row_ypt = $result_ypt->fetch_assoc();
-            //echo $sql;
-            //Check Trained status and if Not trained link to training record.
             $Trained = $row["Trained"];
             $LastName = $row["MemberID"];
             if (!strcmp($Trained, "NO")) {
@@ -149,21 +139,14 @@ class UNIT extends CAdvancement
               $ExpiredYPT . "</td></tr>";
           }
         } else {
-          echo "0 result";
+          echo "<tr><td colspan='9'>0 result</td></tr>";
         }
         echo "</table>";
         if ($rowcount > 0)
           mysqli_free_result($result);
         echo "</br>";
       }
-      /******************************************************************************
-       * 
-       * This function will read in the UnitBasedmembershiptotalsReport.csv file
-       * downloaded from my.scouting and insert/update the table membershiptotals.
-       * 
-       * This function will only be used for current year
-       * 
-       *****************************************************************************/
+
       public static function DisplayMembershipTable()
       {
         $SelectedYear = parent::GetYear();
@@ -173,17 +156,50 @@ class UNIT extends CAdvancement
           return;
         }
         ?>
-
         <div class="col-12 px-5">
-          <table class="table table-striped">
-            <td style="width:300px"> <!-- Chartered Org -->
-            <td style="width:120px"> <!-- Unit -->
-            <td style="width:50px"> <!-- Total -->
-            <td style="width:50px"> <!-- Adult Total -->
-            <td style="width:100px"> <!-- Expire Date -->
-            <td style="width:100px"> <!-- Last Contact -->
-            <td style="width:50px"> <!-- Last Score -->
-            <td style="width:250px"> <!-- Last Score -->
+          <!-- Spinner CSS -->
+          <!-- Custom CSS for button styling and spinner -->
+          <style>
+            .dt-button.btn-primary {
+              background-color: #007bff !important;
+              border-color: #007bff !important;
+              color: #fff !important;
+            }
+
+            .dt-button.btn-primary:hover {
+              background-color: #0056b3 !important;
+              border-color: #004085 !important;
+            }
+
+            /* Spinner styles */
+            .spinner {
+              border: 4px solid rgba(255, 255, 255, 0.3);
+              border-top: 4px solid #007bff;
+              border-radius: 50%;
+              width: 40px;
+              height: 40px;
+              animation: spin 1s linear infinite;
+              margin-right: 10px;
+            }
+
+            @keyframes spin {
+              0% {
+                transform: rotate(0deg);
+              }
+
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+          </style>
+          <div class="overlay" id="overlay"></div>
+          <div class="spinner-container" id="spinner">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <table id="membershipTable" class="table table-striped">
+            <thead>
               <tr>
                 <th>Chartered Org</th>
                 <th>Unit</th>
@@ -194,125 +210,223 @@ class UNIT extends CAdvancement
                 <th>Metric</th>
                 <th>Commissioner</th>
               </tr>
+            </thead>
+            <tbody>
               <?php
               $rowcount = 0;
-              //$Year = date('Y');
-              //$sql = "SELECT * FROM membershiptotals WHERE `Expire_Date` LIKE '%" . parent::GetYear() . "'";
-              $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "' ORDER BY `Unit` ";
-              //if ($result = mysqli_query($CAdvancement->getDbConn(), $sql)) {
+              $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "' ORDER BY `Unit`";
               if ($result = parent::doQuery($sql)) {
                 $rowcount = mysqli_num_rows($result);
                 while ($row = $result->fetch_assoc()) {
-                  $Unit = $row['Unit']; // e.g., "Pack 0127-BP"
-                  // Extract only "Pack" from $Unit (assuming "Pack" is the part before the space or hyphen)
-                  $UnitDisplay = explode(' ', $Unit)[0]; // Gets "Pack" by splitting on space
-                  // Alternatively, if you want to split on hyphen: $UnitDisplay = explode('-', $Unit)[0];
-                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit); // Use urlencode for safety
-                  $UnitURL = "<a href=\"$URLPath\">"; // Double quotes for cleaner string
+                  $Unit = $row['Unit'];
+                  $UnitDisplay = explode(' ', $Unit)[0];
+                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                  $UnitURL = "<a href=\"$URLPath\">";
                   $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                   $CurrentDate = date_create("");
                   $LastContact = date_create($row["Last_Contact"]);
                   $Difference90 = date_sub($CurrentDate, date_interval_create_from_date_string("90 days"));
                   $CurrentDate = date_create("");
                   $Difference180 = date_sub($CurrentDate, date_interval_create_from_date_string("180 days"));
+                  $FormatterContact = "";
                   if ($Difference180 > $LastContact)
                     $FormatterContact = "<b style='color:red;'>";
                   else if ($Difference90 > $LastContact)
                     $FormatterContact = "<b style='color:orange;'>";
-                  else
-                    $FormatterContact = "";
                   echo "<tr><td>" .
-                    $row["Chartered_Org"] . "</td><td>" .
+                    htmlspecialchars($row["Chartered_Org"]) . "</td><td>" .
                     $UnitView . "</td><td>" .
-                    $row["Total_Youth"] . "</td><td>" .
-                    $row["Total_Adults"] . "</td><td>" .
-                    $row["Expire_Date"] . "</td><td>" .
-                    $FormatterContact . $row["Last_Contact"] . "</td><td>" .
-                    $row["Last_Assessment_Score"] . "</td><td>" .
-                    $row["Assigned_Commissioner"] . "</td></tr>";
+                    htmlspecialchars($row["Total_Youth"]) . "</td><td>" .
+                    htmlspecialchars($row["Total_Adults"]) . "</td><td>" .
+                    htmlspecialchars($row["Expire_Date"]) . "</td><td>" .
+                    $FormatterContact . htmlspecialchars($row["Last_Contact"]) . "</td><td>" .
+                    htmlspecialchars($row["Last_Assessment_Score"]) . "</td><td>" .
+                    htmlspecialchars($row["Assigned_Commissioner"]) . "</td></tr>";
+                  if ($FormatterContact) echo "</b>";
                 }
-                echo "</table>";
-                echo "</div>";
                 mysqli_free_result($result);
               } else {
-                echo "0 result";
+                echo "<tr><td colspan='8'>0 result</td></tr>";
               }
-
-              $FormatterContact = "<b style='color:red;'>";
-              echo "<p style='text-align: center;'>" . $FormatterContact . "Last contact more that 180 days old.</p></b>";
-              $FormatterContact = "<b style='color:orange;'>";
-              echo "<p style='text-align: center;'>" . $FormatterContact . "Last contact more than 90 days old but less than 180 days old.</p></b>";
-              echo "<p style='text-align: center;'>Last contact less than 90 days old.</p>";
               ?>
+            </tbody>
           </table>
-        <?php
-        return;
-      }
-      /******************************************************************************
-       * 
-       * This function will read in the UnitBasedmembershiptotalsReport.csv file
-       * downloaded from my.scouting and insert/update the table membershiptotals.
-       * 
-       * This function will only be used for current year
-       * 
-       *****************************************************************************/
-      public static function DisplayPreviousMembershipTable()
-      {
-        ?>
-          <center>
-            <table class="tl1 tl2 tc3 tc4 tc5">
-              <td style="width:300px"> <!-- Chartered Org -->
-              <td style="width:120px"> <!-- Unit -->
-              <td style="width:50px"> <!-- Male -->
-              <td style="width:50px"> <!-- Female -->
-              <td style="width:50px"> <!-- Total -->
-                <tr>
-                  <th>Chartered Org</th>
-                  <th>Unit</th>
-                  <th>Male</th>
-                  <th>Female</th>
-                  <th>Total</th>
-                </tr>
-                <?php
-                $rowcount = 0;
-                //$Year = date('Y');
-                //$sql = "SELECT * FROM membershiptotals WHERE `Expire_Date` LIKE '%" . parent::GetYear() . "'";
-                $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "'";
-                //if ($result = mysqli_query($CAdvancement->getDbConn(), $sql)) {
-                if ($result = parent::doQuery($sql)) {
-                  $rowcount = mysqli_num_rows($result);
-                  while ($row = $result->fetch_assoc()) {
-                    $Unit = $row['Unit'];
-                    $UnitURL = "<a href='https://centennialdistrict.co/Unit_View.php?btn=Units&unit_name=$Unit'";
-                    $UnitView = sprintf("%s%s>%s</a>", $UnitURL, $Unit, $Unit);
-                    $Formatter = "";
-                    echo "<tr><td>" .
-                      $row["Chartered_Org"] . "</td><td>" .
-                      $UnitView . "</td><td>" .
-                      $row["Male_Youth"] . "</td><td>" .
-                      $row["Female_Youth"] . "</td><td>" .
-                      $Formatter . $row["Total_Youth"] . "</td></tr>";
+          <p style='text-align: center;'><b style='color:red;'>Last contact more than 180 days old.</b></p>
+          <p style='text-align: center;'><b style='color:orange;'>Last contact more than 90 days old but less than 180 days old.</b></p>
+          <p style='text-align: center;'>Last contact less than 90 days old.</p>
+        </div>
+        <!-- DataTables and Export Libraries -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+        <script>
+          $(document).ready(function() {
+            // Show spinner
+            function showSpinner() {
+              document.getElementById('overlay').style.display = 'block';
+              document.getElementById('spinner').style.display = 'block';
+            }
+
+            // Hide spinner
+            function hideSpinner() {
+              document.getElementById('overlay').style.display = 'none';
+              document.getElementById('spinner').style.display = 'none';
+            }
+
+            showSpinner();
+            // Initialize DataTable
+            if ($('#membershipTable').length) {
+              $('#membershipTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'csv',
+                    className: 'btn btn-primary btn-sm d-print-none mt-2',
+                    title: 'Membership_Report_<?php echo $SelectedYear; ?>'
+                  },
+                  {
+                    extend: 'excel',
+                    className: 'btn btn-primary btn-sm d-print-none mt-2',
+                    title: 'Membership_Report_<?php echo $SelectedYear; ?>'
+                  },
+                  {
+                    extend: 'pdf',
+                    className: 'btn btn-primary btn-sm d-print-none mt-2',
+                    title: 'Membership_Report_<?php echo $SelectedYear; ?>'
                   }
-                  echo "</table>";
-                  mysqli_free_result($result);
-                } else {
-                  echo "0 result";
-                }
-                ?>
-            </table>
-          </center>
+                ],
+                pageLength: -1,
+                paging: false, // Disable pagination controls
+                order: [
+                  [0, 'asc']
+                ],
+                columnDefs: [{
+                    type: 'num',
+                    targets: [2, 3, 6]
+                  }, // Treat Youth, Adult's, and Metric as numeric
+                  {
+                    type: 'date',
+                    targets: [4, 5]
+                  } // Treat Expire Date and Last Connection as dates
+                ]
+              });
+            }
+            hideSpinner();
+          });
+        </script>
       <?php
       }
-      /******************************************************************************
-       * 
-       * This function replaces the UpdateTotals function. BSA remove the membership
-       * report (UnitBasedMembershipTotalsReport.csv) and this data is no longer
-       * available. The Report Chartered Organizations does pervoide some of the 
-       * need data so we will import the membership table from this file. The BSA
-       * removed the number of Girls/Boys in the programs and its just youth now.
-       * I feel it so cover up the lack of Girls actually in the program.
-       * 
-       *****************************************************************************/
+
+      public static function DisplayPreviousMembershipTable()
+      {
+      ?>
+        <center>
+          <table id="previousMembershipTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Chartered Org</th>
+                <th>Unit</th>
+                <th>Male</th>
+                <th>Female</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $rowcount = 0;
+              $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "'";
+              if ($result = parent::doQuery($sql)) {
+                $rowcount = mysqli_num_rows($result);
+                while ($row = $result->fetch_assoc()) {
+                  $Unit = $row['Unit'];
+                  $UnitURL = "<a href='https://centennialdistrict.co/Unit_View.php?btn=Units&unit_name=" . urlencode($Unit) . "'>";
+                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+                  echo "<tr><td>" .
+                    htmlspecialchars($row["Chartered_Org"]) . "</td><td>" .
+                    $UnitView . "</td><td>" .
+                    htmlspecialchars($row["Male_Youth"]) . "</td><td>" .
+                    htmlspecialchars($row["Female_Youth"]) . "</td><td>" .
+                    htmlspecialchars($row["Total_Youth"]) . "</td></tr>";
+                }
+                mysqli_free_result($result);
+              } else {
+                echo "<tr><td colspan='5'>0 result</td></tr>";
+              }
+              ?>
+            </tbody>
+          </table>
+        </center>
+        <!-- DataTables and Export Libraries for Previous Membership Table -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+        <script>
+          $(document).ready(function() {
+            // Show spinner
+            function showSpinner() {
+              document.getElementById('overlay').style.display = 'block';
+              document.getElementById('spinner').style.display = 'block';
+            }
+
+            // Hide spinner
+            function hideSpinner() {
+              document.getElementById('overlay').style.display = 'none';
+              document.getElementById('spinner').style.display = 'none';
+            }
+
+            showSpinner();
+            // Initialize DataTable
+            if ($('#previousMembershipTable').length) {
+              $('#previousMembershipTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'csv',
+                    className: 'btn btn-primary',
+                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
+                  },
+                  {
+                    extend: 'excel',
+                    className: 'btn btn-primary',
+                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
+                  },
+                  {
+                    extend: 'pdf',
+                    className: 'btn btn-primary',
+                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
+                  }
+                ],
+                pageLength: 10,
+                order: [
+                  [0, 'asc']
+                ],
+                columnDefs: [{
+                    type: 'num',
+                    targets: [2, 3, 4]
+                  } // Treat Male, Female, and Total as numeric
+                ]
+              });
+            }
+            hideSpinner();
+          });
+        </script>
+    <?php
+      }
+
       public static function &ImportCORData($fileName)
       {
         $col_territoryname = 0;
@@ -340,21 +454,18 @@ class UNIT extends CAdvancement
 
         $DateStr = "";
         $RecordsInError = 0;
-        //$filePath = "Data/" . $fileName;
         $Inserted = 0;
         $Updated = 0;
         $row = 1;
 
-
         if (($handle = fopen($fileName, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if ($row < 10) { // Skip the first row(s), headers.
+            if ($row < 10) {
               if ($row == 6)
-                $DateStr = $data[0]; // Get the report date.
+                $DateStr = $data[0];
               $row++;
               continue;
             }
-            // Verify the proper array size, should be $Exprire_Date + 1
             if (count($data) != ($col_communityorganizationtypeshort + 1)) {
               $strMsg = "ERROR: ImportCORData(" . $fileName . ") is incorrect size.";
               error_log($strMsg);
@@ -364,10 +475,8 @@ class UNIT extends CAdvancement
             $Unit = parent::formatUnitNumber($data[$col_unitname], $data[$col_genderaccepted]);
             if (strstr($Unit, "0000") || $Unit == null) {
               continue;
-            }  // Skip total rows
-            // Test to see if data is in database and then select either INSERT or UPDATE
+            }
             $ReformattedDate = self::FormatDate($data[$col_expirydtstr]);
-            // If unit is in database then just update it..
             if (self::InsertUpdateCheckTotals($Unit)) {
               $sqlUpdateTotal = "UPDATE `membershiptotals` SET `DistrictName`='$data[$col_districtname]', `SubDistrict`='$data[$col_subdistrictname]', `Unit`='$Unit', 
               `UnitID`='$data[$col_unitid]', `Gender`='$data[$col_genderaccepted]', `Expire_Date`='$ReformattedDate', `Chartered_Org`='$data[$col_communityorganization]', 
@@ -381,12 +490,8 @@ class UNIT extends CAdvancement
                 $RecordsInError++;
               } else {
                 $Updated++;
-                // If the unit has NOT expired, update the adv_* tables
-                //if (parent::right($data[$Exprire_Date], 4) >= parent::GetYear())
-                //   self::UpdateAdvTotals($data, parent::GetYear());
               }
             } else {
-              // New Unit add it to database
               $sqlInsertTotal = "INSERT INTO `membershiptotals`(`DistrictName`, `SubDistrict`, `Unit`, `UnitID`, `Gender`, 
               `Chartered_Org`, `Total_Youth`, `Total_Adults`, `Expire_Date` ) 
               VALUES ('$data[$col_districtname]','$data[$col_subdistrictname]','$Unit','$data[$col_unitid]','$data[$col_genderaccepted]',
@@ -398,27 +503,17 @@ class UNIT extends CAdvancement
                 $RecordsInError++;
               } else {
                 $Updated++;
-                // If the unit has NOT expired, update the adv_* tables
-                //if (parent::right($data[$Exprire_Date], 4) >= parent::GetYear())
-                //   self::UpdateAdvTotals($data, parent::GetYear());
               }
             }
           }
+          fclose($handle);
         }
         parent::UpdateLastUpdated('membershiptotals', date("m/d/Y"));
         return $RecordsInError;
       }
-      /******************************************************************************
-       * 
-       * This function will read in the UnitBasedmembershiptotalsReport.csv file
-       * downloaded from my.scouting and insert/update the table membershiptotals.
-       * 
-       * 
-       *****************************************************************************/
+
       public static function &UpdateTotals($fileName)
       {
-        /* Defined the file columns, which change */
-        /* These must also be updated in function UpdateAdvTotals */
         $Service_Territory = 0;
         $Council_Name = 1;
         $District_Name = 2;
@@ -442,13 +537,12 @@ class UNIT extends CAdvancement
         $row = 1;
         if (($handle = fopen($filePath, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if ($row < 9) { // Skip the first row(s), headers.
+            if ($row < 9) {
               if ($row == 5)
-                $DateStr = $data[0]; // Get the report date.
+                $DateStr = $data[0];
               $row++;
               continue;
             }
-            // Verify the proper array size, should be $Exprire_Date + 1
             if (count($data) != ($Exprire_Date + 1)) {
               $strMsg = "ERROR: UpdateTotals(" . $fileName . ") is incorrect.";
               error_log($strMsg);
@@ -458,15 +552,13 @@ class UNIT extends CAdvancement
             $Unit = parent::formatUnitNumber($data[$Unit_Name], $data[$Gender]);
             if (strstr($Unit, "0000") || $Unit == null) {
               continue;
-            }  // Skip total rows
-            // Test to see if data is in database and then select either INSERT or UPDATE
+            }
             $ReformattedDate = self::FormatDate($data[$Exprire_Date]);
             if (self::InsertUpdateCheckTotals($Unit)) {
-              //Update Date
               $sqlUpdateTotal = sprintf(
                 "UPDATE `membershiptotals` SET `DistrictName`='%s',`Unit`='%s',`Gender`='%s',`Chartered_Org`='%s',`Male_Youth`='%s',
-  					`Female_Youth`='%s',`Total_Youth`='%s', `Youth_Last_Year`='%s', `Male_Adults`='%s',`Female_Adults`='%s',`Total_Adults`='%s',
-  					`Adults_Last_Year`='%s', `Expire_Date`='%s' WHERE `Unit`='%s'",
+                `Female_Youth`='%s',`Total_Youth`='%s', `Youth_Last_Year`='%s', `Male_Adults`='%s',`Female_Adults`='%s',`Total_Adults`='%s',
+                `Adults_Last_Year`='%s', `Expire_Date`='%s' WHERE `Unit`='%s'",
                 $data[$District_Name],
                 $Unit,
                 $data[$Gender],
@@ -487,34 +579,27 @@ class UNIT extends CAdvancement
                 $RecordsInError++;
               } else {
                 $Updated++;
-                // If the unit has NOT expired, update the adv_* tables
                 if (parent::right($data[$Exprire_Date], 4) >= parent::GetYear())
                   self::UpdateAdvTotals($data, parent::GetYear());
               }
-              //Reset String
               $sqlUpdateTotal = "";
             } else {
-              //New unit data gets insert here the first time.
               $sqlTotalInsertSt = "INSERT INTO `membershiptotals` (`DistrictName`, `Unit`, `Gender`, `Chartered_Org`, `Male_Youth`, `Female_Youth`, `Total_Youth`, Youth_Last_Year,
-  				`Male_Adults`, `Female_Adults`, `Total_Adults`, `Adults_Last_Year`, `Expire_Date`) VALUES (";
-              // Insert Data
+                `Male_Adults`, `Female_Adults`, `Total_Adults`, `Adults_Last_Year`, `Expire_Date`) VALUES (";
               $sqlInsertTotal = "";
               for ($i = $District_Name; $i < count($data); $i++) {
                 $sqlInsertTotal = $sqlInsertTotal . sprintf("'%s', ", $i == $Unit_Name ? $Unit : addslashes($data[$i]));
               }
               $sqlInsertTotal = substr($sqlInsertTotal, 0, (strlen($sqlInsertTotal) - 2));
               $sqlInsertTotal =  $sqlTotalInsertSt . $sqlInsertTotal . ");";
-              // Update the database
               if (!parent::doQuery($sqlInsertTotal)) {
                 echo "Insert Error: " . $sqlInsertTotal . "" . mysqli_error(parent::getDbConn()) . "<br />";
                 $RecordsInError++;
               } else {
                 $Inserted++;
-                // If the unit has NOT expired, update the adv_* tables
                 if (parent::right($data[$Exprire_Date], 4) == parent::GetYear())
                   self::UpdateAdvTotals($data, parent::GetYear());
               }
-              //Reset String
               $sqlInsertTotal = "";
             }
           }
@@ -528,18 +613,9 @@ class UNIT extends CAdvancement
         parent::UpdateLastUpdated('membershiptotals', $DateStr);
         return $RecordsInError;
       }
-      /******************************************************************************
-       * 
-       * This function will read in the Assigned_Unassigned_Units.csv file
-       * downloaded from my.scouting and insert/update the membershiptotals for
-       * Commissioner contact and assignee
-       * 
-       * 
-       *****************************************************************************/
+
       public static function &UpdateCommissioner($fileName)
       {
-        /* Defined the file columns, which change */
-        /* These must also be updated in function UpdateAdvTotals */
         $colTerritory_Name = 0;
         $colCouncil_Name = 1;
         $colDistrict_Name = 2;
@@ -565,38 +641,31 @@ class UNIT extends CAdvancement
         $colRegistration_Expiration_Date = 22;
         $colExpired_Unit = 23;
         $colExpired_Unit_Date = 24;
-            
+
         $Datestr = "";
         $RecordsInError = 0;
-        //$filePath = "Data/" . $fileName;
         $Inserted = 0;
         $Updated = 0;
         $row = 1;
         if (($handle = fopen($fileName, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if ($row < 9) { // Skip the first row(s), headers.
+            if ($row < 9) {
               if ($row == 5)
-                $Datestr = $data[0]; // Get the report date.
+                $Datestr = $data[0];
               $row++;
               continue;
             }
-
-            // Verify the proper array size, should be $Exprire_Date + 1
             if (count($data) != ($colExpired_Unit_Date + 1)) {
               $strMsg = "ERROR: UpdateCommissioner(" . $fileName . ") is incorrect.";
               error_log($strMsg);
               parent::function_alert($strMsg);
               exit;
             }
-
-
             $Unit = parent::formatUnitNumber($data[$colUnit_Type] . " " . $data[$colUnit_Number], $data[$colGender_Accepted]);
             if (strstr($Unit, "0000") || $Unit == null) {
               continue;
-            }  // Skip total rows
-            // Test to see if data is in database and then select either INSERT or UPDATE
+            }
             if (self::InsertUpdateCheckTotals($Unit)) {
-              //Update Date
               $timestamp = strtotime($data[$colExpired_Unit_Date]);
               $Expire_Date = date('Y-m-d', $timestamp);
               $sqlUpdateTotal = sprintf(
@@ -618,20 +687,16 @@ class UNIT extends CAdvancement
               } else {
                 $Updated++;
               }
-              //Reset String
               $sqlUpdateTotal = "";
             } else {
-              //New unit data gets insert here the first time.
               $sqlTotalInsertSt = "INSERT INTO `membershiptotals` (`DistrictName`, `Unit`, `Gender`, `Chartered_Org`, `Male_Youth`, `Female_Youth`, `Total_Youth`, Youth_Last_Year,
-  				`Male_Adults`, `Female_Adults`, `Total_Adults`, `Adults_Last_Year`, `Expire_Date`) VALUES (";
-              // Insert Data
+                `Male_Adults`, `Female_Adults`, `Total_Adults`, `Adults_Last_Year`, `Expire_Date`) VALUES (";
               $sqlInsertTotal = "";
               for ($i = $colDistrict_Name; $i < count($data); $i++) {
                 $sqlInsertTotal = $sqlInsertTotal . sprintf("'%s', ", $i == $Unit ? $Unit : addslashes($data[$i]));
               }
               $sqlInsertTotal = substr($sqlInsertTotal, 0, (strlen($sqlInsertTotal) - 2));
               $sqlInsertTotal =  $sqlTotalInsertSt . $sqlInsertTotal . ");";
-              // Update the database
               if (!parent::doQuery($sqlInsertTotal)) {
                 $strMsg = "ERROR: UpdateCommissioner(" . $fileName . ") - parent::doQuery(" . $sqlInsertTotal . ") - " . mysqli_error(parent::getDbConn());
                 error_log($strMsg);
@@ -639,26 +704,18 @@ class UNIT extends CAdvancement
               } else {
                 $Inserted++;
               }
-              //Reset String
               $sqlInsertTotal = "";
             }
           }
           fclose($handle);
           $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-          //parent::function_alert($Usermsg);
         } else {
           $Usermsg = "Failed to open file";
-          //parent::function_alert($Usermsg);
         }
         parent::UpdateLastUpdated('Commissioner', $Datestr);
         return $RecordsInError;
       }
-      /******************************************************************************
-       * This function will update the youth count in the adv_ tables, this function
-       * is called when the user updated the membership totals.
-       *
-       *
-       *****************************************************************************/
+
       public static function UpdateAdvTotals($data, $year)
       {
         $Service_Territory = 0;
@@ -681,11 +738,9 @@ class UNIT extends CAdvancement
           case "Pack":
           case "Troop":
           case "Crew":
-            // Check if adv data for $year exists
             $sql = sprintf("SELECT * FROM `adv_%s` WHERE `Unit`='%s' AND `Date`='%s'", strtolower($UnitType), $FormattedUnit, $year);
             $query = parent::doQuery($sql);
             if (mysqli_num_rows($query) > 0) {
-              //Update
               $sql = sprintf(
                 "UPDATE `adv_%s` SET `Male_Youth`='%s', `Female_Youth`='%s',`Youth`='%s',`Gender`='%s' WHERE `Unit`='%s' AND `Date`='%s'",
                 strtolower($UnitType),
@@ -697,10 +752,9 @@ class UNIT extends CAdvancement
                 $year
               );
             } else {
-              //Insert
               $sql = sprintf(
                 "INSERT INTO `adv_%s`(`Date`, `Male_Youth`, `Female_Youth`, `Youth`, `Unit`,`Gender`) 
-  					VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+                VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
                 strtolower($UnitType),
                 $year,
                 $data[$Male_Youth],
@@ -719,17 +773,9 @@ class UNIT extends CAdvancement
             break;
         }
       }
-      /******************************************************************************
-       * Check if data is already in table, if so update it else insert it.
-       * In this Table their should only be one Unit, this is the master that all
-       * other table are "linked" to.
-       * Returns
-       *   true if data is in table
-       *   false if data not found in table
-       *****************************************************************************/
-      public static function  &InsertUpdateCheckTotals($Unit)
+
+      public static function &InsertUpdateCheckTotals($Unit)
       {
-        //$sql = sprintf( "SELECT * FROM `membershiptotals` WHERE `Unit`='$Unit' AND `Expire_Date` LIKE '%%%s'", date("Y"));
         $sql = sprintf("SELECT * FROM `membershiptotals` WHERE `Unit`='$Unit'");
         $query = parent::doQuery($sql);
         if (!$query) {
@@ -742,10 +788,7 @@ class UNIT extends CAdvancement
         }
         return $result;
       }
-      /******************************************************************************
-       * This funtion will reformat a date from mm/dd/yyyy to a format of
-       * yyyy-mm-dd
-       *****************************************************************************/
+
       public static function FormatDate($date)
       {
         $month = strtok($date, '/');
