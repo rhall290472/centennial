@@ -72,7 +72,7 @@
         <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <span class="text-danger">Admin</span>
+              <span class="text-danger">Upload Data</span>
             </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>

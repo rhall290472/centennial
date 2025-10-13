@@ -74,7 +74,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
+          <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Upload Data</span>
         </a>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
