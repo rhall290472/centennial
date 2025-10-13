@@ -156,7 +156,7 @@ class UNIT extends CAdvancement
           return;
         }
         ?>
-        <div class="col-12 px-5">
+        <!-- <div class="col-12 px-5"> -->
           <!-- Spinner CSS -->
           <!-- Custom CSS for button styling and spinner -->
           <div class="overlay" id="overlay"></div>
@@ -221,7 +221,7 @@ class UNIT extends CAdvancement
           <p style='text-align: center;'><b style='color:red;'>Last contact more than 180 days old.</b></p>
           <p style='text-align: center;'><b style='color:orange;'>Last contact more than 90 days old but less than 180 days old.</b></p>
           <p style='text-align: center;'>Last contact less than 90 days old.</p>
-        </div>
+        <!-- </div> -->
         <!-- DataTables and Export Libraries -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
@@ -237,18 +237,18 @@ class UNIT extends CAdvancement
         <script>
           $(document).ready(function() {
             // Show spinner
-            function showSpinner() {
-              document.getElementById('overlay').style.display = 'block';
-              document.getElementById('spinner').style.display = 'block';
-            }
+            // function showSpinner() {
+            //   document.getElementById('overlay').style.display = 'block';
+            //   document.getElementById('spinner').style.display = 'block';
+            // }
 
-            // Hide spinner
-            function hideSpinner() {
-              document.getElementById('overlay').style.display = 'none';
-              document.getElementById('spinner').style.display = 'none';
-            }
+            // // Hide spinner
+            // function hideSpinner() {
+            //   document.getElementById('overlay').style.display = 'none';
+            //   document.getElementById('spinner').style.display = 'none';
+            // }
 
-            showSpinner();
+            // showSpinner();
             // Initialize DataTable
             if ($('#membershipTable').length) {
               $('#membershipTable').DataTable({
@@ -289,7 +289,7 @@ class UNIT extends CAdvancement
                 ]
               });
             }
-            hideSpinner();
+            // hideSpinner();
           });
         </script>
       <?php
