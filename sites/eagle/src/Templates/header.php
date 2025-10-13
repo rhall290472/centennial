@@ -29,19 +29,34 @@
 			$is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 			if ($is_localhost) {
 			?>
-	    	<link href= <?php echo SHARED_ASSETS_URL . '/styles.css'; ?> rel="stylesheet" />
+	    	<link href=<?php echo SHARED_ASSETS_URL . '/styles.css'; ?> rel="stylesheet" />
 	    <?php
 			} else { ?>
 	    	<link href="https://shared.centennialdistrict.co/assets/styles.css" rel="stylesheet" />
 	    <?php } ?>
 
-			<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+	    <!-- DataTables CSS -->
+	    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
-<!-- jQuery (required by DataTables) -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	    <!-- jQuery (required by DataTables) -->
+	    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+	    <!-- DataTables JS -->
+	    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+	    <!-- jQuery (required for DataTables) -->
+	    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	    <!-- DataTables CSS -->
+	    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+	    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" /> -->
+	    <!-- DataTables JS and Buttons -->
+	    <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+	    <!-- Moment.js and DataTables DateTime Sorting Plugin -->
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+	    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
