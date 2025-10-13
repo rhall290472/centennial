@@ -159,39 +159,6 @@ class UNIT extends CAdvancement
         <div class="col-12 px-5">
           <!-- Spinner CSS -->
           <!-- Custom CSS for button styling and spinner -->
-          <style>
-            .dt-button.btn-primary {
-              background-color: #007bff !important;
-              border-color: #007bff !important;
-              color: #fff !important;
-            }
-
-            .dt-button.btn-primary:hover {
-              background-color: #0056b3 !important;
-              border-color: #004085 !important;
-            }
-
-            /* Spinner styles */
-            .spinner {
-              border: 4px solid rgba(255, 255, 255, 0.3);
-              border-top: 4px solid #007bff;
-              border-radius: 50%;
-              width: 40px;
-              height: 40px;
-              animation: spin 1s linear infinite;
-              margin-right: 10px;
-            }
-
-            @keyframes spin {
-              0% {
-                transform: rotate(0deg);
-              }
-
-              100% {
-                transform: rotate(360deg);
-              }
-            }
-          </style>
           <div class="overlay" id="overlay"></div>
           <div class="spinner-container" id="spinner">
             <div class="spinner-border text-primary" role="status">
@@ -266,7 +233,7 @@ class UNIT extends CAdvancement
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+        <!-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css"> -->
         <script>
           $(document).ready(function() {
             // Show spinner
@@ -287,6 +254,10 @@ class UNIT extends CAdvancement
               $('#membershipTable').DataTable({
                 dom: 'Bfrtip',
                 buttons: [{
+                    extend: 'copy',
+                    className: 'btn btn-primary btn-sm d-print-none mt-2'
+                  }, 
+                  {
                     extend: 'csv',
                     className: 'btn btn-primary btn-sm d-print-none mt-2',
                     title: 'Membership_Report_<?php echo $SelectedYear; ?>'

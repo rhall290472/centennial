@@ -132,6 +132,7 @@ try {
     <div class="row">
       <div class="col-2">
         <form action="index.php?page=adv-report" method="POST">
+          <p class="mb-0 d-print-none">Select Year</p>
           <?php
           try {
             $CTroop->SelectYear();
@@ -152,42 +153,6 @@ try {
         min-height: 400px;
         width: 100%;
         display: block;
-      }
-
-      .dt-button.btn-primary {
-        background-color: #007bff !important;
-        border-color: #007bff !important;
-        color: #fff !important;
-      }
-
-      .dt-button.btn-primary:hover {
-        background-color: #0056b3 !important;
-        border-color: #004085 !important;
-      }
-
-      .spinner-container {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-      }
-
-      .spinner-border {
-        width: 3rem;
-        height: 3rem;
-      }
-
-      .overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
       }
     </style>
     <div class="overlay" id="overlay"></div>
@@ -392,7 +357,7 @@ try {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+<!-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css"> -->
 
 <!-- Google Charts for Bar and Pie Charts -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -415,6 +380,10 @@ try {
     const tableOptions = {
       dom: 'Bfrtip',
       buttons: [{
+          extend: 'copy',
+          className: 'btn btn-primary btn-sm d-print-none mt-2'
+        },
+        {
           extend: 'csv',
           className: 'btn btn-primary btn-sm d-print-none mt-2',
           title: 'Advancement_Report'

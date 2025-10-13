@@ -39,12 +39,6 @@ if (!isset($_SESSION['csrf_token'])) {
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
   <!-- Custom CSS for button styling and spinner -->
   <style>
-    .dt-button.btn-primary {
-      background-color: #007bff !important;
-      border-color: #007bff !important;
-      color: #fff !important;
-    }
-
     .dt-button.btn-primary:hover {
       background-color: #0056b3 !important;
       border-color: #004085 !important;

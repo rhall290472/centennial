@@ -153,41 +153,8 @@ try {
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" /> -->
 <!-- Custom CSS for button styling and spinner -->
-<style>
-  .dt-button.btn-primary {
-    background-color: #007bff !important;
-    border-color: #007bff !important;
-    color: #fff !important;
-  }
-
-  .dt-button.btn-primary:hover {
-    background-color: #0056b3 !important;
-    border-color: #004085 !important;
-  }
-
-  /* Spinner styles */
-  .spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #007bff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-right: 10px;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-</style>
 <!-- DataTables JS and Buttons -->
 <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>

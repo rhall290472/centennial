@@ -41,16 +41,6 @@ if (!isset($_SESSION['csrf_token'])) {
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
   <!-- Custom CSS for button styling, spinner, and layout -->
   <style>
-    .dt-button.btn-primary {
-      background-color: #007bff !important;
-      border-color: #007bff !important;
-      color: #fff !important;
-      margin-right: 5px !important;
-      padding: 0.25rem 0.5rem !important;
-      font-size: 0.875rem !important;
-      border-radius: 0.2rem !important;
-    }
-
     .dt-button.btn-primary:hover {
       background-color: #0056b3 !important;
       border-color: #004085 !important;
