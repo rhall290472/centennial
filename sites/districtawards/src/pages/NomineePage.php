@@ -61,7 +61,7 @@ if (isset($_POST['SubmitForm'])) {
   }
   $rowNominee = $Nominee->fetch_assoc();
   if ($rowNominee == null) {
-     $_SESSION['feedback'] = ['type' => 'danger', 'message' => "Nominee index error"];
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => "Nominee index error"];
     header("Location: index.php");
     exit();
   }
@@ -114,7 +114,7 @@ if (isset($_POST['SubmitForm'])) {
     // Record has been updated in database now create a audit trail
     $cDistrictAwards->CreateAudit($rowNominee, $FormData, 'NomineeIDX');
   }
-  $_SESSION['feedback'] = ['type' => 'sucess', 'message' => "Nominee updated."];
+  $_SESSION['feedback'] = ['type' => 'success', 'message' => "Nominee updated."];
   header("Location: index.php");
   exit();
 }
@@ -126,21 +126,23 @@ if (isset($_POST['SubmitForm'])) {
 <head>
   <meta name="description" content="NomineePage.php">
   <script>
-    function growTextarea(i, elem) {
-      var elem = $(elem);
-      var resizeTextarea = function(elem) {
-        var scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft;
-        var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
-        elem.css('height', 'auto').css('height', elem.prop('scrollHeight'));
-        window.scrollTo(scrollLeft, scrollTop);
-      };
-      elem.on('input', function() {
-        resizeTextarea($(this));
-      });
-      resizeTextarea($(elem));
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const textareas = document.querySelectorAll('.growTextarea');
 
-    $('.growTextarea').each(growTextarea);
+      textareas.forEach(textarea => {
+        // Function to resize textarea based on content
+        function resizeTextarea() {
+          textarea.style.height = 'auto'; // Reset height to recalculate
+          textarea.style.height = `${textarea.scrollHeight}px`; // Set to scroll height
+        }
+
+        // Initial resize
+        resizeTextarea();
+
+        // Resize on input
+        textarea.addEventListener('input', resizeTextarea);
+      });
+    });
   </script>
 </head>
 
@@ -398,7 +400,7 @@ if (isset($_POST['SubmitForm'])) {
             <div class="form-row">
               <div class="col">
                 <label>Notes</label>
-                <textarea name="element_14_1" class="form-control growTextarea" id="Notes" rows="10" style="height:100%;"><?php if (strlen($rowNominee['Notes']) > 0) echo $rowNominee['Notes']; ?></textarea>
+                <textarea name="element_14_1" class="form-control growTextarea" id="Notes" rows="10" ><?php if (strlen($rowNominee['Notes']) > 0) echo $rowNominee['Notes']; ?></textarea>
               </div>
             </div>
 

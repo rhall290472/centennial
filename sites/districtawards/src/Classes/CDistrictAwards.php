@@ -754,10 +754,15 @@ public static function UpdateNomineeRecord($NomineeData)
               `Position`='$NomineeData[Position]',`Unit`='$NomineeData[Unit]',`Notes`='$NomineeData[Notes]',`IsDeleted`='$NomineeData[IsDeleted]',`updated_by`='$_SESSION[username]',
               `NominatedBy`='$NomineeData[NominatedBy]',`NominatedByUnit`='$NomineeData[NominatedByUnit]',`NominatedByPosition`='$NomineeData[NominatedByPosition]'
               WHERE NomineeIDX='$NomineeData[NomineeIDX]'";
+
+      $sqlStmtNote = "UPDATE `district_awards` SET `Notes`='$NomineeData[Notes]' WHERE NomineeIDX='$NomineeData[NomineeIDX]'";
+
+      //Execute the sql Statement (for update, if applicable)
+      $Result &= self::doQuery($sqlStmt);
+      $Result &= self::doQuery($sqlStmtNote);
+
     }
 
-    // Execute the sql Statement (for update, if applicable)
-    //$Result &= self::doQuery($sqlStmt);
 
     // **REMOVED: The unconditional LAST_INSERT_ID() query—now handled only in insert branch above**
 
