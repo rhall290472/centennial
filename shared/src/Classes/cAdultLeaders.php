@@ -44,6 +44,7 @@ class AdultLeaders
   const COL_EMAIL = 6;
 
   private static $instances = [];
+  private ?mysqli $dbConn = null; // Allow null initially
 
   /**
    * The Singleton's constructor should always be private to prevent direct
@@ -132,6 +133,10 @@ class AdultLeaders
     $db = self::getInstance();
     $connConf = self::getConfigData();
     $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+    if ($db->dbConn->connect_error) {
+      error_log("Database connection failed: " . $db->dbConn->connect_error);
+      throw new \Exception("Failed to connect to database: " . $db->dbConn->connect_error);
+    }
     $db->dbConn->set_charset('utf8');
     return $db;
   }
