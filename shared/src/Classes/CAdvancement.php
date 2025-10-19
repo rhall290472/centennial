@@ -44,6 +44,7 @@ class CAdvancement
    * see how this works in a moment.
    */
   private static $instances = [];
+  private ?mysqli $dbConn = null; // Allow null initially
   private static $year;
 
   /**
@@ -133,6 +134,10 @@ class CAdvancement
     $db = self::getInstance();
     $connConf = self::getConfigData();
     $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+    if ($db->dbConn->connect_error) {
+      error_log("Database connection failed: " . $db->dbConn->connect_error);
+      throw new \Exception("Failed to connect to database: " . $db->dbConn->connect_error);
+    }
     $db->dbConn->set_charset('utf8');
     return $db;
   }
