@@ -114,15 +114,16 @@ unset($_SESSION['feedback']);
       while ($rowScout = $Scout->fetch_assoc()) {
         $FirstName = $cEagle->GetScoutPreferredName($rowScout);
 
-        echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
-          htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
-          htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
-          "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . "'>" . htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
-          htmlspecialchars($rowScout["MemberId"]) . "</td><td>" .
-          htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
-          htmlspecialchars($rowScout["BOR"]) . "</td><td>" .
-          htmlspecialchars($rowScout["ProjectDate"]) . "</td></tr>";
-      }
+        echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"] ?? '') . "</td><td>" .
+          htmlspecialchars($rowScout["UnitNumber"] ?? '') . "</td><td>" .
+          htmlspecialchars($rowScout["Gender"] ?? '') . "</td><td>" .
+          "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid'] ?? '') . "'>" .
+          htmlspecialchars(($FirstName ?? '') . " " . ($rowScout["LastName"] ?? '')) . "</a></td><td>" .
+          htmlspecialchars($rowScout["MemberId"] ?? '') . "</td><td>" .
+          htmlspecialchars($rowScout["AgeOutDate"] ?? '') . "</td><td>" .
+          htmlspecialchars($rowScout["BOR"] ?? '') . "</td><td>" .
+          htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
+
       if ($SelectedUnit && $SelectedNum) {
         mysqli_stmt_close($stmt);
       } else {
