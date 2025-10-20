@@ -7,7 +7,7 @@
       'cookie_secure' => isset($_SERVER['HTTPS'])
     ]);
   }
-  /*
+/*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -30,8 +30,7 @@
 !/                                                                            \!
 !==============================================================================!
 */
-
-  include_once "CCounselor.php";
+load_class(BASE_PATH . '/src/Classes/CCounselor.php');
 $CCounselor = CCounselor::getInstance();
 
 // This code stops anyone for seeing this page unless they have logged in and
@@ -43,38 +42,9 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
 ?>
 <html>
-
-<head>
-  <?php include('header.php'); ?>
-</head>
-
 <body>
-  <!-- Responsive navbar-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container px-lg-4">
-      <a class="navbar-brand" href="#!">Centennial District Merit Badge College</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="https://mbcollege.centennialdistrict.co/index.php">Home</a></li>
-          <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
-          <li class="nav-item"><a class="nav-link" href="mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College">Contact</a></li>
-          <?php
-          if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-            echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
-          } else {
-            echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
-          }
-          ?>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container-fluid">
+ <div class="container-fluid">
     <div class="row flex-nowrap">
-      <!-- Include the common side nav bar -->
-      <?php include 'navbar.php'; ?>
       <div class="col py-3">
         <?php
         if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
@@ -109,9 +79,6 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       </div>
     </div>
   </div>
-
-  <?php include("Footer.php"); ?>
-
 </body>
 
 </html>

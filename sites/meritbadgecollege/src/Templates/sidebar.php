@@ -37,10 +37,10 @@
               <i class="fs-5 bi-book"></i><span class="ms-1">Scouts</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="./EnterScout.php">Enter Data</a></li>
-              <li><a class="dropdown-item" href="./ImportScout.php">Import Data</a></li>
-              <li><a class="dropdown-item" href="./ViewByScoutSchedule.php">Schedule</a></li>
-              <li><a class="dropdown-item" href="./EmailScouts.php">Email Schedule</a></li>
+              <li><a class="dropdown-item" href="index.php?page=scout-data">Enter Data</a></li>
+              <li><a class="dropdown-item" href="index.php?page=scout-import">Import Data</a></li>
+              <li><a class="dropdown-item" href="index.php?page=scout-schedule">Schedule</a></li>
+              <li><a class="dropdown-item" href="index.php?page=scout-emails">Email Schedule</a></li>
             </ul>
           </li>
           <!-- Counselors Submenu -->
@@ -49,11 +49,11 @@
               <i class="fs-5 bi-person"></i><span class="ms-1">Counselors</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="./ImportCounselor.php">Import Data</a></li>
-              <li><a class="dropdown-item" href="./EditCounselor.php">Edit</a></li>
-              <li><a class="dropdown-item" href="./ViewByCounselorSchedule.php">Schedule</a></li>
-              <li><a class="dropdown-item" href="./EmailCounselors.php">Email Schedule</a></li>
-              <li><a class="dropdown-item" href="./CounselorsStats.php">Stats</a></li>
+              <li><a class="dropdown-item" href="index.php?page=counselor-import">Import Data</a></li>
+              <li><a class="dropdown-item" href="index.php?page=counselor-data">Edit</a></li>
+              <li><a class="dropdown-item" href="index.php?page=counselor-schedule">Schedule</a></li>
+              <li><a class="dropdown-item" href="index.php?page=counselor-emails">Email Schedule</a></li>
+              <li><a class="dropdown-item" href="index.php?page=counselor-stats">Stats</a></li>
             </ul>
           </li>
           <!-- Reports Submenu -->
@@ -62,11 +62,11 @@
               <i class="fs-5 bi-book"></i><span class="ms-1">Reports</span>
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="./ViewByRoom.php">Room Schedule</a></li>
-              <li><a class="dropdown-item" href="./CreateScoutbookCSV.php">Create CSV File</a></li>
-              <li><a class="dropdown-item" href="./ViewCollegeStats.php">College Stats</a></li>
-              <li><a class="dropdown-item" href="./DoubleKnot.php">Double Knot Signup</a></li>
-              <li><a class="dropdown-item" href="./CollegeDetails.php">College Details</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-roomschedule">Room Schedule</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-csvfile">Create CSV File</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-stats">College Stats</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-doubleknot">Double Knot Signup</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-details">College Details</a></li>
             </ul>
           </li>
         </ul>

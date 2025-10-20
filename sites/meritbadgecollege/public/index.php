@@ -36,7 +36,24 @@ $valid_pages = [
   'view-schedule',
   'view-badges',
   'view-counselors',
-  'login',
+
+  'scout-data',
+  'scout-import',
+  'scout-schedule',
+  'scout-emails',
+
+  'counselor-import',
+  'counselor-data',
+  'counselor-schedule',
+  'counselor-emails',
+  'counselor-stats',
+
+  'rpt-roomschedule',
+  'rpt-csvfile',
+  'rpt-stats',
+  'rpt-doubleknot',
+  'rpt-details',
+
   'logout'
 ];
 if (!in_array($page, $valid_pages)) {
@@ -202,6 +219,51 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'view-counselors':
           include('../src/Pages/ViewByCounselor.php');
           break;
+        case 'scout-data':
+          include('../src/Pages/EnterScout.php');
+          break;
+        case 'scout-import':
+          include('../src/Pages/ImportScout.php');
+          break;
+        case 'scout-schedule':
+          include('../src/Pages/ViewByScoutSchedule.php');
+          break;
+        case 'scout-emails':
+          include('../src/Pages/EmailScouts.php');
+          break;
+
+        case 'counselor-import':
+          include('../src/Pages/ImportCounselor.php');
+          break;
+        case 'counselor-data':
+          include('../src/Pages/EditCounselor.php');
+          break;
+        case 'counselor-schedule':
+          include('../src/Pages/ViewByCounselorSchedule.php');
+          break;
+        case 'counselor-emails':  
+          include('../src/Pages/EmailCounselors.php');
+          break;
+        case 'counselor-stats':
+          include('../src/Pages/CounselorsStats.php');
+          break;
+
+        case 'rpt-roomschedule':
+          include('../src/Pages/ViewByRoom.php');
+          break;
+        case 'rpt-csvfile':
+          include('../src/Pages/CreateScoutbookCSV.php');
+          break;
+        case 'rpt-stats':
+          include('../src/Pages/ViewCollegeStats.php');
+          break;
+        case 'rpt-doubleknot':
+          include('../src/Pages/DoubleKnot.php');
+          break;
+        case 'rpt-details': 
+          include('../src/Pages/CollegeDetails.php');
+          break;
+
         case 'login':
           include('login.php');
           break;
