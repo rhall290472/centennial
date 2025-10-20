@@ -21,7 +21,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 load_class(BASE_PATH . '/src/Classes/CReports.php');
 
 // Sanitize input
-$report = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? '';
+$report = htmlspecialchars(filter_input(INPUT_GET, 'ReportBy') ?? '', ENT_QUOTES, 'UTF-8');
 if (empty($report)) {
   $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Report parameter missing or invalid'];
   return;
