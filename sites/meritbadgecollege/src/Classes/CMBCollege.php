@@ -62,8 +62,8 @@ function getConfigData()
 
   if (!strcmp($ip, "::1")) {
     $userdata['dbhost'] = "localhost";
-    $userdata['dbuser'] = "mbcuser";
-    $userdata['dbpass'] = "ZCSCA?yrW7}L";
+    $userdata['dbuser'] = "root";
+    $userdata['dbpass'] = "";
     $userdata['db']     = "meritbadges";
   } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
     $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";

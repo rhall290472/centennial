@@ -7,48 +7,13 @@
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Adults</span>
+        <i class="fs-4 bi-person"></i><span class="ms-1 d-none d-sm-inline">Counselors</span>
       </a>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=untrained">Untrained Leaders</a></li>
-        <li><a class="dropdown-item" href="?page=ypt">Expired YPT</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Packs</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
-        <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Troops</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
-        <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
-        <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Crews</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=crew-summary">Summary</a></li>
-      </ul>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-clipboard2-data"></i><span class="ms-1 d-none d-sm-inline">Reports</span>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="?page=adv-report">District Advancement Report</a></li>
-        <li><a class="dropdown-item" href="?page=membership-report">Membership</a></li>
+        <li><a class="dropdown-item" href="?page=signup">Sign Up</a></li>
+        <li><a class="dropdown-item" href="?page=view-schedule">View College Schedule</a></li>
+        <li><a class="dropdown-item" href="?page=view-badges">View Merit Badges</a></li>
+        <li><a class="dropdown-item" href="?page=view-counselors">View Counselors</a></li>
       </ul>
     </li>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
@@ -66,16 +31,44 @@
           <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
         </a>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?page=updatedata&update=TrainedLeader">Training</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=Updateypt">YPT</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTotals">Upload COR Data</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateFunctionalRole">Functional Roles</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCommissioners">Pack Assigned Commissioners</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdatePack">Pack Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateAdventure">Pack Awards</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateTroop">Troop Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateCrew">Crew Advancements</a></li>
-          <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
+          <!-- Scouts Submenu -->
+          <li class="dropdown-submenu">
+            <a href="#submenu1" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="fs-5 bi-book"></i><span class="ms-1">Scouts</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./EnterScout.php">Enter Data</a></li>
+              <li><a class="dropdown-item" href="./ImportScout.php">Import Data</a></li>
+              <li><a class="dropdown-item" href="./ViewByScoutSchedule.php">Schedule</a></li>
+              <li><a class="dropdown-item" href="./EmailScouts.php">Email Schedule</a></li>
+            </ul>
+          </li>
+          <!-- Counselors Submenu -->
+          <li class="dropdown-submenu">
+            <a href="#submenu2" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="fs-5 bi-person"></i><span class="ms-1">Counselors</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./ImportCounselor.php">Import Data</a></li>
+              <li><a class="dropdown-item" href="./EditCounselor.php">Edit</a></li>
+              <li><a class="dropdown-item" href="./ViewByCounselorSchedule.php">Schedule</a></li>
+              <li><a class="dropdown-item" href="./EmailCounselors.php">Email Schedule</a></li>
+              <li><a class="dropdown-item" href="./CounselorsStats.php">Stats</a></li>
+            </ul>
+          </li>
+          <!-- Reports Submenu -->
+          <li class="dropdown-submenu">
+            <a href="#submenu3" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="fs-5 bi-book"></i><span class="ms-1">Reports</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./ViewByRoom.php">Room Schedule</a></li>
+              <li><a class="dropdown-item" href="./CreateScoutbookCSV.php">Create CSV File</a></li>
+              <li><a class="dropdown-item" href="./ViewCollegeStats.php">College Stats</a></li>
+              <li><a class="dropdown-item" href="./DoubleKnot.php">Double Knot Signup</a></li>
+              <li><a class="dropdown-item" href="./CollegeDetails.php">College Details</a></li>
+            </ul>
+          </li>
         </ul>
       </li>
     <?php endif; ?>
@@ -84,3 +77,36 @@
     Close Sidebar
   </button>
 </div>
+
+<!-- Additional CSS for nested dropdowns -->
+<style>
+  .dropdown-submenu {
+    position: relative;
+  }
+
+  .dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+  }
+
+  .dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+  }
+</style>
+
+<!-- JavaScript to handle nested dropdowns -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function(element) {
+      element.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        let submenu = this.nextElementSibling;
+        if (submenu.classList.contains('dropdown-menu')) {
+          submenu.classList.toggle('show');
+        }
+      });
+    });
+  });
+</script>

@@ -42,7 +42,7 @@ if (defined('ENV') && ENV === 'development') {
 // Dynamically set SITE_URL based on environment
 $is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 $protocol = 'https'; // Simplified since it's always HTTPS in the original code
-$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'adv.centennialdistrict.co';
+$host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'mbcollege.centennialdistrict.co';
 $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
 define('SITE_URL', $protocol . '://' . $host . $port);
 
@@ -65,8 +65,8 @@ define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
-$pageHome = SITE_URL.'/centennial/sites/advancement/public/index.php';
-$pageContact = SITE_URL . '/centennial/sites/advancement/src/Pages/contact.php';
+$pageHome = SITE_URL.'/centennial/sites/meritbadgecollege/public/index.php';
+$pageContact = SITE_URL . '/centennial/sites/meritbadgecollege/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
     [
@@ -96,11 +96,6 @@ if ($is_localhost) {
     define('DB_PASS', 'ZCSCA?yrW7}L');
     define('DB_NAME', 'meritbadges');
 }
-
-// Security headers
-//header('X-Content-Type-Options: nosniff');
-//header('X-Frame-Options: DENY');
-//header('X-XSS-Protection: 1; mode=block');
 
 // File upload limits
 ini_set('upload_max_filesize', '4M');

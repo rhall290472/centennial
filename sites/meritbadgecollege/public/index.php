@@ -21,11 +21,6 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
   die('An error occurred. Please try again later.');
 }
 
-// Define SITE_URL fallback if not set
-if (!defined('SITE_URL')) {
-  define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/meritbadgecollege');
-}
-
 // Load required classes for file uploads
 load_class(__DIR__ . '/../src/Classes/CMBCollege.php');
 
@@ -37,6 +32,10 @@ $page = filter_input(INPUT_GET, 'page') ?? 'home';
 $page = strtolower(trim($page));
 $valid_pages = [
   'home',
+  'signup',
+  'view-schedule',
+  'view-badges',
+  'view-counselors',
   'login',
   'logout'
 ];
@@ -69,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
-      $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CMBCollege->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
@@ -79,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
                 $_SESSION["loggedin"] = true;
-                $_SESSION["id"] = $id;
+                $_SESSION["Userid"] = $id;
                 $_SESSION["username"] = $username;
                 $_SESSION["enabled"] = $enabled;
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -190,6 +189,18 @@ if (!isset($_SESSION['csrf_token'])) {
             </div>
           </div>
       <?php
+          break;
+        case 'signup':
+          include('../src/Pages/CounselorSelect.php');
+          break;
+        case 'view-schedule':
+          include('../src/Pages/ViewSchedule.php');
+          break;
+        case 'view-badges':
+          include('../src/Pages/ViewByBadges.php');
+          break;
+        case 'view-counselors':
+          include('../src/Pages/ViewByCounselor.php');
           break;
         case 'login':
           include('login.php');
