@@ -123,7 +123,7 @@ unset($_SESSION['feedback']);
           htmlspecialchars($rowScout["AgeOutDate"] ?? '') . "</td><td>" .
           htmlspecialchars($rowScout["BOR"] ?? '') . "</td><td>" .
           htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
-
+      }
       if ($SelectedUnit && $SelectedNum) {
         mysqli_stmt_close($stmt);
       } else {
