@@ -758,14 +758,13 @@ class CEagle
   {
     $Name = null;
 
-    if (strlen($rowScout['PreferredName']) > 0) {
+    if (strlen($rowScout['PreferredName'] ?? '') > 0) {
       $Name = $rowScout['PreferredName'];
     } else {
       $Name = $rowScout['FirstName'];
     }
     return $Name;
-  }
-  /*=============================================================================
+  }  /*=============================================================================
      *
      * Read in Eagle Scouts from .csv file
      * 
