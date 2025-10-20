@@ -742,7 +742,7 @@ class CEagle
   public static function GetPreferredName($Coach)
   {
     $Name = null;
-    if (strlen($Coach['PreferredName']) > 0) {
+    if (strlen($Coach['PreferredName'] ?? '') > 0) {
       $Name = $Coach['PreferredName'];
     } else {
       $Name = $Coach['First_Name'];
@@ -757,7 +757,6 @@ class CEagle
   public static function GetScoutPreferredName($rowScout)
   {
     $Name = null;
-
     if (strlen($rowScout['PreferredName'] ?? '') > 0) {
       $Name = $rowScout['PreferredName'];
     } else {
