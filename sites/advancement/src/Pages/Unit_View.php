@@ -362,16 +362,16 @@ if (empty($unit_name)) {
               $YPTURL = "<a href='YPT.php?btn=ByLastName&SortBy=Last_Name&last_name=" . urlencode($LastName) . "'>";
               $YPTStatus = sprintf("%s%s</a>", $YPTURL, htmlspecialchars($YPTStatus));
             } else {
-              $ExpiredYPT = htmlspecialchars($YPTStatus);
+              $ExpiredYPT = ($YPTStatus !== null) ? htmlspecialchars($YPTStatus) : '';
             }
             echo "<tr><td>" .
-              htmlspecialchars($row["Unit"]) . "</td><td>" .
-              htmlspecialchars($row["First_Name"]) . "</td><td>" .
-              htmlspecialchars($row["Last_Name"]) . "</td><td>" .
-              htmlspecialchars($row["MemberID"]) . "</td><td>" .
-              htmlspecialchars($row["Position"]) . "</td><td>" .
-              htmlspecialchars($row["FunctionalRole"]) . "</td><td>" .
-              htmlspecialchars($row["Direct_Contact_Leader"]) . "</td><td>" .
+              htmlspecialchars($row["Unit"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["First_Name"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["Last_Name"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["MemberID"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["Position"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["FunctionalRole"] ?? '') . "</td><td>" .
+              htmlspecialchars($row["Direct_Contact_Leader"] ?? '') . "</td><td>" .
               $Trained . "</td><td>" .
               $ExpiredYPT . "</td></tr>";
           }
