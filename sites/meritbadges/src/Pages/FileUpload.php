@@ -148,7 +148,7 @@ function isValidFileName(string $fileName): bool
               </div>
             <?php endif; ?>
 
-            <form action="$_SERVER['PHP_SELF']" method="post" enctype="multipart/form-data" aria-describedby="form-instructions">
+            <form action="index.php?page=uploadcounselors" method="post" enctype="multipart/form-data" aria-describedby="form-instructions">
               <div class="mb-3">
                 <label for="fileToUpload" class="form-label visually-hidden">Select CSV file</label>
                 <input class="form-control" type="file" name="the_file" id="fileToUpload" accept=".csv" required>

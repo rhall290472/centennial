@@ -482,37 +482,28 @@ class CReports extends CMeritBadges
 
 
         $CounselorCount = self::MeritQueryRows($sqlMBCnt);
-
-        echo "</table>";
-        echo "<div class='a' style='width:1200px'>";
-        echo $SpecialTraining;
-        echo "</dev>";
-        echo "<br>";
-        echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
-        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" .  "'" . " width='50' height='50'></a>";
-        $MeritBadge = $row['MeritName'];
-        echo "<br>";
-        echo "<table class='table table-striped'>";
-        echo "<td style='width:70px'>";
-        echo "<td style='width:70px'>";
-        echo "<td style='width:50px'>";
-        echo "<td style='width:100px'>";
-        echo "<td style='width:100px'>";
-        echo "<td style='width:180px'>";
-        echo "<td style='width:130px'>";
-        echo "<td style='width:120px'>";
-        echo "<td style='width:120px'>";
-        echo "<td style='width:60px'>";
-        echo "<tr>";
-        echo "<th>Troop</th>";
-        echo "<th>#</th>";
-        echo "<th>Last Name</th>";
-        echo "<th>First Name</th>";
-        echo "<th>Zip Code</th>";
-        echo "<th>Phone</th>";
-        echo "<th>EMail</th>";
-        echo "<th>YPT Valid Until</th>";
-        echo "</tr>";
+        ?>
+        </table>
+        <div class='a' style='width:1200px'>
+      </php echo $SpecialTraining; ?>
+        </dev>
+        <br>
+        <?php echo "<h2 class='text-center' style='background-color: var(--scouting-paleblue);'>", $row['MeritName'], "</h2>", "Requirments: ", $row['RequirementsRevised'],
+        " - Counselor Count =", $CounselorCount, "<a href='" . $row['URL'] . "'>" .  "'</a>";
+        $MeritBadge = $row['MeritName']; ?>
+        <br>
+        <table class='table table-striped'>
+        <tr>
+        <th>Troop</th>
+        <th>#</th>
+        <th>Last Name</th>
+        <th>First Name</th>
+        <th>Zip Code</th>
+        <th>Phone</th>
+        <th>EMail</th>
+        <th>YPT Valid Until</th>
+        </tr>
+        <?php
       }
 
       echo "<tr><td>" .

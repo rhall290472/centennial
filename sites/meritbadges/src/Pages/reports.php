@@ -95,7 +95,10 @@ if (empty($report)) {
         $meritBadges->free_result();
 
         if (isset($_POST['Submit']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-          $meritBadge = filter_input(INPUT_POST, 'MeritName', FILTER_SANITIZE_STRING);
+          $meritBadge = filter_input(INPUT_POST, 'MeritName');
+          if ($meritBadge === false || $meritBadge === null) {
+            $meritBadge = '';
+          }
           if ($meritBadge) {
             $reports->reportCounselorofMB($meritBadge);
           } else {
