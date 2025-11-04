@@ -359,10 +359,11 @@ if (empty($unit_name)) {
             }
             $YPTStatus = $cAdultLeaders->GetMemberYPTStatus($row['MemberID']);
             if (!strcmp($YPTStatus, "NO")) {
-              $YPTURL = "<a href='YPT.php?btn=ByLastName&SortBy=Last_Name&last_name=" . urlencode($LastName) . "'>";
+             // $YPTURL = "<a href='index.php?page=ypt&btn=ByLastName&SortBy=Last_Name&last_name=" . urlencode($LastName) . "'>";
+              $YPTURL = "<a href='index.php?page=ypt&btn=ByLastName&MemberID=" . urlencode($LastName) . "'>";
               $YPTStatus = sprintf("%s%s</a>", $YPTURL, htmlspecialchars($YPTStatus));
             } else {
-              $ExpiredYPT = ($YPTStatus !== null) ? htmlspecialchars($YPTStatus) : '';
+              $YPTStatus = ($YPTStatus !== null) ? htmlspecialchars($YPTStatus) : '';
             }
             echo "<tr><td>" .
               htmlspecialchars($row["Unit"] ?? '') . "</td><td>" .
@@ -373,7 +374,7 @@ if (empty($unit_name)) {
               htmlspecialchars($row["FunctionalRole"] ?? '') . "</td><td>" .
               htmlspecialchars($row["Direct_Contact_Leader"] ?? '') . "</td><td>" .
               $Trained . "</td><td>" .
-              $ExpiredYPT . "</td></tr>";
+              $YPTStatus . "</td></tr>";
           }
         }
         $stmt->close();
