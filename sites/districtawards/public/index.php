@@ -77,6 +77,8 @@ $valid_pages = [
 
   'login',
   'logout',
+  'register',
+  'changepassword',
   'updatedata'
 ];
 if (!in_array($page, $valid_pages)) {
@@ -358,9 +360,14 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/ReportBallot.php');
           break;
 
-          case 'edit-nominee':
-            include('../src/Pages/NomineePage.php');
+        case 'edit-nominee':
+          include('../src/Pages/NomineePage.php');
+          break;
+
+         case 'changepassword':
+            include('change_password.php');
             break;
+
             
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
