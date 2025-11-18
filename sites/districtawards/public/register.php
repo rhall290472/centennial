@@ -49,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (empty(trim($_POST["password"]))) {
     $password_err = "Please enter a password.";
   } elseif (strlen(trim($_POST["password"])) < 6) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Password must have atleast 6 characters.'];
     $password_err = "Password must have atleast 6 characters.";
   } else {
     $password = trim($_POST["password"]);
@@ -85,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $CAdvancement->function_alert($msg);
         $str = sprintf("New Eagle registration, at %s\n", Date('Y-m-d H:i:s'));
         error_log($str, 1, "richard.hall@centennialdistrict.co");
-        $CAdvancement->GotoURL("index.php");
+        header("Location: index.php?page=index");
       } else {
         echo "Oops! Something went wrong. Please try again later.";
       }
@@ -96,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   // Close connection
-  mysqli_close($con);
+  // mysqli_close($con);
 }
 ?>
 
@@ -111,7 +112,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <p>Please fill this form to create an account.</p>
       <p>Acounts are reserved for those involved in the administration of the District advancment program. If you are not directly involved with
         the District advancement program please don't submit an account request becuase it will be denied.</p>
-      <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+      <form action="index.php?page=register" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
         <div class="form-group">
           <label>Username</label>
           <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
