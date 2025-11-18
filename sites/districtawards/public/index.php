@@ -364,8 +364,12 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/NomineePage.php');
           break;
 
+        case 'register':
+            include('register.php');
+            break;
+
          case 'changepassword':
-            include('change_password.php');
+            include('../src/pages/changepassword.php');
             break;
 
             
