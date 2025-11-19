@@ -65,8 +65,11 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
         <a class="nav-link" href="?page=policy">Policies</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="?page=logout">Logout</a>
-      </li>
+        <a class="nav-link" href="index.php?page=changepassword">Change Password</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="index.php?page=logout">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a>
+    </li>
     <?php else: ?>
       <li class="nav-item">
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>

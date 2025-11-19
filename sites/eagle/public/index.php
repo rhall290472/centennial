@@ -59,6 +59,8 @@ $valid_pages = [
   'policy',
   'login',
   'logout',
+  'register',
+  'changepassword',
   ''
 ];
 if (!in_array($page, $valid_pages)) {
@@ -266,6 +268,14 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'login':
           include('login.php');
           break;
+
+        case 'register':
+            include('register.php');
+            break;
+         case 'changepassword':
+            include('../src/Pages/changepassword.php');
+            break;
+
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }

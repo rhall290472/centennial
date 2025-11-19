@@ -61,7 +61,7 @@ $username_err = $password_err = $login_err = "";
         <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>
-        <p class="text-center">Don't have an account? <a href="register.php">Sign up now</a>.</p>
+        <p class="text-center">Don't have an account? <a href=" index.php?page=register">Sign up now</a>.</p>
       </form>
     </div>
   </div>

@@ -241,8 +241,8 @@ if (!isset($_SESSION['csrf_token'])) {
       ?>
     
             <?php
-          $imagePath = defined('BASE_PATH') ? BASE_PATH . '/src/Pages/img/DistrictAwards.png' : '/centennial/sites/districtawards/src/Pages/img/DistrictAwards.png';
-          $imagePath = "../src/Pages/img/DistrictAwards.png";
+          $imagePath = defined('BASE_PATH') ? BASE_PATH . '/src/pages/img/DistrictAwards.png' : '/centennial/sites/districtawards/src/pages/img/DistrictAwards.png';
+          $imagePath = "../src/pages/img/DistrictAwards.png";
           //debug_to_console($imagePath, 'Image Path');
           ?>
 
@@ -323,7 +323,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
         case 'fofs':
 
-          include('../src/Pages/NominationPage.php');
+          include('../src/pages/NominationPage.php');
           break;
 
 
@@ -333,35 +333,35 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
 
         case 'rpt-nom-hist-all':
-          include('../src/Pages/ReportAwardYear.php');
+          include('../src/pages/ReportAwardYear.php');
           break;
         case 'rpt-awardees':
-          include('../src/Pages/ReportAwardedYear.php');
+          include('../src/pages/ReportAwardedYear.php');
           break;
         case 'rpt-denials':
-          include('../src/Pages/ReportDeniedYear.php');
+          include('../src/pages/ReportDeniedYear.php');
           break;
         case 'rpt-avail-awards':
-          include('../src/Pages/ReportAvailableAwards.php');
+          include('../src/pages/ReportAvailableAwards.php');
           break;
         case 'rpt-nom-hist':
-          include('../src/Pages/ReportNomineeHistory.php');
+          include('../src/pages/ReportNomineeHistory.php');
           break;
         case 'rpt-award-hist':
-          include('../src/Pages/ReportAwardHistory.php');
+          include('../src/pages/ReportAwardHistory.php');
           break;
         case 'rpt-unit-his':
-          include('../src/Pages/ReportUnitHistory.php');
+          include('../src/pages/ReportUnitHistory.php');
           break;
         case 'rpt-nom-id':
-          include('../src/Pages/ReportMemberID.php');
+          include('../src/pages/ReportMemberID.php');
           break;
         case 'rpt-ballot':
-          include('../src/Pages/ReportBallot.php');
+          include('../src/pages/ReportBallot.php');
           break;
 
         case 'edit-nominee':
-          include('../src/Pages/NomineePage.php');
+          include('../src/pages/NomineePage.php');
           break;
 
         case 'register':
