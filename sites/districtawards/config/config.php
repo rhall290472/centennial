@@ -87,14 +87,14 @@ define('NAV_LINKS', [
 
 if ($is_localhost) {
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('DB_NAME', 'districtawards');
 } else {
     define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
+    define('DB_USER', 'awardsadmin');
+    define('DB_PASS', 'w3frRWX^&q');
+    define('DB_NAME', 'districtawards');
 }
 
 // Template loader function
