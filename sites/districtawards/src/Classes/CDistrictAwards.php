@@ -138,10 +138,10 @@ class CDistrictAwards
   private static function initConnection()
   {
     $db = self::getInstance();
-    $connConf = getConfigData();
+    //$connConf = getConfigData();
 // **FIX: Only create if not already connected**
     if ($db->dbConn === null) {
-        $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+        $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         if ($db->dbConn->connect_error) {
             throw new Exception("Connection failed: " . $db->dbConn->connect_error);
         }
