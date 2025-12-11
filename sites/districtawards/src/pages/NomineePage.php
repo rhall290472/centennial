@@ -169,7 +169,7 @@ if (isset($_POST['SubmitForm'])) {
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
           <label class='d-print-none' for='NomineeName'>Choose a Nominee: </label>
           <select class='form-control d-print-none' id='NomineeName' name='NomineeName'>
-            <option value=\"\" </option>
+            <option value=""></option>
             <option value=-1>Add New</option>
             <?php
             while ($rowNomineeName = $result_ByNominee->fetch_assoc()) {
@@ -296,7 +296,7 @@ if (isset($_POST['SubmitForm'])) {
               <div class="col">
                 <label>Award</label>
                 <select class='form-control' id='element_3_2' name='element_3_2'>
-                  <option value=""> </option>
+                  <option value=""></option>
                   <?php $cDistrictAwards->DisplayAwardsList($rowNominee['Award']); ?>
                 </select>
               </div>
