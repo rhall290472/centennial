@@ -93,6 +93,32 @@ foreach ($nominees as $row) {
 </p>";
 
   $pdf->writeHTML($detail, true, false, true, false, '');
+
+  $MemberID = $row['MemberID'];
+  if ($MemberID != "") {
+    $sql_history = "SELECT * FROM `district_awards` WHERE MemberID='$MemberID' AND (IsDeleted IS NULL OR IsDeleted <> '1') ORDER BY `Year` DESC";
+    $result_history = $cDistrictAwards->doQuery($sql_history);
+
+    $history_html = '<h3>Award History</h3><table border="1" cellpadding="4"><thead><tr style="background-color:#ddd;">
+        <th>Year</th><th>Award</th><th>Status</th><th>Unit</th>
+        </tr></thead><tbody>';
+
+    if ($result_history) {
+        while ($row_history = $result_history->fetch_assoc()) {
+            $award_name = $cDistrictAwards->GetAwardName($row_history['Award']);
+            $status = $cDistrictAwards->GetAwardStatus($row_history['Status']);
+            $history_html .= "<tr>
+                <td>{$row_history['Year']}</td>
+                <td>$award_name</td>
+                <td>$status</td>
+                <td>{$row_history['Unit']}</td>
+            </tr>";
+        }
+    }
+
+    $history_html .= '</tbody></table>';
+    $pdf->writeHTML($history_html, true, false, true, false, '');
+}
 }
 
 // CRITICAL: Clean any output before sending PDF
