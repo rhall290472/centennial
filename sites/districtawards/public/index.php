@@ -110,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
+      $hashed_password = "";
       $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
