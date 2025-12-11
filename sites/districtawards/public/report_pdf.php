@@ -77,9 +77,21 @@ foreach ($nominees as $row) {
   $pdf->Ln(5);
   $pdf->SetFont('helvetica', '', 10);
   $award = $cDistrictAwards->GetAwardName($row['Award']);
-  $detail = "<p><b>Year:</b> {$row['Year']}<br>
-           <b>Award:</b> $award<br>
-           <b>Notes:</b><br>" . nl2br(htmlspecialchars_decode($row['Notes'] ?? '')) . "</p>";
+
+  $nominatedBy = trim(implode(' - ', array_filter([
+    $row['NominatedBy'] ?? '',
+    $row['NominatedByPosition'] ?? '',
+    $row['NominatedByUnit'] ?? ''
+  ])));
+
+  $detail = "<p>
+    <b>Year:</b> " . htmlspecialchars($row['Year']) . "<br>
+    <b>Award:</b> " . htmlspecialchars($award) . "<br>
+    <b>Unit:</b> " . htmlspecialchars($row['Unit']) . "<br>
+    <b>Nominated By:</b> " . htmlspecialchars($nominatedBy) . "<br>
+    <b>Notes:</b><br>" . nl2br(htmlspecialchars($row['Notes'] ?? '')) . "
+</p>";
+
   $pdf->writeHTML($detail, true, false, true, false, '');
 }
 
