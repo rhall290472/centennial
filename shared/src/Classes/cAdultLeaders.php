@@ -166,6 +166,11 @@ class AdultLeaders
     $Result = null;
     try {
       $mysqli = self::getDbConn();
+      if ($mysqli === null) {
+        $strError = "doQuery: No database connection available for query: " . $sql;
+        error_log($strError, 0);
+        return $Result;
+      }
       $Result = $mysqli->query($sql);
       if (!$Result) {
         $strError = "Error: doQuery(" . $sql . ") " . $mysqli->error . " " . __FILE__ . ", " . __LINE__;
