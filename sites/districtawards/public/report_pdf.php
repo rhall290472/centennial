@@ -27,8 +27,8 @@ $title = $year === '' ? 'All Years' : $year;
 
 // Query exactly like your original code
 $sql = $year === ''
-  ? "SELECT * FROM district_awards WHERE (IsDeleted IS NULL OR IsDeleted <> '1') ORDER BY Year DESC, LastName"
-  : "SELECT * FROM district_awards WHERE Year = '$year' AND (IsDeleted IS NULL OR IsDeleted <> '1') ORDER BY LastName";
+  ? "SELECT * FROM district_awards WHERE (IsDeleted IS NULL OR IsDeleted <> '1') ORDER BY Year DESC, Award"
+  : "SELECT * FROM district_awards WHERE Year = '$year' AND (IsDeleted IS NULL OR IsDeleted <> '1') ORDER BY Award";
 
 $result = $cDistrictAwards->doQuery($sql);
 $nominees = [];
