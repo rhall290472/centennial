@@ -85,11 +85,11 @@ foreach ($nominees as $row) {
   ])));
 
   $detail = "<p>
-    <b>Year:</b> " . htmlspecialchars($row['Year']) . "<br>
-    <b>Award:</b> " . htmlspecialchars($award) . "<br>
-    <b>Unit:</b> " . htmlspecialchars($row['Unit']) . "<br>
-    <b>Nominated By:</b> " . htmlspecialchars($nominatedBy) . "<br>
-    <b>Notes:</b><br>" . nl2br(htmlspecialchars($row['Notes'] ?? '')) . "
+    <b>Year:</b> " . $row['Year'] . "<br>
+    <b>Award:</b> " . $award . "<br>
+    <b>Unit:</b> " . $row['Unit'] . "<br>
+    <b>Nominated By:</b> " . $nominatedBy . "<br>
+    <b>Notes:</b><br>" . nl2br($row['Notes'] ?? '') . "
 </p>";
 
   $pdf->writeHTML($detail, true, false, true, false, '');
