@@ -96,8 +96,13 @@ $cDistrictAwards = cDistrictAwards::getInstance();
   ?>
 
   <center>
+    <form action="ReportBallotPDF.php" method="post" target="_blank">
+      <input type="hidden" name="year" value="<?php echo $year; ?>">
+      <input type="hidden" name="export_pdf" value="1">
+      <button type="submit" class="btn btn-success">Export to PDF</button>
+    </form>
     <h4><?php echo "Nominees" ?> </h4>
-    <div class="row" >
+    <div class="row">
       <div class="column">
         <h4 style="background-color: var(--scouting-lighttan);">District Award of Merit</h4>
         <?php $cDistrictAwards->GetDistrictNominees('1'); ?>
@@ -171,12 +176,12 @@ $cDistrictAwards = cDistrictAwards::getInstance();
     <div class="row">
       <div class="column">
         <h4 style="background-color: var(--scouting-lighttan);">Pack Den Leader of the Year</h4>
-        <?php $cDistrictAwards->GetDistrictNominees('13'); ?>
+        <?php $cDistrictAwards->GetDistrictNominees('12'); ?>
         </table>
       </div>
       <div class="column">
         <h4 style="background-color: var(--scouting-lighttan);">Rookie Pack Den Leader of the Year</h4>
-        <?php $cDistrictAwards->GetDistrictNominees('7'); ?>
+        <?php $cDistrictAwards->GetDistrictNominees('13'); ?>
       </div>
     </div>
 

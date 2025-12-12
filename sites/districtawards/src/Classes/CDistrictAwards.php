@@ -1058,52 +1058,59 @@ public static function UpdateNomineeRecord($NomineeData)
         * This function will return list of Nominees
         *
         *===========================================================================*/
-  public static function GetDistrictNominees($Index)
-  {
+public static function GetDistrictNominees($Index, $forPDF = false)
+{
     ?>
-      <table>
+    <table>
         <tr>
-          <th style="width: 50px;">For</th>
-          <th style="width: 100px;">Against</th>
-          <th style="width: 100px;">First Name</th>
-          <th style="width: 100px;">Last Name</th>
-          <th style="width: 100px;">Unit</th>
+            <th style="width: 40px;">For</th>
+            <th style="width: 40px;">Against</th>
+            <th style="width: 100px;">First Name</th>
+            <th style="width: 100px;">Last Name</th>
+            <th style="width: 100px;">Unit</th>
         </tr>
-        <tr>
-          <?php
-          $year = self::GetYear();
+    <?php
+    $year = self::GetYear();
 
-          // Get list of District Award of Merit Nominees..
-          $queryNominees = "SELECT * FROM `district_awards` WHERE Award='$Index' AND Status='2' AND Year='$year' AND (`IsDeleted` IS NULL || `IsDeleted` <>'1') ORDER BY `LastName`";
+    $queryNominees = "SELECT * FROM `district_awards` WHERE Award='$Index' AND Status='2' AND Year='$year' AND (`IsDeleted` IS NULL || `IsDeleted` <>'1') ORDER BY `LastName`";
 
-          if (!$ResultNominees = self::doQuery($queryNominees)) {
-            $msg = "Error: doQuery(".$queryNominees.") ".__FILE__.", ".__LINE__;
-            error_log($msg);
-            exit();
-                }
+    if (!$ResultNominees = self::doQuery($queryNominees)) {
+        $msg = "Error: doQuery(" . $queryNominees . ") " . __FILE__ . ", " . __LINE__;
+        error_log($msg);
+        exit();
+    }
 
-          while ($rowNominee = $ResultNominees->fetch_assoc()) {
-            if ($rowNominee['NomineeIDX'] != -1) {
-              $AwardName = self::GetAwardName($rowNominee['Award']);
-              $Status = self::GetAwardStatus($rowNominee['Status']);
-          ?>
-        <tr>
-          <td style='width:50px'>
-            <center><input type='checkbox' name='name1' />&nbsp;</center>
-          <td style='width:50px'>
-            <center><input type='checkbox' name='name1' />&nbsp;</center>
-        <?php
-              echo "</td><td style='width:100px'>" . $rowNominee["FirstName"] .
-                "</td><td style='width:100px'>" . "<a href=index.php?page=edit-nominee&NomineeIDX=" . $rowNominee['NomineeIDX'] . ">" . $rowNominee['LastName'] . "</a>" .
-                "</td><td style='width:150px'>" . $rowNominee['Unit'] .
-                "</td></tr>";
-            }
-          }
-        ?>
-        </tr>
-      </table>
-  <?php
-  }
+    while ($rowNominee = $ResultNominees->fetch_assoc()) {
+        if ($rowNominee['NomineeIDX'] != -1) {
+            $AwardName = self::GetAwardName($rowNominee['Award']);
+            $Status = self::GetAwardStatus($rowNominee['Status']);
+            ?>
+            <tr>
+                <td style='width:50px; text-align: center;'>
+                    <?php echo $forPDF ? '[ ]' : '<input type=\'checkbox\' name=\'name1\' />'; ?>
+                </td>
+                <td style='width:50px; text-align: center;'>
+                    <?php echo $forPDF ? '[ ]' : '<input type=\'checkbox\' name=\'name1\' />'; ?>
+                </td>
+                <td style='width:100px'><?php echo $rowNominee["FirstName"]; ?></td>
+                <td style='width:100px'>
+                    <?php 
+                    if ($forPDF) {
+                        echo $rowNominee['LastName'];
+                    } else {
+                        echo "<a href=index.php?page=edit-nominee&NomineeIDX=" . $rowNominee['NomineeIDX'] . ">" . $rowNominee['LastName'] . "</a>";
+                    }
+                    ?>
+                </td>
+                <td style='width:150px'><?php echo $rowNominee['Unit']; ?></td>
+            </tr>
+            <?php
+        }
+    }
+    ?>
+    </table>
+    <?php
+}
   /*=============================================================================
      *
      * This function will return list of Units in the District
