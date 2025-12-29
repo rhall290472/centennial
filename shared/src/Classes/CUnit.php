@@ -149,70 +149,70 @@ class UNIT extends CAdvancement
         }
         ?>
         <!-- <div class="col-12 px-5"> -->
-          <!-- Spinner CSS -->
-          <!-- Custom CSS for button styling and spinner -->
-          <div class="overlay" id="overlay"></div>
-          <div class="spinner-container" id="spinner">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
+        <!-- Spinner CSS -->
+        <!-- Custom CSS for button styling and spinner -->
+        <div class="overlay" id="overlay"></div>
+        <div class="spinner-container" id="spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
           </div>
-          <table id="membershipTable" class="table table-striped">
-            <thead>
-              <tr>
-                <th>Chartered Org</th>
-                <th>Unit</th>
-                <th>Youth</th>
-                <th>Adult's</th>
-                <th>Expire Date</th>
-                <th>Last Connection</th>
-                <th>Metric</th>
-                <th>Commissioner</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-              $rowcount = 0;
-              $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "' ORDER BY `Unit`";
-              if ($result = parent::doQuery($sql)) {
-                $rowcount = mysqli_num_rows($result);
-                while ($row = $result->fetch_assoc()) {
-                  $Unit = $row['Unit'];
-                  $UnitDisplay = explode(' ', $Unit)[0];
-                  $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
-                  $UnitURL = "<a href=\"$URLPath\">";
-                  $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
-                  $CurrentDate = date_create("");
-                  $LastContact = date_create($row["Last_Contact"]);
-                  $Difference90 = date_sub($CurrentDate, date_interval_create_from_date_string("90 days"));
-                  $CurrentDate = date_create("");
-                  $Difference180 = date_sub($CurrentDate, date_interval_create_from_date_string("180 days"));
-                  $FormatterContact = "";
-                  if ($Difference180 > $LastContact)
-                    $FormatterContact = "<b style='color:red;'>";
-                  else if ($Difference90 > $LastContact)
-                    $FormatterContact = "<b style='color:orange;'>";
-                  echo "<tr><td>" .
-                    htmlspecialchars($row["Chartered_Org"]) . "</td><td>" .
-                    $UnitView . "</td><td>" .
-                    htmlspecialchars($row["Total_Youth"]) . "</td><td>" .
-                    htmlspecialchars($row["Total_Adults"]) . "</td><td>" .
-                    htmlspecialchars($row["Expire_Date"]) . "</td><td>" .
-                    $FormatterContact . htmlspecialchars($row["Last_Contact"]) . "</td><td>" .
-                    htmlspecialchars($row["Last_Assessment_Score"]) . "</td><td>" .
-                    htmlspecialchars($row["Assigned_Commissioner"]) . "</td></tr>";
-                  if ($FormatterContact) echo "</b>";
-                }
-                mysqli_free_result($result);
-              } else {
-                echo "<tr><td colspan='8'>0 result</td></tr>";
+        </div>
+        <table id="membershipTable" class="table table-striped">
+          <thead>
+            <tr>
+              <th>Chartered Org</th>
+              <th>Unit</th>
+              <th>Youth</th>
+              <th>Adult's</th>
+              <th>Expire Date</th>
+              <th>Last Connection</th>
+              <th>Metric</th>
+              <th>Commissioner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $rowcount = 0;
+            $sql = "SELECT * FROM `membershiptotals` WHERE YEAR(`Expire_Date`) >= '" . parent::GetYear() . "' ORDER BY `Unit`";
+            if ($result = parent::doQuery($sql)) {
+              $rowcount = mysqli_num_rows($result);
+              while ($row = $result->fetch_assoc()) {
+                $Unit = $row['Unit'];
+                $UnitDisplay = explode(' ', $Unit)[0];
+                $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                $UnitURL = "<a href=\"$URLPath\">";
+                $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+                $CurrentDate = date_create("");
+                $LastContact = date_create($row["Last_Contact"]);
+                $Difference90 = date_sub($CurrentDate, date_interval_create_from_date_string("90 days"));
+                $CurrentDate = date_create("");
+                $Difference180 = date_sub($CurrentDate, date_interval_create_from_date_string("180 days"));
+                $FormatterContact = "";
+                if ($Difference180 > $LastContact)
+                  $FormatterContact = "<b style='color:red;'>";
+                else if ($Difference90 > $LastContact)
+                  $FormatterContact = "<b style='color:orange;'>";
+                echo "<tr><td>" .
+                  htmlspecialchars($row["Chartered_Org"]) . "</td><td>" .
+                  $UnitView . "</td><td>" .
+                  htmlspecialchars($row["Total_Youth"]) . "</td><td>" .
+                  htmlspecialchars($row["Total_Adults"]) . "</td><td>" .
+                  htmlspecialchars($row["Expire_Date"]) . "</td><td>" .
+                  $FormatterContact . htmlspecialchars($row["Last_Contact"]) . "</td><td>" .
+                  htmlspecialchars($row["Last_Assessment_Score"]) . "</td><td>" .
+                  htmlspecialchars($row["Assigned_Commissioner"]) . "</td></tr>";
+                if ($FormatterContact) echo "</b>";
               }
-              ?>
-            </tbody>
-          </table>
-          <p style='text-align: center;'><b style='color:red;'>Last contact more than 180 days old.</b></p>
-          <p style='text-align: center;'><b style='color:orange;'>Last contact more than 90 days old but less than 180 days old.</b></p>
-          <p style='text-align: center;'>Last contact less than 90 days old.</p>
+              mysqli_free_result($result);
+            } else {
+              echo "<tr><td colspan='8'>0 result</td></tr>";
+            }
+            ?>
+          </tbody>
+        </table>
+        <p style='text-align: center;'><b style='color:red;'>Last contact more than 180 days old.</b></p>
+        <p style='text-align: center;'><b style='color:orange;'>Last contact more than 90 days old but less than 180 days old.</b></p>
+        <p style='text-align: center;'>Last contact less than 90 days old.</p>
         <!-- </div> -->
         <!-- DataTables and Export Libraries -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -248,7 +248,7 @@ class UNIT extends CAdvancement
                 buttons: [{
                     extend: 'copy',
                     className: 'btn btn-primary btn-sm d-print-none mt-2'
-                  }, 
+                  },
                   {
                     extend: 'csv',
                     className: 'btn btn-primary btn-sm d-print-none mt-2',

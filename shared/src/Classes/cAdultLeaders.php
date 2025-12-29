@@ -1081,174 +1081,171 @@ class AdultLeaders
       //self::function_alert($Usermsg);
     }
 
-?>
-        <?php
+    return $RecordsInError;
+  }
+  /******************************************************************************
+   * This funtion will 
+   *****************************************************************************/
+  public static function UpdateFunctionalRole($fileName)
+  {
+    $RecordsInError = 0;
+    $Inserted = 0;
+    $Updated = 0;
+    $Error = 0;
+    $row = 0;
+    $reportDate = null;
 
-        return $RecordsInError;
-      }
-      /******************************************************************************
-       * This funtion will 
-       *****************************************************************************/
-      public static function UpdateFunctionalRole($fileName)
-      {
-        $RecordsInError = 0;
-        $Inserted = 0;
-        $Updated = 0;
-        $Error = 0;
-        $row = 0;
-        $reportDate = null;
+    // Secure file path using UPLOAD_DIRECTORY
+    $filePath = UPLOAD_DIRECTORY . basename($fileName);
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+      error_log("UpdateFunctionalRole: File not found or unreadable at $filePath");
+      return ++$RecordsInError;
+    }
 
-        // Secure file path using UPLOAD_DIRECTORY
-        $filePath = UPLOAD_DIRECTORY . basename($fileName);
-        if (!file_exists($filePath) || !is_readable($filePath)) {
-          error_log("UpdateFunctionalRole: File not found or unreadable at $filePath");
-          return ++$RecordsInError;
+    $dbConn = self::getDbConn(); // Assuming a method to get DB connection
+    mysqli_begin_transaction($dbConn);
+
+    try {
+      if (($handle = fopen($filePath, "r")) !== false) {
+        // Read header row to validate structure
+        $header = fgetcsv($handle, 1000, ",");
+        //            if ($header === false || count($header) < 7) {
+        if ($header === false) {
+          error_log("UpdateFunctionalRole: Invalid CSV header in $fileName");
+          throw new Exception("Invalid CSV format: Missing required columns.");
         }
 
-        $dbConn = self::getDbConn(); // Assuming a method to get DB connection
-        mysqli_begin_transaction($dbConn);
+        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+          $row++;
+          // Skip empty rows
 
-        try {
-          if (($handle = fopen($filePath, "r")) !== false) {
-            // Read header row to validate structure
-            $header = fgetcsv($handle, 1000, ",");
-            //            if ($header === false || count($header) < 7) {
-            if ($header === false) {
-              error_log("UpdateFunctionalRole: Invalid CSV header in $fileName");
-              throw new Exception("Invalid CSV format: Missing required columns.");
-            }
-
-            while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-              $row++;
-              // Skip empty rows
-
-              // Extract report date from row 5 (configurable if needed)
-              if ($row === 5) {
-                $reportDate = $data[0] ?? null;
-                continue;
-              }
-
-              // Skip rows before data (e.g., headers, metadata)
-              if ($row < 8) {
-                continue;
-              }
-              if (empty($data) || count($data) < 7) {
-                $Error++;
-                $RecordsInError++;
-                error_log("UpdateFunctionalRole: Skipping empty or invalid row $row in $fileName");
-                continue;
-              }
-
-              // Sanitize and validate data
-              $firstName = trim($data[self::COL_FIRSTNAME] ?? '');
-              $lastName = trim($data[self::COL_LASTNAME] ?? '');
-              $positionName = trim($data[self::COL_POSITIONNAME] ?? '');
-              $unit = self::formatUnitNumber($data[self::COL_DISPLAYNAME] ?? '', null);
-
-              //                if (empty($firstName) || empty($lastName) || empty($unit) || empty($positionName)) {
-              if (empty($firstName) || empty($lastName) || empty($positionName)) {
-                $Error++;
-                $RecordsInError++;
-                error_log("UpdateFunctionalRole: Missing required fields in row $row: " . json_encode($data));
-                continue;
-              }
-
-              // Find matching record
-              $sqlFind = "SELECT idx FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
-              $stmt = mysqli_prepare($dbConn, $sqlFind);
-              if (!$stmt) {
-                throw new Exception("Failed to prepare SELECT statement: " . mysqli_error($dbConn));
-              }
-              mysqli_stmt_bind_param($stmt, "sss", $firstName, $lastName, $unit);
-              mysqli_stmt_execute($stmt);
-              $result = mysqli_stmt_get_result($stmt);
-              $numRows = mysqli_num_rows($result);
-              mysqli_stmt_close($stmt);
-
-              if ($numRows === 1) {
-                // Update functional role
-                $sqlUpdate = "UPDATE  trainedleader SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
-                $stmt = mysqli_prepare($dbConn, $sqlUpdate);
-                if (!$stmt) {
-                  throw new Exception("Failed to prepare UPDATE statement: " . mysqli_error($dbConn));
-                }
-                mysqli_stmt_bind_param($stmt, "ssss", $positionName, $firstName, $lastName, $unit);
-                if (mysqli_stmt_execute($stmt)) {
-                  $Updated++;
-                } else {
-                  $Error++;
-                  $RecordsInError++;
-                  error_log("UpdateFunctionalRole: Failed to update row $row: " . mysqli_error($dbConn));
-                }
-                mysqli_stmt_close($stmt);
-              } else if ($unit === null) {
-                // Will end up here is the FunctionalRoleAssignementReport has a displayedname is ==
-                // to Centennial 02
-              } else {
-                // Found more than one role for this leader 
-                // Should just take the first onme but for now just skip
-                //$Error++;
-                //$RecordsInError++;
-                //error_log("UpdateFunctionalRole: Row $row - Found $numRows matches for FirstName: $firstName, LastName: $lastName, Unit: $unit");
-              }
-            }
-            fclose($handle);
-          } else {
-            throw new Exception("Failed to open file: $filePath");
+          // Extract report date from row 5 (configurable if needed)
+          if ($row === 5) {
+            $reportDate = $data[0] ?? null;
+            continue;
           }
 
-          mysqli_commit($dbConn);
-        } catch (Exception $e) {
-          mysqli_rollback($dbConn);
-          error_log("UpdateFunctionalRole: Error processing $fileName: " . $e->getMessage());
-          $RecordsInError++;
+          // Skip rows before data (e.g., headers, metadata)
+          if ($row < 8) {
+            continue;
+          }
+          if (empty($data) || count($data) < 7) {
+            $Error++;
+            $RecordsInError++;
+            error_log("UpdateFunctionalRole: Skipping empty or invalid row $row in $fileName");
+            continue;
+          }
+
+          // Sanitize and validate data
+          $firstName = trim($data[self::COL_FIRSTNAME] ?? '');
+          $lastName = trim($data[self::COL_LASTNAME] ?? '');
+          $positionName = trim($data[self::COL_POSITIONNAME] ?? '');
+          $unit = self::formatUnitNumber($data[self::COL_DISPLAYNAME] ?? '', null);
+
+          //                if (empty($firstName) || empty($lastName) || empty($unit) || empty($positionName)) {
+          if (empty($firstName) || empty($lastName) || empty($positionName)) {
+            $Error++;
+            $RecordsInError++;
+            error_log("UpdateFunctionalRole: Missing required fields in row $row: " . json_encode($data));
+            continue;
+          }
+
+          // Find matching record
+          $sqlFind = "SELECT idx FROM trainedleader WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+          $stmt = mysqli_prepare($dbConn, $sqlFind);
+          if (!$stmt) {
+            throw new Exception("Failed to prepare SELECT statement: " . mysqli_error($dbConn));
+          }
+          mysqli_stmt_bind_param($stmt, "sss", $firstName, $lastName, $unit);
+          mysqli_stmt_execute($stmt);
+          $result = mysqli_stmt_get_result($stmt);
+          $numRows = mysqli_num_rows($result);
+          mysqli_stmt_close($stmt);
+
+          if ($numRows === 1) {
+            // Update functional role
+            $sqlUpdate = "UPDATE  trainedleader SET FunctionalRole = ? WHERE First_Name = ? AND Last_Name = ? AND Unit = ?";
+            $stmt = mysqli_prepare($dbConn, $sqlUpdate);
+            if (!$stmt) {
+              throw new Exception("Failed to prepare UPDATE statement: " . mysqli_error($dbConn));
+            }
+            mysqli_stmt_bind_param($stmt, "ssss", $positionName, $firstName, $lastName, $unit);
+            if (mysqli_stmt_execute($stmt)) {
+              $Updated++;
+            } else {
+              $Error++;
+              $RecordsInError++;
+              error_log("UpdateFunctionalRole: Failed to update row $row: " . mysqli_error($dbConn));
+            }
+            mysqli_stmt_close($stmt);
+          } else if ($unit === null) {
+            // Will end up here is the FunctionalRoleAssignementReport has a displayedname is ==
+            // to Centennial 02
+          } else {
+            // Found more than one role for this leader 
+            // Should just take the first onme but for now just skip
+            //$Error++;
+            //$RecordsInError++;
+            //error_log("UpdateFunctionalRole: Row $row - Found $numRows matches for FirstName: $firstName, LastName: $lastName, Unit: $unit");
+          }
         }
-
-        // Log summary
-        error_log("UpdateFunctionalRole: Processed $fileName - Updated: $Updated, Errors: $Error, Total Rows: $row");
-
-        return $RecordsInError;
-      }
-      /******************************************************************************
-       * This funtion will return trained status for direct contact leaders
-       * 
-       * $DirectContact must be either a YES or NO
-       * 
-       *****************************************************************************/
-      public static function DirectTrained($Unit, $DirectContact)
-      {
-        $Direct = array(
-          "Trained" => 0,
-          "Untrained" => 0
-        );
-
-        $sqlDirect = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' ORDER BY Direct_Contact_Leader DESC ";
-        $sqlDirectUnTrained = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' AND Trained = 'NO' ";
-
-        //Get Direct contact training status:
-        $result = self::doQuery($sqlDirect);
-        //TODO: Needs error checking
-        $rowcount = mysqli_num_rows($result);
-        $result_untrained = self::doQuery($sqlDirectUnTrained);
-        //TODO: Needs error checking
-        $Direct['Untrained'] = mysqli_num_rows($result_untrained);
-        $Direct['Trained'] = $rowcount - $Direct['Untrained'];
-
-        return $Direct;
+        fclose($handle);
+      } else {
+        throw new Exception("Failed to open file: $filePath");
       }
 
-      /******************************************************************************
-       * 
-       * This funtion will scouting positions in the district
-       * 
-       *****************************************************************************/
-      public static function GetPositions()
-      {
-        $sqlPosition = 'SELECT DISTINCT Position FROM ypt ORDER BY Position ASC';
-
-        //Get Position
-        $resultposition = self::doQuery($sqlPosition);
-
-        return $resultposition;
-      }
+      mysqli_commit($dbConn);
+    } catch (Exception $e) {
+      mysqli_rollback($dbConn);
+      error_log("UpdateFunctionalRole: Error processing $fileName: " . $e->getMessage());
+      $RecordsInError++;
     }
+
+    // Log summary
+    error_log("UpdateFunctionalRole: Processed $fileName - Updated: $Updated, Errors: $Error, Total Rows: $row");
+
+    return $RecordsInError;
+  }
+  /******************************************************************************
+   * This funtion will return trained status for direct contact leaders
+   * 
+   * $DirectContact must be either a YES or NO
+   * 
+   *****************************************************************************/
+  public static function DirectTrained($Unit, $DirectContact)
+  {
+    $Direct = array(
+      "Trained" => 0,
+      "Untrained" => 0
+    );
+
+    $sqlDirect = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' ORDER BY Direct_Contact_Leader DESC ";
+    $sqlDirectUnTrained = "SELECT * FROM trainedleader WHERE Unit = '$Unit' AND Direct_Contact_Leader = '$DirectContact' AND Trained = 'NO' ";
+
+    //Get Direct contact training status:
+    $result = self::doQuery($sqlDirect);
+    //TODO: Needs error checking
+    $rowcount = mysqli_num_rows($result);
+    $result_untrained = self::doQuery($sqlDirectUnTrained);
+    //TODO: Needs error checking
+    $Direct['Untrained'] = mysqli_num_rows($result_untrained);
+    $Direct['Trained'] = $rowcount - $Direct['Untrained'];
+
+    return $Direct;
+  }
+
+  /******************************************************************************
+   * 
+   * This funtion will scouting positions in the district
+   * 
+   *****************************************************************************/
+  public static function GetPositions()
+  {
+    $sqlPosition = 'SELECT DISTINCT Position FROM ypt ORDER BY Position ASC';
+
+    //Get Position
+    $resultposition = self::doQuery($sqlPosition);
+
+    return $resultposition;
+  }
+}
