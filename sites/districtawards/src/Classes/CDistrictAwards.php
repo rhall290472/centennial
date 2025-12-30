@@ -48,8 +48,8 @@ function getConfigData()
     $userdata['db']     = "districtawards";
   } else {
     $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-    $userdata['dbuser'] = "webuser1";
-    $userdata['dbpass'] = "webuser1";
+    $userdata['dbuser'] = "centennial";
+    $userdata['dbpass'] = "w3frRWX^&q";
     $userdata['db']     = "districtawards";
   }
 
