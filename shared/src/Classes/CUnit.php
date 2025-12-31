@@ -182,25 +182,33 @@ class UNIT extends CAdvancement
                 $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
                 $UnitURL = "<a href=\"$URLPath\">";
                 $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
-                $CurrentDate = date_create("");
-                $LastContact = date_create($row["Last_Contact"]);
-                $Difference90 = date_sub($CurrentDate, date_interval_create_from_date_string("90 days"));
-                $CurrentDate = date_create("");
-                $Difference180 = date_sub($CurrentDate, date_interval_create_from_date_string("180 days"));
+                $CurrentDate = new DateTime();  // current date/time
+                $LastContact = null;
+
+                if (!empty($row["Last_Contact"]) && $row["Last_Contact"] !== '--' && $row["Last_Contact"] !== '') {
+                  try {
+                    $LastContact = new DateTime($row["Last_Contact"]);
+                  } catch (Exception $e) {
+                    // Invalid date format — log if needed, but treat as no contact
+                    $LastContact = null;
+                  }
+                }
+                $Difference90  = (clone $CurrentDate)->sub(new DateInterval('P90D'));
+                $Difference180 = (clone $CurrentDate)->sub(new DateInterval('P180D'));
                 $FormatterContact = "";
                 if ($Difference180 > $LastContact)
                   $FormatterContact = "<b style='color:red;'>";
                 else if ($Difference90 > $LastContact)
                   $FormatterContact = "<b style='color:orange;'>";
                 echo "<tr><td>" .
-                  htmlspecialchars($row["Chartered_Org"]) . "</td><td>" .
+                  htmlspecialchars($row["Chartered_Org"] ?? '') . "</td><td>" .
                   $UnitView . "</td><td>" .
-                  htmlspecialchars($row["Total_Youth"]) . "</td><td>" .
-                  htmlspecialchars($row["Total_Adults"]) . "</td><td>" .
-                  htmlspecialchars($row["Expire_Date"]) . "</td><td>" .
-                  $FormatterContact . htmlspecialchars($row["Last_Contact"]) . "</td><td>" .
-                  htmlspecialchars($row["Last_Assessment_Score"]) . "</td><td>" .
-                  htmlspecialchars($row["Assigned_Commissioner"]) . "</td></tr>";
+                  htmlspecialchars($row["Total_Youth"] ?? '') . "</td><td>" .
+                  htmlspecialchars($row["Total_Adults"] ?? '') . "</td><td>" .
+                  htmlspecialchars($row["Expire_Date"] ?? '') . "</td><td>" .
+                  $FormatterContact . htmlspecialchars($row["Last_Contact"] ?? '') . "</td><td>" .
+                  htmlspecialchars($row["Last_Assessment_Score"] ?? '') . "</td><td>" .
+                  htmlspecialchars($row["Assigned_Commissioner"] ?? '') . "</td></tr>";
                 if ($FormatterContact) echo "</b>";
               }
               mysqli_free_result($result);
@@ -226,24 +234,30 @@ class UNIT extends CAdvancement
         <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
         <!-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css"> -->
+
         <script>
           $(document).ready(function() {
-            // Show spinner
-            // function showSpinner() {
-            //   document.getElementById('overlay').style.display = 'block';
-            //   document.getElementById('spinner').style.display = 'block';
-            // }
+            // Define spinner functions
+            function showSpinner() {
+              var overlay = document.getElementById('overlay');
+              var spinner = document.getElementById('spinner');
+              if (overlay) overlay.style.display = 'block';
+              if (spinner) spinner.style.display = 'block';
+            }
 
-            // // Hide spinner
-            // function hideSpinner() {
-            //   document.getElementById('overlay').style.display = 'none';
-            //   document.getElementById('spinner').style.display = 'none';
-            // }
+            function hideSpinner() {
+              var overlay = document.getElementById('overlay');
+              var spinner = document.getElementById('spinner');
+              if (overlay) overlay.style.display = 'none';
+              if (spinner) spinner.style.display = 'none';
+            }
 
-            // showSpinner();
-            // Initialize DataTable
-            if ($('#membershipTable').length) {
-              $('#membershipTable').DataTable({
+            // Show spinner immediately
+            //showSpinner();
+
+            // Initialize DataTable if it exists
+            if ($('#membershipTable').length > 0) {
+              var table = $('#membershipTable').DataTable({
                 dom: 'Bfrtip',
                 buttons: [{
                     extend: 'copy',
@@ -266,22 +280,29 @@ class UNIT extends CAdvancement
                   }
                 ],
                 pageLength: -1,
-                paging: false, // Disable pagination controls
+                paging: false,
                 order: [
                   [0, 'asc']
                 ],
                 columnDefs: [{
                     type: 'num',
                     targets: [2, 3, 6]
-                  }, // Treat Youth, Adult's, and Metric as numeric
+                  },
                   {
                     type: 'date',
                     targets: [4, 5]
-                  } // Treat Expire Date and Last Connection as dates
+                  }
                 ]
               });
+
+              // Hide spinner AFTER DataTable fully initializes
+              table.on('init.dt', function() {
+                hideSpinner();
+              });
+            } else {
+              // Fallback: Hide if no table
+              hideSpinner();
             }
-            // hideSpinner();
           });
         </script>
       <?php
@@ -325,69 +346,83 @@ class UNIT extends CAdvancement
               ?>
             </tbody>
           </table>
-        </center>
-        <!-- DataTables and Export Libraries for Previous Membership Table -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
-        <script>
-          $(document).ready(function() {
-            // Show spinner
-            function showSpinner() {
-              document.getElementById('overlay').style.display = 'block';
-              document.getElementById('spinner').style.display = 'block';
-            }
 
-            // Hide spinner
-            function hideSpinner() {
-              document.getElementById('overlay').style.display = 'none';
-              document.getElementById('spinner').style.display = 'none';
-            }
+          <p style='text-align: center;'><b style='color:red;'>Last contact more than 180 days old.</b></p>
+          <p style='text-align: center;'><b style='color:orange;'>Last contact more than 90 days old but less than 180 days old.</b></p>
+          <p style='text-align: center;'>Last contact less than 90 days old.</p>
 
-            showSpinner();
-            // Initialize DataTable
-            if ($('#previousMembershipTable').length) {
-              $('#previousMembershipTable').DataTable({
-                dom: 'Bfrtip',
-                buttons: [{
-                    extend: 'csv',
-                    className: 'btn btn-primary',
-                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
-                  },
-                  {
-                    extend: 'excel',
-                    className: 'btn btn-primary',
-                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
-                  },
-                  {
-                    extend: 'pdf',
-                    className: 'btn btn-primary',
-                    title: 'Previous_Membership_Report_<?php echo parent::GetYear(); ?>'
-                  }
-                ],
-                pageLength: 10,
-                order: [
-                  [0, 'asc']
-                ],
-                columnDefs: [{
-                    type: 'num',
-                    targets: [2, 3, 4]
-                  } // Treat Male, Female, and Total as numeric
-                ]
-              });
-            }
-            hideSpinner();
-          });
-        </script>
-    <?php
+          <?php
+          // Define $SelectedYear here so it's in scope for the script below
+          $SelectedYear = parent::GetYear();
+          ?>
+
+          <script>
+            $(document).ready(function() {
+              function showSpinner() {
+                var overlay = document.getElementById('overlay');
+                var spinner = document.getElementById('spinner');
+                if (overlay) overlay.style.display = 'block';
+                if (spinner) spinner.style.display = 'block';
+              }
+
+              function hideSpinner() {
+                var overlay = document.getElementById('overlay');
+                var spinner = document.getElementById('spinner');
+                if (overlay) overlay.style.display = 'none';
+                if (spinner) spinner.style.display = 'none';
+              }
+
+              showSpinner();
+
+              if ($('#membershipTable').length > 0) {
+                var table = $('#membershipTable').DataTable({
+                  dom: 'Bfrtip',
+                  buttons: [{
+                      extend: 'copy',
+                      className: 'btn btn-primary btn-sm d-print-none mt-2'
+                    },
+                    {
+                      extend: 'csv',
+                      className: 'btn btn-primary btn-sm d-print-none mt-2',
+                      title: 'Membership_Report_<?php echo htmlspecialchars($SelectedYear); ?>'
+                    },
+                    {
+                      extend: 'excel',
+                      className: 'btn btn-primary btn-sm d-print-none mt-2',
+                      title: 'Membership_Report_<?php echo htmlspecialchars($SelectedYear); ?>'
+                    },
+                    {
+                      extend: 'pdf',
+                      className: 'btn btn-primary btn-sm d-print-none mt-2',
+                      title: 'Membership_Report_<?php echo htmlspecialchars($SelectedYear); ?>'
+                    }
+                  ],
+                  pageLength: -1,
+                  paging: false,
+                  order: [
+                    [0, 'asc']
+                  ],
+                  columnDefs: [{
+                      type: 'num',
+                      targets: [2, 3, 6]
+                    },
+                    {
+                      type: 'date',
+                      targets: [4, 5]
+                    }
+                  ]
+                });
+
+                table.on('init.dt', function() {
+                  hideSpinner();
+                });
+              } else {
+                hideSpinner();
+              }
+            });
+          </script>
+
+      <?php
       }
 
       public static function &ImportCORData($fileName)
