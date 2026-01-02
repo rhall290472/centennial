@@ -70,6 +70,22 @@ define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
+
+if ($is_localhost) {
+    define('DB_HOST', 'localhost');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('DB_NAME', 'meritbadges');
+} else {
+    define('DB_HOST', 'rhall29047217205.ipagemysql.com');
+    define('DB_USER', 'mbcuser');
+    define('DB_PASS', 'ZCSCA?yrW7}L');
+    define('DB_NAME', 'meritbadges');
+}
+
+
+
+
 $pageHome = SITE_URL.'/centennial/sites/meritbadges/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/meritbadges/src/Pages/contact.php';
 // Navigation links
@@ -90,22 +106,6 @@ define('NAV_LINKS', [
     ],
 ]);
 
-if ($is_localhost) {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
-} else {
-    define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
-}
-
-// Security headers
-//header('X-Content-Type-Options: nosniff');
-//header('X-Frame-Options: DENY');
-//header('X-XSS-Protection: 1; mode=block');
 
 // File upload limits
 ini_set('upload_max_filesize', '4M');

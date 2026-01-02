@@ -37,6 +37,16 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
           <li><a class="dropdown-item" href="?page=uploadcounselors">Counselor List</a></li>
         </ul>
       </li>
+      
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fs-4 bi bi-upload"></i><span class="ms-1 d-none d-sm-inline">Edits</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="?page=editmeritbadge">Merit Badge</a></li>
+        </ul>
+      </li>
+
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Functions</span>

@@ -12,6 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
+ob_start();
 
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
@@ -135,6 +136,9 @@ $valid_pages = [
   'specialtraining',
   'counselornobadge',
   'counselornounit',
+
+  'editmeritbadge',
+  'updatemeritbadge',
 
   'login',
   'logout',
@@ -346,6 +350,15 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'counselornounit':
           include('../src/Pages/AdminFunctions.php');
           break;
+
+        case 'editmeritbadge':
+          include('../src/Pages/MeritBadgeform/MeritBadgeform.php');
+          break;
+        case 'updatemeritbadge':
+          include('../src/Pages/MeritBadgeform/UpdateMeritBadge.php');
+          break;
+
+
         case 'login':
           include('login.php');
           break;
