@@ -94,41 +94,52 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     $http_code = 0; // Initialize to track HTTP status
 
     // Check if cache exists and is recent
+    $owner = "rhall290472";
+    $repo  = "centennial";
+    //$cache_file = __DIR__ . "/cache/last_commit_cache.txt";
+    $cache_duration = 3600; // 1 hour
+
     if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_duration) {
       $commit_date = file_get_contents($cache_file);
     } else {
-      // GitHub API settings
-      $owner = "rhall290472";
-      $repo = "centennial";
-      $api_url = "https://api.github.com/repos/$owner/$repo/commits?per_page=1";
-      $token = defined('GITHUB_TOKEN') ? GITHUB_TOKEN : ''; // Load token from config.php
+      // This endpoint is public, no auth needed, and rarely rate-limited
+      $feed_url = "https://github.com/{$owner}/{$repo}/commits/main.atom";
 
-      $ch = curl_init($api_url);
+      $ch = curl_init($feed_url);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_USERAGENT, "PHP-App/1.0");
-      curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        "Accept: application/vnd.github.v3+json"
-      ]);
-      if (!empty($token)) {
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-          "Accept: application/vnd.github.v3+json",
-          "Authorization: token $token"
-        ]);
-      }
-      $response = curl_exec($ch);
+      curl_setopt($ch, CURLOPT_USERAGENT, "PHP-Commit-Date/1.0 (rhall290472@gmail.com)"); // Required by GitHub
+      curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+
+      $feed = curl_exec($ch);
       $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       curl_close($ch);
 
-      if ($http_code == 200 && $response) {
-        $commits = json_decode($response, true);
-        if (!empty($commits)) {
-          $commit_date = $commits[0]['commit']['committer']['date'];
-          // Save to cache
+
+      if ($feed === false) {
+        // Hard cURL error (network, timeout, etc.)
+        error_log("cURL error: " . curl_error($ch));
+        // fall back to cache
+      } elseif ($http_code !== 200) {
+        // GitHub returned an error page (403, 404, 429, etc.)
+        error_log("GitHub returned HTTP $http_code for $feed_url");
+        // fall back to cache
+      } elseif (empty(trim($feed))) {
+        // Empty response (shouldn't happen, but safety)
+        error_log("Empty response from GitHub");
+        // fall back to cache
+      } else {
+        // Success! Parse the Atom feed
+        if (preg_match('/<entry[^>]*>.*?<updated>(.*?)<\/updated>/is', $feed, $matches)) {
+          $commit_date = $matches[1];
           file_put_contents($cache_file, $commit_date);
         }
-      } else {
-        // Log error for debugging
-        error_log("GitHub API error: HTTP $http_code, Response: $response, URL: $api_url, Token used: " . (empty($token) ? 'none' : 'provided'));
+      }
+
+      // Fallback: if not found yet, try to load from cache anyway
+      if (!$commit_date && file_exists($cache_file)) {
+        $commit_date = file_get_contents($cache_file);
       }
     }
 

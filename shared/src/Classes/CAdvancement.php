@@ -98,8 +98,8 @@ class CAdvancement
       $userdata['db']     = "centennial";
     } else {
       $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-      $userdata['dbuser'] = "webuser1";
-      $userdata['dbpass'] = "webuser1";
+      $userdata['dbuser'] = "centennial";
+      $userdata['dbpass'] = "w3frRWX^&q";
       $userdata['db']     = "centennial";
     }
 
@@ -241,7 +241,7 @@ class CAdvancement
         </select>
         </div>
         <div class="col-1 py-6">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
           <input class='btn btn-primary btn-sm d-print-none' type='submit' name='SubmitYear' placeholder='Year' value='Set Year' />
         </div>
       </form>
