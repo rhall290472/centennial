@@ -12,7 +12,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 // Optional: Regenerate CSRF token on POST if needed
 // But better: validate it here too
 
-require_once __DIR__ . '/../../../config/config.php';  // Adjust path to load config
+// require_once __DIR__ . '/../../../config/config.php';  // Adjust path to load config
 load_class(__DIR__ . '/../../Classes/CMeritBadges.php');
 $CMeritBadge = CMeritBadges::getInstance();
 
