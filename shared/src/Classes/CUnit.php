@@ -457,7 +457,7 @@ class UNIT extends CAdvancement
         $row = 1;
 
         if (($handle = fopen($fileName, "r")) !== FALSE) {
-          while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+          while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
             if ($row < 10) {
               if ($row == 6)
                 $DateStr = $data[0];
@@ -534,7 +534,7 @@ class UNIT extends CAdvancement
         $Updated = 0;
         $row = 1;
         if (($handle = fopen($filePath, "r")) !== FALSE) {
-          while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+          while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
             if ($row < 9) {
               if ($row == 5)
                 $DateStr = $data[0];
@@ -646,7 +646,7 @@ class UNIT extends CAdvancement
         $Updated = 0;
         $row = 1;
         if (($handle = fopen($fileName, "r")) !== FALSE) {
-          while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+          while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
             if ($row < 9) {
               if ($row == 5)
                 $Datestr = $data[0];

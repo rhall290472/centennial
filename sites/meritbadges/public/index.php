@@ -39,6 +39,9 @@ if (!defined('SITE_URL')) {
   define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/advancement');
 }
 
+// Default fallback
+$page = $_GET['page'] ?? 'home';
+
 // Load required classes for file uploads
 load_class(__DIR__ . '/../src/Classes/CMeritBadges.php');
 

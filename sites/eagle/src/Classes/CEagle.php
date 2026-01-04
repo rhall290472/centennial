@@ -883,7 +883,7 @@ class CEagle
 
     $row = 0;
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
         if ($row < 1) {
           $row++;
           continue;
@@ -1101,7 +1101,7 @@ class CEagle
   //    $UserName = $_SESSION['username'];
   //    $row = 0;
   //    if (($handle = fopen($filePath, "r")) !== FALSE) {
-  //      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+  //      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
   //        if ($row < 8) {
   //          $row++;
   //          continue;
@@ -1172,7 +1172,7 @@ class CEagle
     $UserName = $_SESSION['username'];
     $row = 0;
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
         /* Skip down to row 3 [4] to get unit */
         if ($row < 3) {
           $row++;
@@ -1262,7 +1262,7 @@ class CEagle
   //    //$UserName = $_SESSION['username'];
   //    $row = 0;
   //    if (($handle = fopen($filePath, "r")) !== FALSE) {
-  //      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+  //      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
   //        if (count($data) < 9) {
   //          continue;
   //        } // Skip until we get to data!

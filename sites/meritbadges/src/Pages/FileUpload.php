@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['csrf_token']) || $_
 try {
   $CMeritBadges = CMeritBadges::getInstance();
 } catch (Exception $e) {
-  error_log('Failed to initialize CMeritBadges: ' . $e->getMessage());
+  error_log('Failed to initialize CMeritBadges: ' . $e->getMessage() .'-'.__FILE__ . ' ' . __LINE__);
   die('An error occurred. Please try again later.');
 }
 
@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $fileSize = $_FILES['the_file']['size'];
     $fileTmpName = $_FILES['the_file']['tmp_name'];
     $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $uploadPath = UPLOAD_DIRECTORY . basename($fileName);
+    //$uploadPath = UPLOAD_DIRECTORY . basename($fileName);
+    $uploadDir .=  basename($fileName);
 
     // Validate file
     if (!in_array($fileExtension, ALLOWED_EXTENSIONS)) {
@@ -67,26 +68,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
       $errors[] = 'Invalid file name. Use alphanumeric characters, underscores, or hyphens.';
     }
     // if (file_exists($uploadPath)) {
-      // $errors[] = 'A file with this name already exists.';
+    // $errors[] = 'A file with this name already exists.';
     // }
 
     // Validate MIME type
-    $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mimeType = finfo_file($fileInfo, $fileTmpName);
-    finfo_close($fileInfo);
-    // if ($mimeType !== 'text/csv' && $mimeType !== 'application/csv') {
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($fileTmpName);
+
     if ($mimeType !== 'text/plain') {
       $errors[] = 'Invalid file type. Please upload a valid CSV file.';
     }
-
     // Process file if no errors
     if (empty($errors)) {
-      if (move_uploaded_file($fileTmpName, $uploadPath)) {
+      if (move_uploaded_file($fileTmpName, $uploadDir)) {
         $reportType = $_POST['submit'];
         try {
           switch ($reportType) {
             case 'Counselors':
-              $CMeritBadges->UpdateCounselors($fileName);
+              $CMeritBadges->UpdateCouncilList($uploadDir);
               $successMessage = 'Counselors list updated successfully.';
               break;
             default:
@@ -95,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
           }
         } catch (Exception $e) {
           $errors[] = 'Failed to process the file: ' . $e->getMessage();
-          error_log('File processing error: ' . $e->getMessage());
+          error_log('File processing error: ' . $e->getMessage() .'-'.__FILE__ . ' ' . __LINE__);
         }
       } else {
         $errors[] = 'Failed to upload the file. Please contact the administrator.';
@@ -125,7 +124,8 @@ function isValidFileName(string $fileName): bool
 
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <?php //include __DIR__ . '/sidebar.php'; ?>
+      <?php //include __DIR__ . '/sidebar.php'; 
+      ?>
       <div class="col py-3">
         <div class="container px-lg-5">
           <div class="p-4 p-lg-5 bg-light rounded-3">
@@ -155,7 +155,7 @@ function isValidFileName(string $fileName): bool
                 <div id="form-instructions" class="form-text">Upload a valid CSV file (max 4MB).</div>
               </div>
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-              <button class="btn btn-primary" type="submit">Upload File</button>
+              <button class="btn btn-primary" type="submit" name="submit" value="Counselors">Upload File</button>
             </form>
           </div>
         </div>

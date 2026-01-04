@@ -326,32 +326,57 @@ class AdultLeaders
    *****************************************************************************/
   public static function FindMemberUnit($FName, $LName, $Unit1Type, $Unit2Type)
   {
-    $Units = array();
+    $Units = ['', ''];  // Default empty array with two slots
 
-    if (is_null($Unit2Type))
-      $qryUnits = "SELECT DISTINCT Unit FROM trainedleader WHERE First_Name='$FName' AND Last_Name='$LName' AND Unit LIKE '%$Unit1Type%'";
-    else
-      $qryUnits = "SELECT DISTINCT Unit FROM trainedleader WHERE First_Name='$FName' AND Last_Name='$LName' AND (Unit LIKE '%$Unit1Type%' OR Unit LIKE '%$Unit2Type%')";
-
-    $result_units = self::doQuery($qryUnits);
-    while ($row_unit = $result_units->fetch_assoc()) {
-      $Unit = $row_unit['Unit'];
-      // Remove the unit type from returned value.
-      $pieces = explode(" ", $Unit);
-      $Units[] = $pieces[1];
+    $mysqli = self::getDbConn();  // Assuming this returns the mysqli connection used elsewhere
+    if (!$mysqli) {
+      error_log("FindMemberUnit: No DB connection");
+      return $Units;
     }
 
-    //Check to ensure we found something
-    if (is_array($Units)) {
-      if (sizeof($Units) < 1) {
-        $Units[0] = "";
-        $Units[1] = "";
-      } else if (sizeof($Units) < 2) {
-        $Units[1] = "";
+    if (is_null($Unit2Type)) {
+      $sql = "SELECT DISTINCT Unit FROM trainedleader 
+                WHERE First_Name = ? AND Last_Name = ? AND Unit LIKE ?";
+      $likeParam = "%$Unit1Type%";
+      $stmt = $mysqli->prepare($sql);
+      if ($stmt) {
+        $stmt->bind_param("sss", $FName, $LName, $likeParam);
       }
     } else {
-      $Units[0] = "";
-      $Units[1] = "";
+      $sql = "SELECT DISTINCT Unit FROM trainedleader 
+                WHERE First_Name = ? AND Last_Name = ? 
+                  AND (Unit LIKE ? OR Unit LIKE ?)";
+      $like1 = "%$Unit1Type%";
+      $like2 = "%$Unit2Type%";
+      $stmt = $mysqli->prepare($sql);
+      if ($stmt) {
+        $stmt->bind_param("ssss", $FName, $LName, $like1, $like2);
+      }
+    }
+
+    if (!$stmt) {
+      error_log("FindMemberUnit prepare failed: " . $mysqli->error);
+      return $Units;
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $foundUnits = [];
+    while ($result && $row = $result->fetch_assoc()) {
+      $Unit = $row['Unit'];
+      $pieces = explode(" ", $Unit);
+      if (isset($pieces[1])) {
+        $foundUnits[] = $pieces[1];
+      }
+    }
+
+    $stmt->close();
+
+    // Fill Units array with up to 2 values
+    if (!empty($foundUnits)) {
+      $Units[0] = $foundUnits[0] ?? '';
+      $Units[1] = $foundUnits[1] ?? '';
     }
 
     return $Units;
@@ -901,7 +926,7 @@ class AdultLeaders
 
     // Insert new data
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
         if ($row < 10) { // Skip the first row(s), headers.
           $row++;
           continue;
@@ -1011,7 +1036,7 @@ class AdultLeaders
     }
 
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
         if ($Row < 10) { // Skip the first row(s), headers.
           if ($Row == 5)
             $Datestr = $data[0]; // Get the report date.
@@ -1108,14 +1133,14 @@ class AdultLeaders
     try {
       if (($handle = fopen($filePath, "r")) !== false) {
         // Read header row to validate structure
-        $header = fgetcsv($handle, 1000, ",");
+        $header = fgetcsv($handle, 1000, ",", '"', "\\");
         //            if ($header === false || count($header) < 7) {
         if ($header === false) {
           error_log("UpdateFunctionalRole: Invalid CSV header in $fileName");
           throw new Exception("Invalid CSV format: Missing required columns.");
         }
 
-        while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+        while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== false) {
           $row++;
           // Skip empty rows
 

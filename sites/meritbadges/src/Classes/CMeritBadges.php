@@ -1,4 +1,5 @@
 <?php
+ob_start();  // Start buffering at the beginning of CMeritBadges.php or the calling file
 defined('IN_APP') or die('Direct access not allowed.');
 
 
@@ -94,7 +95,7 @@ class CMeritBadges
       $db = self::initConnection();
       return $db->dbConn;
     } catch (Exception $ex) {
-      error_log("Database connection error: " . $ex->getMessage());
+      error_log("Database connection error: " . $ex->getMessage() . '-' . __FILE__ . ' ' . __LINE__);
       return null;
     }
   }
@@ -114,7 +115,7 @@ class CMeritBadges
 
     $stmt = $mysqli->prepare($sql);
     if (!$stmt) {
-      error_log("Prepare failed: " . $mysqli->error);
+      error_log("Prepare failed: " . $mysqli->error . '-' . __FILE__ . ' ' . __LINE__);
       return false;
     }
 
@@ -125,7 +126,7 @@ class CMeritBadges
 
     $result = $stmt->execute();
     if (!$result) {
-      error_log("Query failed: " . $stmt->error);
+      error_log("Query failed: " . $stmt->error . '-' . __FILE__ . ' ' . __LINE__);
       $stmt->close();
       return false;
     }
@@ -312,133 +313,147 @@ class CMeritBadges
     return substr($str, -$length);
   }
 
-  public static function UpdateCounselors($fileName)
-  {
-    $filePath = "Data/" . filter_var($fileName);
-    $inserted = 0;
-    $updated = 0;
-    $errors = 0;
+  // public static function UpdateCounselors($filePath)
+  // {
+  //   $colOrganizations = 0;
+  //   $colFirstname = 1;
+  //   $colLastname= 2;
+  //   $colMemberid = 3;
+  //   $colStrexpirydt = 4;
+  //   $colYptStatus = 5;
+  //   $colStryptsxirydt = 6;
+  //   $colTroopnos = 7;
+  //   $colPhone = 8;
+  //   $colEmail = 9;
+  //   $colCstareetAddress = 10;
+  //   $colCcity = 11;
+  //   $colCstate = 12;
+  //   $colCzip = 13;
+  //   $colMbccounciling = 13;
+  //   $colAwards = 14;
 
-    if (($handle = fopen($filePath, "r")) !== false) {
-      self::doQuery("UPDATE `counselors` SET `Active` = 'No'");
+  //   $inserted = 0;
+  //   $updated = 0;
+  //   $errors = 0;
 
-      $row = 1;
-      while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-        if ($row++ < 10) continue;
-        if (strcmp($data[14], "Merit Badge Counselor")) continue;
+  //   if (($handle = fopen($filePath, "r")) !== false) {
+  //     self::doQuery("UPDATE `counselors` SET `Active` = 'No'");
 
-        $memberID = filter_var($data[11]);
-        if (self::InsertUpdateCheck($memberID)) {
-          $sql = "UPDATE `counselors` SET `HomeDistrict` = ?, `FirstName` = ?, `LastName` = ?, `Zip` = ?, 
-                            `MemberID` = ?, `Email` = ?, `Trained` = ?, `Active` = ?, `ValidationDate` = ? 
-                            WHERE `MemberID` = ?";
-          $params = [
-            $data[2],
-            $data[7],
-            $data[9],
-            $data[10],
-            $data[11],
-            $data[13],
-            $data[16],
-            'YES',
-            date("d/M/Y"),
-            $data[11]
-          ];
-          if (!self::doQuery($sql, $params)) {
-            $errors++;
-          } else {
-            if (!empty($data[4])) {
-              $sql = "UPDATE `counselors` SET `HomeTroop` = ? WHERE `MemberID` = ?";
-              if (!self::doQuery($sql, [$data[4], $data[11]])) {
-                $errors++;
-              }
-            }
-            $updated++;
-          }
-        } else {
-          $sql = "INSERT INTO `counselors` (`HomeDistrict`, `HomeTroop`, `FirstName`, `LastName`, `Zip`, 
-                            `MemberID`, `Email`, `Trained`, `Active`, `ValidationDate`, `DoNotPublish`) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-          $params = [
-            $data[2],
-            $data[4],
-            $data[7],
-            $data[9],
-            $data[10],
-            $data[11],
-            $data[13],
-            $data[16],
-            'YES',
-            date("d/M/Y"),
-            'FALSE'
-          ];
-          if (!self::doQuery($sql, $params)) {
-            $errors++;
-          } else {
-            if (!empty($data[4])) {
-              $sql = "UPDATE `counselors` SET `HomeTroop` = ? WHERE `MemberID` = ?";
-              if (!self::doQuery($sql, [$data[4], $data[11]])) {
-                $errors++;
-              }
-            }
-            $inserted++;
-          }
-        }
-      }
-      fclose($handle);
-      $msg = "Records Inserted: $inserted, Updated: $updated, Errors: $errors";
-      self::showMessage($msg);
-    } else {
-      self::showMessage("Failed to open file: $filePath");
-    }
+  //     $row = 1;
+  //     while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== false) {
+  //       if ($row++ < 10) continue;
+  //       //if (strcmp($data[14], "Merit Badge Counselor")) continue;
 
-    if ($errors == 0 && $inserted == 0) {
-      self::GotoURL('index.php');
-    } else {
-      echo '<center><br><button class="btn btn-primary rounded-pill" style="width:220px" onclick="window.location.href=\'index.php\'">Return Main</button><br></center>';
-    }
-  }
+  //       $memberID = filter_var($data[$colMemberid]);
+  //       if (self::InsertUpdateCheck($memberID)) {
+  //         $sql = "UPDATE `counselors` SET `HomeDistrict` = ?, `FirstName` = ?, `LastName` = ?, `Zip` = ?, 
+  //                           `MemberID` = ?, `Email` = ?, `Active` = ?, `ValidationDate` = ? 
+  //                           WHERE `MemberID` = ?";
+  //         $params = [
+  //           $data[$colOrganizations], 
+  //           $data[$colFirstname], 
+  //           $data[$colLastname], 
+  //           $data[$colCzip], 
+  //           $data[$colMemberid],
+  //           $data[$colEmail], 
+  //           'YES',
+  //           date("d/M/Y"),
+  //           $data[$colMemberid]
+  //         ];
+  //         if (!self::doQuery($sql, $params)) {
+  //           $errors++;
+  //         } else {
+  //           // if (!empty($data[$colTroopnos])) {
+  //           //   $sql = "UPDATE `counselors` SET `HomeTroop` = ? WHERE `MemberID` = ?";
+  //           //   if (!self::doQuery($sql, [$data[$colTroopnos], $data[$colMemberid]])) {
+  //           //     $errors++;
+  //           //   }
+  //           // }
+  //           $updated++;
+  //         }
+  //       } else {
+  //         $sql = "INSERT INTO `counselors` (`HomeDistrict`, `HomeTroop`, `FirstName`, `LastName`, `Zip`, 
+  //                           `MemberID`, `Email`, `Active`, `ValidationDate`, `DoNotPublish`) 
+  //                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  //         $params = [
+  //           $data[$colOrganizations],
+  //           $data[$colTroopnos],
+  //           $data[$colFirstname],
+  //           $data[$colLastname],
+  //           $data[$colCzip],
+  //           $data[$colMemberid],
+  //           $data[$colEmail],
+  //           'YES',
+  //           date("d/M/Y"),
+  //           'FALSE'
+  //         ];
+  //         if (!self::doQuery($sql, $params)) {
+  //           $errors++;
+  //         } else {
+  //           if (!empty($data[4])) {
+  //             $sql = "UPDATE `counselors` SET `HomeTroop` = ? WHERE `MemberID` = ?";
+  //             if (!self::doQuery($sql, [$data[$colTroopnos], $data[$colMemberid]])) {
+  //               $errors++;
+  //             }
+  //           }
+  //           $inserted++;
+  //         }
+  //       }
+  //     }
+  //     fclose($handle);
+  //     $msg = "Records Inserted: $inserted, Updated: $updated, Errors: $errors";
+  //     self::showMessage($msg);
+  //   } else {
+  //     self::showMessage("Failed to open file: $filePath");
+  //   }
 
-  public static function Updateypt($fileName)
-  {
-    $filePath = "Data/" . filter_var($fileName);
-    $inserted = 0;
-    $updated = 0;
-    $errors = 0;
+  //   if ($errors == 0 && $inserted == 0) {
+  //     self::GotoURL('index.php');
+  //   } else {
+  //     echo '<center><br><button class="btn btn-primary rounded-pill" style="width:220px" onclick="window.location.href=\'index.php\'">Return Main</button><br></center>';
+  //   }
+  // }
 
-    if (($handle = fopen($filePath, "r")) !== false) {
-      $row = 1;
-      while (($data = fgetcsv($handle, 1000, ",")) !== false) {
-        if ($row++ < 9) continue;
-        if (strcmp($data[9], "Merit Badge Counselor")) continue;
+  // public static function Updateypt($fileName)
+  // {
+  //   $filePath = "Data/" . filter_var($fileName);
+  //   $inserted = 0;
+  //   $updated = 0;
+  //   $errors = 0;
 
-        $memberID = filter_var($data[8]);
-        if (self::InsertUpdateCheck($memberID)) {
-          $sql = "UPDATE `counselors` SET `YPT` = ?, `Active` = ?, `ValidationDate` = ? WHERE `MemberID` = ?";
-          $params = [$data[14], $data[10], date("d/M/Y"), $memberID];
-          if (!self::doQuery($sql, $params)) {
-            $errors++;
-          } else {
-            $updated++;
-          }
-        } else {
-          echo "Error: MemberID = " . htmlspecialchars($memberID) . "<br>";
-          $errors++;
-        }
-      }
-      fclose($handle);
-      $msg = "Records Inserted: $inserted, Updated: $updated, Errors: $errors";
-      self::showMessage($msg);
-    } else {
-      self::showMessage("Failed to open file: $filePath");
-    }
+  //   if (($handle = fopen($filePath, "r")) !== false) {
+  //     $row = 1;
+  //     while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== false) {
+  //       if ($row++ < 9) continue;
+  //       if (strcmp($data[9], "Merit Badge Counselor")) continue;
 
-    if ($errors == 0) {
-      self::GotoURL('index.php');
-    } else {
-      echo '<center><br><button class="btn btn-primary rounded-pill" style="width:220px" onclick="window.location.href=\'index.php\'">Return Main</button><br></center>';
-    }
-  }
+  //       $memberID = filter_var($data[8]);
+  //       if (self::InsertUpdateCheck($memberID)) {
+  //         $sql = "UPDATE `counselors` SET `YPT` = ?, `Active` = ?, `ValidationDate` = ? WHERE `MemberID` = ?";
+  //         $params = [$data[14], $data[10], date("d/M/Y"), $memberID];
+  //         if (!self::doQuery($sql, $params)) {
+  //           $errors++;
+  //         } else {
+  //           $updated++;
+  //         }
+  //       } else {
+  //         echo "Error: MemberID = " . htmlspecialchars($memberID) . "<br>";
+  //         $errors++;
+  //       }
+  //     }
+  //     fclose($handle);
+  //     $msg = "Records Inserted: $inserted, Updated: $updated, Errors: $errors";
+  //     self::showMessage($msg);
+  //   } else {
+  //     self::showMessage("Failed to open file: $filePath");
+  //   }
+
+  //   if ($errors == 0) {
+  //     self::GotoURL('index.php');
+  //   } else {
+  //     echo '<center><br><button class="btn btn-primary rounded-pill" style="width:220px" onclick="window.location.href=\'index.php\'">Return Main</button><br></center>';
+  //   }
+  // }
 
   public static function create_progress()
   {
@@ -459,10 +474,11 @@ class CMeritBadges
 
   public static function update_progress($percent)
   {
-    echo "<script>updateProgress($percent);</script>";
+    echo "<script>updateProgress($percent);</script>\n";
+    echo str_repeat(' ', 1024);  // Padding helps force flush
+    ob_flush();
     flush();
   }
-
   public static function GetFileSize($fileName)
   {
     $fileName = filter_var($fileName);
@@ -487,6 +503,21 @@ class CMeritBadges
 
   public static function UpdateCouncilList($uploadPath)
   {
+
+    // Disable zlib compression if enabled
+    if (ini_get('zlib.output_compression')) {
+      ini_set('zlib.output_compression', 'Off');
+    }
+
+    // Turn on implicit flushing
+    ob_implicit_flush(true);
+    ob_end_flush();  // End any existing buffer
+
+    // Optional: pad output to force browser to render sooner
+    echo str_repeat(' ', 4096);  // Send 4KB of space
+    echo "<!-- Progress bar starting -->\n";
+
+
     $colOrganizations = 0;
     $colFirstname = 1;
     $colLastname = 2;
@@ -503,7 +534,7 @@ class CMeritBadges
     $colMbcounciling = 13;
     $colAwards = 14;
 
-    $filePath = "Data/" . filter_var($uploadPath);
+    $filePath = filter_var($uploadPath);
     $inserted = 0;
     $updated = 0;
     $errors = 0;
@@ -517,13 +548,13 @@ class CMeritBadges
 
     if (($handle = fopen($filePath, "r")) !== false) {
       $row = 1;
-      while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== false) {
         if ($row++ < 10) continue;
 
         $percent = number_format(($row / $numRows) * 100, 2);
         self::update_progress($percent);
 
-        $unit = AdultLeaders::FindMemberUnit($data);
+        $unit = AdultLeaders::FindMemberUnit($data[$colFirstname], $data[$colLastname], "Troop", "Crew");
         $district = filter_var($data[$colOrganizations]);
         $firstName = filter_var($data[$colFirstname]);
         $lastName = filter_var($data[$colLastname]);
@@ -545,12 +576,60 @@ class CMeritBadges
           }
         }
 
+
+        $awardsString = trim($data[$colAwards]);
+        $badges = [];
+
+        // Split on commas, but handle the known problematic badge
+        $parts = array_map('trim', explode(",", $awardsString));
+
+        // Check if this row contains the split "Signs, Signals, and Codes"
+        $signsIndex = array_search('Signs', $parts, true);
+        if (
+          $signsIndex !== false &&
+          isset($parts[$signsIndex + 1]) && trim($parts[$signsIndex + 1]) === 'Signals' &&
+          isset($parts[$signsIndex + 2]) && trim($parts[$signsIndex + 2]) === 'and Codes'
+        ) {
+
+          // Recombine the three parts into one correct badge
+          $parts[$signsIndex] = 'Signs, Signals, and Codes';
+
+          // Remove the next two parts
+          unset($parts[$signsIndex + 1], $parts[$signsIndex + 2]);
+
+          // Re-index array
+          $parts = array_values($parts);
+        }
+
+        // Now $parts contains clean, non-split badge names
+        foreach ($parts as $badge) {
+          if (empty(trim($badge))) continue;
+          $badges[] = trim($badge);
+        }
         $i = 0;
-        $badges = array_filter(explode(",", $data[$colAwards]));
+
         foreach ($badges as $badge) {
+
           $meritBadge = self::FixMeritBadgeName(trim($badge));
 
-          if (!self::InsertUpdateMeritBadge($firstName, $lastName, $meritBadge)) {
+          // DEBUG Code echo "$firstName, $lastName, $meritBadge <br>";
+
+          // if ((strcasecmp($lastName, 'McLaughry') === 0 && strcasecmp($firstName, 'Amy') === 0) ||
+          //   (strcasecmp($lastName, 'Nadeau') === 0 && strcasecmp($firstName, 'Katie') === 0)  ||
+          //   (strcasecmp($lastName, 'Parmar') === 0 && strcasecmp($firstName, 'PJ') === 0) ||
+          //   (strcasecmp($lastName, 'Rairdon') === 0 && strcasecmp($firstName, 'James') === 0) ||
+          //   (strcasecmp($lastName, 'Rau') === 0 && strcasecmp($firstName, 'Andreas') === 0) ||
+          //   (strcasecmp($lastName, 'Thomsen') === 0 && strcasecmp($firstName, 'Timothy') === 0) ||
+          //   (strcasecmp($lastName, 'Vaughn') === 0 && strcasecmp($firstName, 'Jacqueline') === 0) ||
+          //   (strcasecmp($lastName, 'Mihalis') === 0 && strcasecmp($firstName, 'Veletas') === 0)
+          // ) {
+          //   error_log("DEBUG: Processing " . $firstName . " " . $lastName . " - Raw awards: " . $data[$colAwards]);
+          //   error_log("All badges for her: " . implode(', ', $badges));
+          //   continue;
+          // }
+          
+          //if (!self::InsertUpdateMeritBadge($firstName, $lastName, $meritBadge)) {
+          if (!self::InsertUpdateCheck($memberID)) {
             if ($i == 0) {
               $sql = "INSERT INTO `counselors` (`LastName`, `FirstName`, `HomePhone`, `Email`, 
                                     `MemberID`, `ValidationDate`, `HomeDistrict`, `NumOfBadges`, `Address`, 
@@ -590,8 +669,13 @@ class CMeritBadges
               error_log("Error inserting merit badge: $sql");
             } else {
               $inserted++;
+              $i++;
             }
-          } else {
+          } 
+          //*
+          //* COunselor in Database jkust update merit badge.
+          //*
+          else {
             $sql = "UPDATE `counselormerit` SET `LastName` = ?, `FirstName` = ?, `MeritName` = ?, 
                                 `Status` = 'UPDATED', `StatusDate` = ? WHERE `LastName` = ? AND `FirstName` = ? AND `MeritName` = ?";
             $params = [$lastName, $firstName, $meritBadge, date("d/M/Y"), $lastName, $firstName, $meritBadge];
@@ -617,8 +701,8 @@ class CMeritBadges
                 $city,
                 $state,
                 $zipCode,
-                (isset($unit[0]))? $unit[0]: "NA",
-                (isset($unit[1]))? $unit[1]: "NA",
+                (isset($unit[0])) ? $unit[0] : "NA",
+                (isset($unit[1])) ? $unit[1] : "NA",
                 $lastName,
                 $firstName
               ];
@@ -626,18 +710,21 @@ class CMeritBadges
                 $errors++;
                 error_log("Error updating counselor: $sql");
               }
+              else {
+                $inserted++;
+                $i++;
+              }
             }
           }
-          $i++;
         }
       }
       fclose($handle);
       $msg = "Records Inserted: $inserted, Updated: $updated, Errors: $errors";
       self::showMessage($msg);
 
-      if ($errors == 0 && $addCounselor == 0) {
-        self::GotoURL('index.php');
-      } else {
+      if ($errors != 0 && $addCounselor != 0) {
+        //header("Location: index.php?page=home");
+      //} else {
         echo '<center><br><button class="btn btn-primary rounded-pill" style="width:220px" onclick="window.location.href=\'index.php\'">Return Main</button><br></center>';
       }
     } else {
@@ -700,7 +787,8 @@ class CMeritBadges
       "Vet. Medicine" => "Veterinary Medicine",
       "Truck Trans." => "Truck Transportation",
       "Amer. Labor" => "American Labor",
-      "Motorboating" => "Motorboating"
+      "Motorboating" => "Motorboating",
+      "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine"
     ];
     return $map[$badge] ?? $badge;
   }

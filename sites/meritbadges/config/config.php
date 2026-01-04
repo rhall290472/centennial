@@ -26,21 +26,6 @@ if (!is_dir($logDir)) {
     mkdir($logDir, 0755, true);
 }
 
-// Environment configuration  // development
-define('ENV', 'development'); // Set to 'production' on live server
-// Enable error reporting in development only
-
-if (defined('ENV') && ENV === 'development') {
-    ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
-    //ini_set('error_log', BASE_PATH . '/../../shared/logs');
-    error_reporting(E_ALL);
-} else {
-    ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    //ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
-}
-
 
 // Dynamically set SITE_URL based on environment
 $is_localhost = isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
@@ -48,6 +33,31 @@ $protocol = 'https'; // Simplified since it's always HTTPS in the original code
 $host = $is_localhost ? ($_SERVER['SERVER_NAME'] ?? 'localhost') : 'centennialdistrict.co';
 $port = ($is_localhost && isset($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], ['80', '443'])) ? ':' . $_SERVER['SERVER_PORT'] : '';
 define('SITE_URL', $protocol . '://' . $host . $port);
+
+
+// Environment configuration  // development
+define('ENV', 'development'); // Set to 'production' on live server
+// Enable error reporting in development only
+
+if (defined('ENV') && ENV === 'development') {
+    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
+    if($is_localhost)
+       ini_set('error_log', BASE_PATH . '/../../shared/logs/error.log');
+    else
+      ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    if($is_localhost)
+       ini_set('error_log', BASE_PATH . '/../../shared/logs/error.log');
+    else
+      ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    //ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+}
+
+
 
 // Assets URL
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');

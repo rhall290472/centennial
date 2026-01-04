@@ -10,7 +10,7 @@
       <ul class="navbar-nav ms-auto">
         <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
           <li class="nav-item">
-            <a class="nav-link <?php echo $page === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
+            <a class="nav-link <?php echo ($page ?? '') === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle <?php echo in_array($page, [

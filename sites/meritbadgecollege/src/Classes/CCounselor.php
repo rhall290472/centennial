@@ -894,7 +894,7 @@ class CCounselor extends CMBCollege
 
     $Row = 1;
     if (($handle = fopen($FileToOpen, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
         if ($Row < 2) {
           $Row++;
           continue;
