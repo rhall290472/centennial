@@ -656,6 +656,7 @@ class AdultLeaders
   }
 
   /**
+   * TODO:
    * GetUnTrainedIDCount()
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
@@ -678,19 +679,31 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetTotalIDCount($ID)
-  {
+public static function GetTotalIDCount($ID)
+{
+    $dbConn = self::getDbConn();
+    if (!$dbConn) return 0;
+
     if (!empty($ID)) {
-      $SqlTotal = sprintf("SELECT * FROM  WHERE `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
+        $sql = "SELECT COUNT(*) FROM trainedleader WHERE MemberID = ?";
     } else {
-      $SqlTotal =  "SELECT * FROM trainedleader";
+        $sql = "SELECT COUNT(*) FROM trainedleader";
     }
-    $Total = -1;
-    $Result = self::doQuery($SqlTotal);
-    if ($Result)
-      $Total = mysqli_num_rows($Result);
-    return $Total;
-  }
+
+    $stmt = $dbConn->prepare($sql);
+    if (!$stmt) return 0;
+
+    if (!empty($ID)) {
+        $stmt->bind_param("s", $ID);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_row();
+    $stmt->close();
+
+    return (int)($row[0] ?? 0);
+}
   /**
    * GetResultIDUnTrained()
    * Execute a quuery of the connected database and return a list of untrained leaders
@@ -731,18 +744,45 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetUnTrainedPositionCount($position)
-  {
-    if (!empty($position)) {
-      $SqlUnTrained = sprintf("SELECT * FROM  WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
-    } else {
-      $SqlUnTrained = "SELECT * FROM trainedleader WHERE `Trained` = 'No' ORDER BY Direct_Contact_Leader DESC,Position,Last_Name";
+public static function GetUnTrainedPositionCount($position)
+{
+    $dbConn = self::getDbConn();
+    if (!$dbConn) {
+        error_log("GetUnTrainedPositionCount: No database connection - ".__FILE__." ".__LINE__ );
+        return 0;
     }
-    $Result = self::doQuery($SqlUnTrained);
-    $UnTrained = mysqli_num_rows($Result);
-    return $UnTrained;
-  }
+
+    if (empty($position)) {
+        $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No'";
+    } else {
+        $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No' AND Position = ?";
+    }
+
+    $stmt = $dbConn->prepare($sql);
+    if (!$stmt) {
+        error_log("GetUnTrainedPositionCount: Prepare failed: " . $dbConn->error ." - ".__FILE__." ".__LINE__ );
+        return 0;
+    }
+
+    if (!empty($position)) {
+        $stmt->bind_param("s", $position);
+    }
+
+    if (!$stmt->execute()) {
+        error_log("GetUnTrainedPositionCount: Execute failed: " . $stmt->error ." - ".__FILE__." ".__LINE__ );
+        $stmt->close();
+        return 0;
+    }
+
+    $result = $stmt->get_result();
+    $row = $result->fetch_row();
+    $count = $row[0] ?? 0;
+
+    $stmt->close();
+    return (int)$count;
+}
   /**
+   * TODO:
    * GetTotalPositionCount()
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
@@ -774,6 +814,7 @@ class AdultLeaders
     return $Result;
   }
   /**
+   * TODO:
    * GetResultPositionUnTrained()
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
@@ -790,6 +831,7 @@ class AdultLeaders
     return $UnTrained;
   }
   /**
+   * TODO:
    * GetResultPositionUnTrained()
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
