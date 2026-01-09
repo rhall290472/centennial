@@ -16,6 +16,7 @@ $uploadDir = BASE_PATH . '/Data/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
+define('UPLOAD_DIRECTORY', $uploadDir);
 
 // Create log directory if it doesn't exist
 $logDir = BASE_PATH . '/../../shared/logs';
@@ -63,7 +64,6 @@ define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
 
 define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
-define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
 $pageHome = SITE_URL.'/centennial/sites/meritbadgecollege/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/meritbadgecollege/src/Pages/contact.php';
@@ -87,8 +87,8 @@ define('NAV_LINKS', [
 
 if ($is_localhost) {
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
     define('DB_NAME', 'meritbadges');
 } else {
     define('DB_HOST', 'rhall29047217205.ipagemysql.com');

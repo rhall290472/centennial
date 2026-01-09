@@ -94,103 +94,114 @@ function getConfigData()
  */
 class CMBCollege
 {
-  /**
-   * The Singleton's instance is stored in a static field. This field is an
-   * array, because we'll allow our Singleton to have subclasses. Each item in
-   * this array will be an instance of a specific Singleton's subclass. You'll
-   * see how this works in a moment.
-   */
-  private static $instances = [];
-  private static $year;
+    /**
+     * The Singleton's instance is stored in a static field. This field is an
+     * array, because we'll allow our Singleton to have subclasses. Each item in
+     * this array will be an instance of a specific Singleton's subclass. You'll
+     * see how this works in a moment.
+     */
+    private static $instances = [];
+    private static $year;
 
-  /**
-   * The Singleton's constructor should always be private to prevent direct
-   * construction calls with the `new` operator.
-   */
-  protected function __construct() {}
+    protected $dbConn;  // Declared here to fix dynamic property deprecation
 
-  /**
-   * Singletons should not be cloneable.
-   */
-  protected function __clone() {}
+    /**
+     * The Singleton's constructor should always be private to prevent direct
+     * construction calls with the `new` operator.
+     */
+    protected function __construct() {}
 
-  /**
-   * Singletons should not be restorable from strings.
-   */
-  public function __wakeup()
-  {
-    throw new \Exception("Cannot unserialize a singleton.");
-  }
+    /**
+     * Singletons should not be cloneable.
+     */
+    protected function __clone() {}
 
-  /**
-   * This is the static method that controls the access to the singleton
-   * instance. On the first run, it creates a singleton object and places it
-   * into the static field. On subsequent runs, it returns the client existing
-   * object stored in the static field.
-   *
-   * This implementation lets you subclass the Singleton class while keeping
-   * just one instance of each subclass around.
-   */
-  public static function getInstance()
-  {
-    $cls = static::class;
-    if (!isset(self::$instances[$cls])) {
-      self::$instances[$cls] = new static();
+    /**
+     * Singletons should not be restorable from strings.
+     */
+    public function __wakeup()
+    {
+        throw new \Exception("Cannot unserialize a singleton.");
     }
 
-    return self::$instances[$cls];
-  }
+    /**
+     * This is the static method that controls the access to the singleton
+     * instance. On the first run, it creates a singleton object and places it
+     * into the static field. On subsequent runs, it returns the client existing
+     * object stored in the static field.
+     *
+     * This implementation lets you subclass the Singleton class while keeping
+     * just one instance of each subclass around.
+     */
+    public static function getInstance()
+    {
+        $cls = static::class;
+        if (!isset(self::$instances[$cls])) {
+            self::$instances[$cls] = new static();
+        }
 
-  /**
-   *
-   * @return DbConn
-   */
-  private static function initConnection()
-  {
-    $db = self::getInstance();
-    $connConf = getConfigData();
-    $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
-    $db->dbConn->set_charset('utf8');
-    return $db;
-  }
+        return self::$instances[$cls];
+    }
 
-  /**
-   * @return mysqli
-   */
-  public static function getDbConn()
-  {
-    try {
-      $db = self::initConnection();
-      return $db->dbConn;
-    } catch (Exception $ex) {
-      $strError = "I was unable to open a connection to the database. " . $ex->getMessage();
-      error_log($strError, 0);
-      return null;
+    /**
+     *
+     * @return DbConn
+     */
+    private static function initConnection()
+    {
+        $db = self::getInstance();
+        $connConf = getConfigData();
+        $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+
+        // Check for connection errors (prevents silent failures)
+        if ($db->dbConn->connect_error) {
+            throw new Exception("Database connection failed: " . $db->dbConn->connect_error);
+        }
+
+        // Use 'utf8mb4' for full Unicode support ('utf8' is deprecated/incomplete)
+        $db->dbConn->set_charset('utf8mb4');
+
+        return $db;
     }
-  }
-  /**************************************************************************
-   **
-   ** doQuery()
-   ** Excutes a mysqli_query
-   **
-   *************************************************************************/
-  public static function &doQuery($sql)
-  {
-    $Result = false;
-    try {
-      $mysqli = self::getDbConn();
-      $Result = $mysqli->query($sql);
-      if (!$Result) {
-        $strError = "Unable to execute query. sql = " . $sql . " " . __FILE__ . ", " . __LINE__;
-        error_log($strError, 0);
-      }
-    } catch (Exception $ex) {
-      $strError = "Unable to execute query. " . $ex->getMessage() . "sql = " . $sql . " " . __FILE__ . ", " . __LINE__;
-      error_log($strError, 0);
-      $Result = false;
+
+    /**
+     * @return mysqli
+     */
+    public static function getDbConn()
+    {
+        try {
+            $db = self::initConnection();
+            return $db->dbConn;
+        } catch (Exception $ex) {
+            $strError = "I was unable to open a connection to the database. " . $ex->getMessage();
+            error_log($strError, 0);
+            return null;
+        }
     }
-    return $Result;
-  }
+
+    /**************************************************************************
+     **
+     ** doQuery()
+     ** Executes a mysqli_query
+     **
+     *************************************************************************/
+    public static function doQuery($sql)  // Removed & reference (not needed for mysqli_result)
+    {
+        $Result = false;
+        try {
+            $mysqli = self::getDbConn();
+            $Result = $mysqli->query($sql);
+            if (!$Result) {
+                $strError = "Unable to execute query. sql = " . $sql . " " . __FILE__ . ", " . __LINE__;
+                error_log($strError, 0);
+            }
+        } catch (Exception $ex) {
+            $strError = "Unable to execute query. " . $ex->getMessage() . "sql = " . $sql . " " . __FILE__ . ", " . __LINE__;
+            error_log($strError, 0);
+            $Result = false;
+        }
+        return $Result;
+    }
   /**************************************************************************
    **
    **
@@ -1294,6 +1305,7 @@ class CMBCollege
 
           ?>
             <form method=post>
+              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
               <div class="row  d-print-none">
                 <div class="col-2">
                   <select class='form-control' id='CollegeYear' name='CollegeYear'>

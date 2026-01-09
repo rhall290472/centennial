@@ -1,13 +1,13 @@
 <?php
-    // Secure session start
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start([
-        'cookie_httponly' => true,
-        'use_strict_mode' => true,
-        'cookie_secure' => isset($_SERVER['HTTPS'])
-      ]);
-    }
-    /*
+// Secure session start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+/*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -39,6 +39,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 }
 ?>
 <html>
+
 <body>
   <div class="container-fluid">
     <div class="row flex-nowrap">
@@ -84,7 +85,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
               $CollegeDate = date('m/d/Y', $date);
               $CollegeNotes = $rowCollegeDetails['Notes'];
             ?>
-              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="College_Details" method="post">
+              <form action="index.php?page=rpt-details" id="College_Details" method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                 <label class="form col-form-label" for="element_1_1">Open for Registration </label>
                 <input class="form form-check" id="element_1_1" name="element_1_1" type="hidden" value='0' />
                 <input class="form form-check" id="element_1_1" name="element_1_1" type="checkbox" value='1'
@@ -101,130 +103,136 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
           <div class="col">
             <label class="form col-form-label" for="element_1_3">Location </label>
             <input class="form-control" id="element_1_3" name="element_1_3" class="element text large" type="element text" maxlength="255" size="50"
-              <?php if (strlen($rowCollegeDetails['Location']) > 0) echo "value='$CollegeLocation'"; ?> />
+              value="<?php echo !empty($CollegeLocation) ? htmlspecialchars($CollegeLocation) : ''; ?>" />
             <label>Location</label>
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_1_4">Address </label>
             <input class="form-control" id="element_1_4" name="element_1_4" class="element text large" type="element text" maxlength="255" size="50"
-              <?php if (strlen($rowCollegeDetails['Address']) > 0) echo "value='$CollegeAddress'"; ?> />
+              value="<?php echo !empty($CollegeAddress) ? htmlspecialchars($CollegeAddress) : ''; ?>" />
             <label>Address</label>
           </div>
         </div>
         <div class="row">
           <div class="col">
             <label class="form col-form-label" for="element_2_1">Contact Person </label>
-            <input class="form-control" id="element_2_1" name="element_2_1" class="element text" maxlength="255" size="50"
-              <?php if (strlen($ContactPerson) > 0) echo "value='$ContactPerson'"; ?> />
+            <input class="form-control" id="element_2_1" name="element_2_1" class="element text"
+              value="<?php echo !empty($ContactPerson) ? htmlspecialchars($ContactPerson) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_2_2">Phone </label>
             <input class="form-control" id="element_2_2" name="element_2_2" class="element number" type="number" maxlength="10" size="10"
-              <?php if (strlen($rowCollegeDetails['Phone']) > 0) echo "value=" . $rowCollegeDetails['Phone']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['Phone']) ? htmlspecialchars($rowCollegeDetails['Phone']) : ''; ?>" />
+
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_2_3">Email </label>
             <input class="form-control" id="element_2_3" name="element_2_3" class="element text" type="email" maxlength="255" size="50"
-              <?php if (strlen($rowCollegeDetails['Email']) > 0) echo "value=" . $rowCollegeDetails['Email']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['Email']) ? htmlspecialchars($rowCollegeDetails['Email']) : ''; ?>" />
           </div>
         </div>
         <div class="row">
           <div class="col">
             <label class="form col-form-label" for="element_3_1">Fee per Scout </label>
             <input class="form-control" id="element_3_1" name="element_3_1" class="element number" type="number" maxlength="5" size="5"
-              <?php if (strlen($rowCollegeDetails['Fee/Scout']) > 0) echo "value=" . $rowCollegeDetails['Fee/Scout']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['Fee/Scout']) ? htmlspecialchars($rowCollegeDetails['Fee/Scout']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_3_2">Facility Cost </label>
             <input class="form-control" id="element_3_2" name="element_3_2" class="element number" type="number" maxlength="5" size="5"
-              <?php if (strlen($rowCollegeDetails['FacilityCost']) > 0) echo "value=" . $rowCollegeDetails['FacilityCost']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['FacilityCost']) ? htmlspecialchars($rowCollegeDetails['FacilityCost']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_3_3">Lunch Cost </label>
             <input class="form-control" id="element_3_3" name="element_3_3" class="element number" type="number" maxlength="5" size="5"
-              <?php if (strlen($rowCollegeDetails['LunchCost']) > 0) echo "value=" . $rowCollegeDetails['LunchCost']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['LunchCost']) ? htmlspecialchars($rowCollegeDetails['LunchCost']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_3_4">% to Council </label>
             <input class="form-control" id="element_3_4" name="element_3_4" class="element number" type="number" step="0.01" maxlength="5" size="5"
-              <?php if (strlen($rowCollegeDetails['%ToCouncil']) > 0) echo "value=" . $rowCollegeDetails['%ToCouncil']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['%ToCouncil']) ? htmlspecialchars($rowCollegeDetails['%ToCouncil']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_3_5">Profit Loss </label>
             <input class="form-control" id="element_3_5" name="element_3_5" class="element number" type="number" maxlength="5" size="5"
-              <?php if (strlen($rowCollegeDetails['Profit/Loss']) > 0) echo "value=" . $rowCollegeDetails['Profit/Loss']; ?> />
+              value="<?php echo !empty($rowCollegeDetails['Profit/Loss']) ? htmlspecialchars($rowCollegeDetails['Profit/Loss']) : ''; ?>" />
           </div>
         </div>
         <div class="row">
           <div class="col">
             <label class="form col-form-label" for="element_4_1">Period A Times </label>
             <input class="form-control" id="element_4_1" name="element_4_1" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodA']) > 0) echo "value='$PeriodA'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodA']) ? htmlspecialchars($rowCollegeDetails['PeriodA']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_4_2">Period B Times </label>
             <input class="form-control" id="element_4_2" name="element_4_2" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodB']) > 0) echo "value='$PeriodB'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodB']) ? htmlspecialchars($rowCollegeDetails['PeriodB']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_4_3">Period C Times </label>
             <input class="form-control" id="element_4_3" name="element_4_3" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodC']) > 0) echo "value='$PeriodC'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodC']) ? htmlspecialchars($rowCollegeDetails['PeriodC']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_4_4">Period D Times </label>
             <input class="form-control" id="element_4_4" name="element_4_4" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodD']) > 0) echo "value='$PeriodD'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodD']) ? htmlspecialchars($rowCollegeDetails['PeriodD']) : ''; ?>" />
           </div>
         </div>
         <div class="row">
           <div class="col">
             <label class="form col-form-label" for="element_5_1">Period AB Times </label>
             <input class="form-control" id="element_5_1" name="element_5_1" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodAB']) > 0) echo "value='$PeriodAB'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodAB']) ? htmlspecialchars($rowCollegeDetails['PeriodAB']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_5_2">Period CD Times </label>
             <input class="form-control" id="element_5_2" name="element_5_2" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodCD']) > 0) echo "value='$PeriodCD'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodCD']) ? htmlspecialchars($rowCollegeDetails['PeriodCD']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_5_3">Period E Times </label>
             <input class="form-control" id="element_5_3" name="element_5_3" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodE']) > 0) echo "value='$PeriodE'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodE']) ? htmlspecialchars($rowCollegeDetails['PeriodE']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_5_4">Period F Times </label>
             <input class="form-control" id="element_5_4" name="element_5_4" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['PeriodF']) > 0) echo "value='$PeriodF'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['PeriodF']) ? htmlspecialchars($rowCollegeDetails['PeriodF']) : ''; ?>" />
           </div>
         </div>
         <div class="row">
           <div class="col">
             <label class="form col-form-label" for="element_6_1">Lunch </label>
             <input class="form-control" id="element_6_1" name="element_6_1" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['Lunch']) > 0) echo "value='$LunchTIme'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['Lunch']) ? htmlspecialchars($rowCollegeDetails['Lunch']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_6_2">Date</label>
             <input class="form-control" id="element_6_2" name="element_6_2" type="element text" maxlength="255" size="25"
-              <?php if (strlen($CollegeDate) > 0) echo "value=" . $CollegeDate; ?> />
+              <?php if (strlen($CollegeDate) > 0) echo "value='$CollegeDate'"; ?> />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_6_3">Start Time </label>
             <input class="form-control" id="element_6_3" name="element_6_3" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['StartTime']) > 0) echo "value='$StartTime'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['StartTime']) ? htmlspecialchars($rowCollegeDetails['StartTime']) : ''; ?>" />
           </div>
           <div class="col">
             <label class="form col-form-label" for="element_6_14">End Time </label>
             <input class="form-control" id="element_6_4" name="element_6_4" class="element text" maxlength="255" size="25"
-              <?php if (strlen($rowCollegeDetails['EndTime']) > 0) echo "value='$EndTime'"; ?> />
+              value="<?php echo !empty($rowCollegeDetails['EndTime']) ? htmlspecialchars($rowCollegeDetails['EndTime']) : ''; ?>" />
           </div>
         </div>
         <div class="row">
           <div class="col-12 py-3">
-            <label class="form col-form-label" for="element_7_1">Notes </label>
-            <textarea class="textarea form-control-sm" rows="10" cols="100" id="element_7_1" name="element_7_1"><?php echo $CollegeNotes; ?></textarea>
+            <label class="form-label" for="element_7_1">Notes</label>
+            <textarea
+              class="form-control"
+              id="element_7_1"
+              name="element_7_1"
+              rows="10"
+              cols="100"><?php echo htmlspecialchars($CollegeNotes ?? '', ENT_QUOTES); ?></textarea>
           </div>
         </div>
         <div class="row">

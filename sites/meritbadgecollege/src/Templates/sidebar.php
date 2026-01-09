@@ -161,6 +161,7 @@
     
 <!-- Additional CSS for nested dropdowns -->
 <style>
+  /* Base positioning for submenus (opens to the right) */
   .dropdown-submenu {
     position: relative;
   }
@@ -169,24 +170,67 @@
     top: 0;
     left: 100%;
     margin-top: -1px;
+    min-width: 220px; /* Wider to fully show longer menu items */
+    z-index: 1050;    /* Higher than typical Bootstrap elements */
   }
 
-  .dropdown-submenu:hover>.dropdown-menu {
+  /* Show submenu on hover (desktop) */
+  .dropdown-submenu:hover > .dropdown-menu {
     display: block;
+  }
+
+  /* Optional: Slight shadow and border for visual separation */
+  .dropdown-menu {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  /* Ensure sidebar doesn't clip children */
+  #sidebar {
+    overflow: visible !important;
+  }
+
+  /* Ensure main content doesn't overlap */
+  .main-content {
+    overflow: visible !important;
   }
 </style>
 
 <!-- JavaScript to handle nested dropdowns -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function(element) {
-      element.addEventListener('click', function(e) {
-        e.stopPropagation();
+  document.addEventListener('DOMContentLoaded', function () {
+    // Show main Admin dropdown on hover (optional – improves UX)
+    const adminDropdown = document.querySelector('.nav-item.dropdown > .dropdown-toggle');
+    const adminMenu = adminDropdown?.nextElementSibling;
+
+    if (adminDropdown && adminMenu) {
+      adminDropdown.parentElement.addEventListener('mouseenter', () => {
+        adminMenu.classList.add('show');
+        adminDropdown.setAttribute('aria-expanded', 'true');
+      });
+      adminDropdown.parentElement.addEventListener('mouseleave', () => {
+        adminMenu.classList.remove('show');
+        adminDropdown.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // Handle nested submenus (click to toggle, prevent parent close)
+    document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function (element) {
+      element.addEventListener('click', function (e) {
+        e.stopPropagation(); // Prevent closing parent dropdown
         e.preventDefault();
-        let submenu = this.nextElementSibling;
-        if (submenu.classList.contains('dropdown-menu')) {
+
+        const submenu = this.nextElementSibling;
+        if (submenu && submenu.classList.contains('dropdown-menu')) {
           submenu.classList.toggle('show');
         }
+      });
+    });
+
+    // Optional: Close submenus when clicking elsewhere
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function (openSubmenu) {
+        openSubmenu.classList.remove('show');
       });
     });
   });

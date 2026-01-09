@@ -853,14 +853,16 @@ class CCounselor extends CMBCollege
     $colFirst_Name = 1;
     $colLast_Name = 2;
     $colmemberid = 3;
-    $colYPT_Status = 4;
-    //$colStrYPTExp = 4;
-    //$colTroopnos = 5;
-    //$colPhone = 6;
-    $colEmail = 5;
-    $colCity = 6;
-    $colNumber_Badges_Counsel = 7;
-    $colAwards = 8;
+    $colStrexpirydt = 4;
+    $colYPT_Status = 5;
+    $colStryptexpirydt = 6;
+    $colTroopnos = 7;
+    $colPhone = 8;
+    $colEmail = 9;
+    $colCity = 11;
+    $colZip = 12;
+    $colNumber_Badges_Counsel = 13;
+    $colAwards = 14;
 
     // File does not contain BSA Member ID so we create fake one
     //$BSAMemberID = -100;
@@ -869,7 +871,7 @@ class CCounselor extends CMBCollege
     $Updated = 0;
     $RecordsInError = 0;
     $RecordsInsert = 0;
-    $FileToOpen = "Data/" . $uploadPath;
+    $FileToOpen = UPLOAD_DIRECTORY . $uploadPath;
     $AddCounselor = 0;
     $RecordsInErrorDebug = 0;
 
@@ -895,7 +897,7 @@ class CCounselor extends CMBCollege
     $Row = 1;
     if (($handle = fopen($FileToOpen, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
-        if ($Row < 2) {
+        if ($Row <= 9) {
           $Row++;
           continue;
         } //Skip past the header stuff, first line of data is row 11
@@ -1024,8 +1026,9 @@ class CCounselor extends CMBCollege
         }
       }
       fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInErrorDebug;
-      self::function_alert($Usermsg);
+      $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Records Updated Inserted: ' . $Inserted . ' Updated: ' . $Updated . ' Errors: ' . $RecordsInErrorDebug];
+      // $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInErrorDebug;
+      // self::function_alert($Usermsg);
       if ($RecordsInError == 0 && $RecordsInsert != 0 && $AddCounselor == 0) echo "<script>window.location.href = 'index.php';</script>";
       else {
     ?>
@@ -1044,117 +1047,46 @@ class CCounselor extends CMBCollege
      * This function will mark the Merit Badge Counselor Not Active
      * 
      *===========================================================================*/
-      public static function FixMeritBadgeName($Badge)
-      {
-        //Default case
-        $MeritBadge = "";
-        //                // OK, BSA added a new "feature", the second cloumn of merit badge names are now missing the 
-        // first charater of the badge name??
-        // 12Apr22, now they are abbrv the names,
-        //*
-        // Now Signs, Signals, and Codes are seprated by comma which srews up my strtok
-        // 26Aug2023
-        switch (ltrim($Badge)) {
-          case "Cit. in Comm.":
-            $MeritBadge = "Citizenship in the Community";
-            break;
-          case "Cit. in Nation":
-            $MeritBadge = "Citizenship in the Nation";
-            break;
-          case "Cit. in World":
-            $MeritBadge = "Citizenship in the World";
-            break;
-          case "Signs Signals Codes":
-          case "Signs":
-            $MeritBadge = "Signs, Signals, and Codes";
-            break;
-          case "Signals":
-            $MeritBadge = "Bad Merit Badge Name";
-            break;
-          case "and Codes":
-            $MeritBadge = "Bad Merit Badge Name";
-            break;
-          case "Wilderness Surv.":
-            $MeritBadge = "Wilderness Survival";
-            break;
-          case "Model Design":
-            $MeritBadge = "Model Design and Building";
-            break;
-          case "Fish and Wildlife":
-            $MeritBadge = "Fish and Wildlife Management";
-            break;
-          case "Mining":
-            $MeritBadge = "Mining in Society";
-            break;
-          case "Soil and Water Con.":
-            $MeritBadge = "Soil and Water Conservation";
-            break;
-          case "Small-Boat Sailing":
-            $MeritBadge = "Small Boat Sailing";
-            break;
-          case "Composite Mat.":
-            $MeritBadge = "Composite Materials";
-            break;
-          case "Scout Heritage":
-            $MeritBadge = "Scouting Heritage";
-            break;
-          case "Reptile and Amph.":
-            $MeritBadge = "Reptile and Amphibian Study";
-            break;
-          case "Disabilities Awar.":
-            $MeritBadge = "Disabilities Awareness";
-            break;
-          case "Amer. Cultures":
-            $MeritBadge = "American Cultures";
-            break;
-          case "Automotive Maint.":
-            $MeritBadge = "Automotive Maintenance";
-            break;
-          case "Landscape Arch.":
-            $MeritBadge = "Landscape Architecture";
-            break;
-          case "Emergency Prep.":
-            $MeritBadge = "Emergency Preparedness";
-            break;
-          case "Pers. Fitness":
-            $MeritBadge = "Personal Fitness";
-            break;
-          case "Personal Mgmt.":
-            $MeritBadge = "Personal Fitness";
-            break;
-          case "Amer. Business":
-            $MeritBadge = "American Business";
-            break;
-          case "Communication":
-            $MeritBadge = "Communications";
-            break;
-          case "Amer. Heritage":
-            $MeritBadge = "American Heritage";
-            break;
-          case "Digital Tech":
-            $MeritBadge = "Digital Technology";
-            break;
-          case "Enviro. Science":
-            $MeritBadge = "Environmental Science";
-            break;
-          case "Vet. Medicine":
-            $MeritBadge = "Veterinary Medicine";
-            break;
-          case "Truck Trans.":
-            $MeritBadge = "Truck Transportation";
-            break;
-          case "Amer. Labor":
-            $MeritBadge = "American Labor";
-            break;
-          case "Motorboating":
-            $MeritBadge = "Motor boating";
-            break;
-          default:
-            $MeritBadge = ltrim($Badge);
-            break;
-        }
-        return $MeritBadge;
-      }
+  public static function FixMeritBadgeName($badge)
+  {
+    $badge = trim($badge);
+    $map = [
+      "Cit. in Comm." => "Citizenship in the Community",
+      "Cit. in Nation" => "Citizenship in the Nation",
+      "Cit. in World" => "Citizenship in the World",
+      "Signs Signals Codes" => "Signs, Signals, and Codes",
+      "Signs" => "Signs, Signals, and Codes",
+      "Signals" => "Bad Merit Badge Name",
+      "and Codes" => "Bad Merit Badge Name",
+      "Wilderness Surv." => "Wilderness Survival",
+      "Model Design" => "Model Design and Building",
+      "Fish and Wildlife" => "Fish and Wildlife Management",
+      "Mining" => "Mining in Society",
+      "Soil and Water Con." => "Soil and Water Conservation",
+      "Small-Boat Sailing" => "Small Boat Sailing",
+      "Composite Mat." => "Composite Materials",
+      "Scout Heritage" => "Scouting Heritage",
+      "Reptile and Amph." => "Reptile and Amphibian Study",
+      "Disabilities Awar." => "Disabilities Awareness",
+      "Amer. Cultures" => "American Cultures",
+      "Automotive Maint." => "Automotive Maintenance",
+      "Landscape Arch." => "Landscape Architecture",
+      "Emergency Prep." => "Emergency Preparedness",
+      "Pers. Fitness" => "Personal Fitness",
+      "Personal Mgmt." => "Personal Management", // Fixed typo
+      "Amer. Business" => "American Business",
+      "Communication" => "Communications",
+      "Amer. Heritage" => "American Heritage",
+      "Digital Tech" => "Digital Technology",
+      "Enviro. Science" => "Environmental Science",
+      "Vet. Medicine" => "Veterinary Medicine",
+      "Truck Trans." => "Truck Transportation",
+      "Amer. Labor" => "American Labor",
+      "Motorboating" => "Motorboating",
+      "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine"
+    ];
+    return $map[$badge] ?? $badge;
+  }
       /******************************************************************************
        * Check if data is already in table, if so update it else insert it.
        * In this Table their should only be one Unit, this is the master that all

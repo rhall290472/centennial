@@ -54,7 +54,10 @@ $valid_pages = [
   'rpt-doubleknot',
   'rpt-details',
 
-  'logout'
+  'fileupload',
+
+  'logout',
+  'login'
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -262,6 +265,10 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
         case 'rpt-details': 
           include('../src/Pages/CollegeDetails.php');
+          break;
+
+        case 'fileupload':
+          include('../src/Pages/FileUpload.php');
           break;
 
         case 'login':

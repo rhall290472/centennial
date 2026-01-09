@@ -31,19 +31,16 @@ if (session_status() === PHP_SESSION_NONE) {
 !==============================================================================!
 */
 
-include_once('CScout.php');
-	$CScout = CScout::getInstance();
-	include_once('CCounselor.php');
-	$CCounselor = CCounselor::getInstance();
+load_class(BASE_PATH . '/src/Classes/CScout.php');
+load_class(BASE_PATH . '/src/Classes/CCounselor.php');
+
+$CScout = CScout::getInstance();
+$CCounselor = CCounselor::getInstance();
 ?>
 
 
-	<head>
-    <?php include('header.php'); ?>
-	</head>
 <?php
-	$currentDirectory = getcwd();
-    $uploadDirectory = "/Data/";
+    $uploadDirectory = $uploadDir;
 
     $errors = []; // Store errors here
 
@@ -58,7 +55,7 @@ include_once('CScout.php');
     $End = end($Explode);
     $fileExtension = strtolower($End);
 
-    $uploadPath = $currentDirectory . $uploadDirectory . basename($fileName); 
+    $uploadPath = $uploadDirectory . basename($fileName); 
 
     if (isset($_POST['submit'])) {
 
