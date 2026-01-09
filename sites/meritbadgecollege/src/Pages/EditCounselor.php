@@ -11,6 +11,13 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 }
 ?>
 
+<head>
+  <!-- Tom Select CSS (Bootstrap 5 theme) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
+
+  <!-- Tom Select JS -->
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+</head>
 <div class="row justify-content-center mt-4">
   <div class="col-lg-10 col-xl-8">
     <div class="card shadow-sm border-0">
@@ -40,7 +47,11 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
           <div class="row g-3 align-items-end">
             <div class="col-md-6">
               <label for="CounselorName" class="form-label fw-semibold">Select Counselor</label>
-              <select class="form-select form-select-lg" id="CounselorName" name="CounselorName" required>
+              <select class="form-select form-select-lg"
+                id="CounselorName"
+                name="CounselorName"
+                placeholder="Type to search counselors..."
+                required>
                 <option value="">-- Choose a Counselor --</option>
                 <?php while ($rowCerts = $result_ByCounselor->fetch_assoc()): ?>
                   <option value="<?php echo htmlspecialchars($rowCerts['MemberID']); ?>">
@@ -155,3 +166,14 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
     </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#CounselorName', {
+            sortField: { field: 'text', direction: 'asc' },  // Optional: sort alphabetically
+            maxOptions: null,                                // Show all options (no limit)
+            searchField: ['text'],                           // Search by name
+            placeholder: 'Type to search counselors...'
+        });
+    });
+</script>
