@@ -175,6 +175,7 @@ $CMBCollege = CMBCollege::getInstance();
           Data they lasted entered. -->
           <p style="text-align:Left"><b>Counselor Information</b></p>
           <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="edit_counselor" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <!-- Counselor Information -->
             <div class="form-row">
               <div class="col-3">

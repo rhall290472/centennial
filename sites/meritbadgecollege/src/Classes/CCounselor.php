@@ -397,7 +397,7 @@ class CCounselor extends CMBCollege
     // Don't email if Admin is editing Counselor signup    
     if (!(isset($_SESSION["loggedin"]) && $_SESSION["Type"] === "Admin")) {
       $str = sprintf("New signup %s, at %s\n", $sqlUpdate, Date('Y-m-d H:i:s'));
-      error_log($str, 1, "richard.hall@centennialdistrict.co");
+      error_log($str);
     }
   }
   /*=============================================================================

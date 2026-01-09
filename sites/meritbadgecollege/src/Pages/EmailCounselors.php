@@ -1,120 +1,185 @@
 <?php
-  // Secure session start
-  if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-      'cookie_httponly' => true,
-      'use_strict_mode' => true,
-      'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
-  }
-  /*
-!==============================================================================!
-!\                                                                            /!
-!\\                                                                          //!
-! \##########################################################################/ !
-!  #         This is Proprietary Software of Richard Hall                   #  !
-!  ##########################################################################  !
-!  ##########################################################################  !
-!  #                                                                        #  !
-!  #                                                                        #  !
-!  #   Copyright 2017-2024 - Richard Hall                                   #  !
-!  #                                                                        #  !
-!  #   The information contained herein is the property of Richard          #  !
-!  #   Hall, and shall not be copied, in whole or in part, or               #  !
-!  #   disclosed to others in any manner without the express written        #  !
-!  #   authorization of Richard Hall.                                       #  !
-!  #                                                                        #  !
-!  #                                                                        #  !
-! /##########################################################################\ !
-!//                                                                          \\!
-!/                                                                            \!
-!==============================================================================!
-*/
+load_class(BASE_PATH . '/src/Classes/CCounselor.php');
+$Counselor = cCounselor::getInstance();
 
-  include_once 'CCounselor.php';
-$CCounselor = CCounselor::getInstance();
-// This code stops anyone for seeing this page unless they have logged in and
-// they account is enabled.
+$CMBCollege = CMBCollege::getInstance();
+
+// Redirect if not logged in
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $CScout->GotoURL("index.php");
-  header("location: index.php");
+  $CMBCollege->GotoURL("index.php");
   exit;
 }
 
+// Handle form submission
+$bPreview = isset($_POST['Preview']);
+$collegeYearSet = false;
+
+
+// Handle form submission
+$action = $_POST['action'] ?? null;
+$bPreview = ($action === 'preview') || isset($_POST['Preview']);
+$collegeYearSet = false;
+
+if (isset($_POST['CollegeYear']) && !empty($_POST['CollegeYear'])) {
+    $CollegeYear = $_POST['CollegeYear'];
+    setYear($CollegeYear);
+    $collegeYearSet = true;
+}
+
+// Only proceed if form was submitted with a valid action
+if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_token'] ?? '')) {
+    if ($action === 'preview' || $action === 'send') {
+        if ($collegeYearSet || !empty($_POST['CounselorName'])) {
+            // Build safe query
+            $dbc = $Counselor->getDbConn();
+            $query = "SELECT * FROM college_counselors WHERE College = ? ";
+            $params = [$CollegeYear ?? $CMBCollege->GetYear()];
+            $types = "s";
+
+            if (!empty($_POST['CounselorName'])) {
+                $CounselorID = $_POST['CounselorName'];
+                $query .= "AND BSAId = ? ";
+                $params[] = $CounselorID;
+                $types .= "s";
+            }
+
+            $query .= "ORDER BY LastName, FirstName, MBPeriod";
+
+            // Escape values safely
+            $stmt_query = $query;
+            foreach ($params as $param) {
+                $stmt_query = preg_replace('/\?/', "'" . $dbc->real_escape_string($param) . "'", $stmt_query, 1);
+            }
+
+            $results = $Counselor->doQuery($stmt_query);
+
+            if ($results && $results->num_rows > 0) {
+                $Counselor->EmailCounselors($results, $bPreview);
+
+                if ($action === 'send' && !$bPreview) {
+                    $_SESSION['feedback'] = [
+                        'type' => 'success',
+                        'message' => 'Emails have been sent successfully!'
+                    ];
+                } elseif ($action === 'preview') {
+                    $_SESSION['feedback'] = [
+                        'type' => 'info',
+                        'message' => 'Preview mode: Emails displayed above (not sent).'
+                    ];
+                }
+
+                $results->free();
+            } else {
+                $_SESSION['feedback'] = [
+                    'type' => 'warning',
+                    'message' => 'No counselors found matching your selection.'
+                ];
+            }
+        } else {
+            $_SESSION['feedback'] = [
+                'type' => 'danger',
+                'message' => 'Please select a college year or counselor.'
+            ];
+        }
+    }
+}
+
+// if (isset($_POST['CollegeYear']) && !empty($_POST['CollegeYear'])) {
+//   $CollegeYear = $_POST['CollegeYear'];
+//   setYear($CollegeYear);
+//   $collegeYearSet = true;
+// }
+
+// if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_token'] ?? '')) {
+//   if ($collegeYearSet || isset($_POST['CounselorName']) && !empty($_POST['CounselorName'])) {
+//     $query = "SELECT * FROM college_counselors WHERE College = ? ";
+//     $params = [$CollegeYear ?? $CMBCollege->GetYear()];
+//     $types = "s";
+
+//     if (isset($_POST['CounselorName']) && !empty($_POST['CounselorName'])) {
+//       $CounselorID = $_POST['CounselorName'];
+//       $query .= "AND BSAId = ? ";
+//       $params[] = $CounselorID;
+//       $types .= "s";
+//     }
+
+//     $query .= "ORDER BY LastName, FirstName, MBPeriod";
+
+//     // Use prepared statement for safety (assuming doQuery supports it; fallback to escaping if not)
+//     $results = $Counselor->doQuery($query);
+
+//     if ($results && $results->num_rows > 0) {
+//       $Counselor->EmailCounselors($results, $bPreview);
+//       if (!$bPreview) {
+//         $_SESSION['feedback'] = [
+//           'type' => 'success',
+//           'message' => 'Emails have been sent successfully!'
+//         ];
+//       }
+//       $results->free();
+//     } else {
+//       $_SESSION['feedback'] = [
+//         'type' => 'info',
+//         'message' => 'No counselors found to email for the selected criteria.'
+//       ];
+//     }
+//   }
+// }
 ?>
-<html>
 
-<head>
-  <?php include('header.php'); ?>
-</head>
-
-<body>
-  <!-- Responsive navbar-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container px-lg-4">
-      <a class="navbar-brand" href="#!">Centennial District Merit Badge College</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link active" aria-current="page" href="https://mbcollege.centennialdistrict.co/index.php">Home</a></li>
-          <!-- <li class="nav-item"><a class="nav-link" href="#!">About</a></li> -->
-          <li class="nav-item"><a class="nav-link" href="mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College">Contact</a></li>
-          <?php
-          if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-            echo '<li class="nav-item"><a class="nav-link" href="./logoff.php">Log off</a></li>';
-          } else {
-            echo '<li class="nav-item"><a class="nav-link" href="./logon.php">Log on</a></li>';
-          }
-          ?>
-        </ul>
+<div class="row justify-content-center mt-4">
+  <div class="col-lg-10 col-xl-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">
+          <i class="fas fa-envelope me-2"></i>Email Counselors
+        </h4>
       </div>
-    </div>
-  </nav>
-
-
-
-  <div class="container-fluid">
-    <div class="row flex-nowrap">
-      <!-- Include the common side nav bar -->
-      <?php include 'navbar.php'; ?>
-      <div class="col py-3">
-        <div class="row">
-        <?php
-        $CollegeYear = $CCounselor->getYear();
-        $CCounselor->SelectCollegeYear($CollegeYear, "Counselor(s) Schedule", true);
-        // Allow user to select a single counselor to display
-        $CCounselor->SelectCounselor($CollegeYear, true);
-      
-        ?>
+      <div class="card-body p-4 p-md-5">
+        <div class="alert alert-warning mb-4">
+          <strong>Warning:</strong> Clicking "Send Emails" will immediately send emails to all selected counselors.
+          Use the <strong>Preview Emails</strong> option first to review content.
         </div>
-        <p class="text-bg-danger">WARNING: Once you select "Select College" or "Select Counselor" the emails WILL be sent! Unless to check the Preview emails box</p>
-        <?php
-        $bPreview = false;
-        if (isset($_POST['Preview']))
-          $bPreview = true;
-        if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
-          $CollegeYear = $_POST['CollegeYear'];
-          setYear($CollegeYear);
-          $queryByMBCollege = sprintf("SELECT * FROM college_counselors WHERE College='%s' ORDER BY LastName, FirstName, MBPeriod", $CollegeYear);
-          $report_results = $CCounselor->doQuery($queryByMBCollege, $CollegeYear);
-          if ($CCounselor->EmailCounselors($report_results, $bPreview)) {
-            $report_results->free_result();
-          }
-        }
-        if (isset($_POST['CounselorName']) && $_POST['CounselorName'] !== '') {
-          $CounselorID = $_POST['CounselorName'];
-          $queryByMBCollege = sprintf("SELECT * FROM college_counselors WHERE College='%s' AND BSAId='%s' ORDER BY LastName, FirstName, MBPeriod", $CollegeYear, $CounselorID);
-          $report_results = $CCounselor->doQuery($queryByMBCollege, $CollegeYear);
 
-          if ($CCounselor->EmailCounselors($report_results, $bPreview)) {
-            $report_results->free_result();
-          }
-        }
-        ?>
+        <form method="post">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
+          <!-- College Year Selector -->
+          <?php $Counselor->SelectCollegeYear($CMBCollege->GetYear(), "Email Counselors", false); ?>
+
+          <hr class="my-4">
+
+          <!-- Optional: Single Counselor Selector -->
+          <?php $Counselor->SelectCounselor($CMBCollege->GetYear(), false); ?>
+
+          <hr class="my-4">
+
+          <!-- Preview Option -->
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" name="Preview" id="Preview" value="1" <?php echo $bPreview ? 'checked' : ''; ?>>
+            <label class="form-check-label text-primary fw-semibold" for="Preview">
+              <i class="fas fa-eye me-2"></i>Preview Emails Only (No emails will be sent)
+            </label>
+          </div>
+
+          <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+            <button type="submit" name="action" value="preview" class="btn btn-outline-secondary btn-lg">
+              <i class="fas fa-eye me-2"></i>Preview & Review
+            </button>
+            <button type="submit" name="action" value="send" class="btn btn-danger btn-lg"
+              onclick="return confirm('Are you SURE you want to send emails now? This cannot be undone.');">
+              <i class="fas fa-paper-plane me-2"></i>Send Emails Now
+            </button>
+          </div>
+        </form>
+
+        <?php if (isset($_SESSION['feedback'])): ?>
+          <div class="alert alert-<?php echo htmlspecialchars($_SESSION['feedback']['type']); ?> mt-4">
+            <?php echo htmlspecialchars($_SESSION['feedback']['message']); ?>
+          </div>
+          <?php unset($_SESSION['feedback']); ?>
+        <?php endif; ?>
       </div>
     </div>
   </div>
-  <?php include("Footer.php"); ?>
-</body>
-
-</html>
+</div>

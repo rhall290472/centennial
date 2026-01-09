@@ -88,13 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
-      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled, role FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CMBCollege->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
           if (mysqli_stmt_num_rows($stmt) == 1) {
-            mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
+            mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled, $role);
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
                 $_SESSION["loggedin"] = true;
@@ -103,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION["enabled"] = $enabled;
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
+                $_SESSION['Role'] = $role;
                 header("Location: index.php?page=home");
               } else {
                 $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password or your account is not enabled.'];
@@ -196,7 +197,7 @@ if (!isset($_SESSION['csrf_token'])) {
                 availability of counselors.</p>
 
               <h4>Counselors:</h4>
-              <p>Please view the <a href='./ViewSchedule.php'>College schedule </a> to see what Merit Badges and period(s) have already been selected. You may offer a duplicate merit
+              <p>Please view the <a href='./index.php?page=view-schedule'>College schedule </a> to see what Merit Badges and period(s) have already been selected. You may offer a duplicate merit
                 badge but just at a different time.</p>
 
               <p>To sign up to support this district event please select the counselors sign up link to the left and complete

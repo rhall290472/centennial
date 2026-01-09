@@ -10,38 +10,6 @@
         <li class="nav-item">
           <a class="nav-link <?php echo $page === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Packs
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
-            <li><a class="dropdown-item" href="?page=pack-below-goal">Below District Goal</a></li>
-            <li><a class="dropdown-item" href="?page=pack-meeting-goal">Meeting District Goal</a></li>
-          </ul>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['troop-summary', 'troop-below-goal', 'troop-meeting-goal']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Troops
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
-            <li><a class="dropdown-item" href="?page=troop-below-goal">Below District Goal</a></li>
-            <li><a class="dropdown-item" href="?page=troop-meeting-goal">Meeting District Goal</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo $page === 'crew-summary' ? 'active' : ''; ?>" href="?page=crew-summary">Crews</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['adv-report', 'membership-report']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Reports
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="?page=adv-report">Advancement Report</a></li>
-            <li><a class="dropdown-item" href="?page=membership-report">Membership Report</a></li>
-          </ul>
-        </li>
         <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
           <li class="nav-item">
             <a class="nav-link" href="?page=logout">Logout</a>
