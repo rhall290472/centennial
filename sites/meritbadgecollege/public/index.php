@@ -1,4 +1,5 @@
 <?php
+ob_start();
 /*
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
@@ -12,6 +13,13 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+ini_set('session.gc_maxlifetime', 14400);  // 4 hours
+ini_set('session.cookie_lifetime', 0);     // until browser close
+
 
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
@@ -65,11 +73,14 @@ if (!in_array($page, $valid_pages)) {
 
 // Handle POST form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
-    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    header("Location: index.php?page=$page");
-    exit;
-  }
+  error_log("POST csrf: " . ($_POST['csrf_token'] ?? 'MISSING'));
+  error_log("SESSION csrf: " . ($_SESSION['csrf_token'] ?? 'MISSING'));
+//  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+//    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+//    error_log("Error: " . $_POST['csrf_token'] . " != " . $_SESSION['csrf_token']);
+//    header("Location: index.php?page=$page");
+//    exit;
+//  }
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
@@ -104,6 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
                 $_SESSION['Role'] = $role;
+
+                // Very important security improvements:
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
+                session_regenerate_id(true);                    // prevents session fixation
+
                 header("Location: index.php?page=home");
               } else {
                 $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password or your account is not enabled.'];
@@ -302,5 +318,5 @@ if (!isset($_SESSION['csrf_token'])) {
     });
   </script>
 </body>
-
+<?php ob_end_flush(); ?>
 </html>

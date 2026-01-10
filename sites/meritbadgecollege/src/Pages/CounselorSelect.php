@@ -5,7 +5,7 @@ require_once BASE_PATH . '/src/Classes/CMBCollege.php';
 $Counselor = CCounselor::getInstance();  // Fixed class name case (was cCounselor)
 $CMBCollege = CMBCollege::getInstance();
 
-ob_start();
+
   // Form submission handling
   if (isset($_POST['SubmitForm'])) {
     $ErrorFlag = false;
@@ -51,8 +51,8 @@ ob_start();
        } else{
         $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to save your reponses. Please try again.'];
        }
-      //header("Location: index.php?page=home");
-      $Counselor->GotoURL('index.php?page=home');
+      header("Location: index.php?page=home");
+      //$Counselor->GotoURL('index.php?page=home');
       exit;
     }
   }
@@ -141,7 +141,7 @@ ob_start();
           <p>If your name is not in the Counselor list, missing a Merit Badge, want to offer a NOVA class, or need to edit your merit badges, please <a href="mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College">contact us</a>.</p>
 
           <form method="post" class="mb-4">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
             <div class="row g-3">
               <div class="col-md-4">
                 <label for="CounselorName" class="form-label">Choose or Type a Counselor</label>
@@ -216,7 +216,7 @@ ob_start();
           <div class="form-section">
             <h5>Counselor Signup Information</h5>
             <form action="index.php?page=signup" method="post" id="add_nomination">
-              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
 
               <div class="row g-3 mb-3">
                 <div class="col-md-2">

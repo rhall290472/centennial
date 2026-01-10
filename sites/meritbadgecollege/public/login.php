@@ -43,6 +43,7 @@ $username_err = $password_err = $login_err = "";
       <?php endif; ?>
 
       <form action="index.php?page=login" method="post">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="mb-3">
           <label for="username" class="form-label">Username</label>
           <input type="text" name="username" id="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($username); ?>">

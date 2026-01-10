@@ -45,41 +45,6 @@ function setYear($yr)
  * 
  * 
  *****************************************************************************/
-function getConfigData()
-{
-
-  if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-    //ip from share internet
-    $ip = $_SERVER['HTTP_CLIENT_IP'];
-  } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    //ip pass from proxy
-    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-  } else {
-    $ip = $_SERVER['REMOTE_ADDR'];
-  }
-
-  $userdata  = array();
-
-  if (!strcmp($ip, "::1")) {
-    $userdata['dbhost'] = "localhost";
-    $userdata['dbuser'] = "root";
-    $userdata['dbpass'] = "";
-    $userdata['db']     = "meritbadges";
-  } else if ((isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-    $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-    $userdata['dbuser'] = "mbcuser";
-    $userdata['dbpass'] = "ZCSCA?yrW7}L";
-    $userdata['db']     = "meritbadges";
-  } else {
-    $userdata['dbhost'] = "rhall29047217205.ipagemysql.com";
-    $userdata['dbuser'] = "mbcuser";
-    $userdata['dbpass'] = "ZCSCA?yrW7}L";
-    $userdata['db']     = "meritbadges";
-  }
-
-  return $userdata;
-}
-
 
 
 /******************************************************************************
@@ -150,8 +115,8 @@ class CMBCollege
   private static function initConnection()
   {
     $db = self::getInstance();
-    $connConf = getConfigData();
-    $db->dbConn = new mysqli($connConf['dbhost'], $connConf['dbuser'], $connConf['dbpass'], $connConf['db']);
+    
+    $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     // Check for connection errors (prevents silent failures)
     if ($db->dbConn->connect_error) {
@@ -304,12 +269,12 @@ class CMBCollege
     /******************************************************************************
      *
      *****************************************************************************/
-    public static function GotoURL($url)
-    {
-      echo "<script>
-      location.replace('$url')
-    </script>";
-    }
+    // public static function GotoURL($url)
+    // {
+    //   echo "<script>
+    //   location.replace('$url')
+    // </script>";
+    // }
     /**************************************************************************
      **
      **
@@ -516,7 +481,7 @@ class CMBCollege
       public static function &RegistrationOpen()
       {
         $return = false;
-        $yr = $_SESSION['year'];
+        $yr = self::GetYear();
 
         $qryRegOpen = "SELECT * FROM college_details WHERE College = '$yr' ORDER BY College DESC";
 
@@ -1424,6 +1389,7 @@ class CMBCollege
           $result_CollegeYear = self::doQuery($queryCollegeYear);
   ?>
     <form method=post>
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
       <div class="row  py-3 d-print-none">
         <div class="col-2">
           <select class='form-control' id='CollegeYear' name='CollegeYear'>
@@ -1548,3 +1514,12 @@ class CMBCollege
           }
         }
       }
+
+
+// Helper function (put somewhere in utils or CMBCollege class)
+function get_csrf_token(): string {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}      
