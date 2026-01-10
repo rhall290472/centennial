@@ -37,7 +37,7 @@ if (!session_id()) {
 !==============================================================================!
 */
 
-include_once('../CMeritBadges.php');
+include_once(SHARED_PATH . '/src/Classes/CMeritBadges.php');
 include_once('../../cAdultLeaders.php');
 
 // This code stops anyone for seeing this page unless they have logged in and

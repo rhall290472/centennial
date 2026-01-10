@@ -37,7 +37,10 @@ define('SITE_URL', $protocol . '://' . $host . $port);
 // https: //shared.centennialdistrict.co/assets/styles.css
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
 define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
-define('SHARED_PATH', __DIR__ . '/../../../shared/'); 
+
+define('SHARED_PATH', dirname(__DIR__, 3)); // backup to the shared directory
+define('SRC_PATH', SHARED_PATH . '/shared/src');
+define('SHARED_CLASS_PATH', SRC_PATH . '/Classes');
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Merit Badge College');

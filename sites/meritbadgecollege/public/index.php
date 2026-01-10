@@ -4,7 +4,8 @@ ob_start();
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
-
+ini_set('session.gc_maxlifetime', 14400);  // 4 hours
+ini_set('session.cookie_lifetime', 0);     // until browser close
 // Secure session start
 if (session_status() === PHP_SESSION_NONE) {
   session_start([
@@ -17,8 +18,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: 0");
 
-ini_set('session.gc_maxlifetime', 14400);  // 4 hours
-ini_set('session.cookie_lifetime', 0);     // until browser close
+
 
 
 // Load configuration
@@ -30,7 +30,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 }
 
 // Load required classes for file uploads
-load_class(__DIR__ . '/../src/Classes/CMBCollege.php');
+load_class('../src/Classes/CMBCollege.php');
 
 $CMBCollege = CMBCollege::getInstance();
 
@@ -108,6 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled, $role);
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
+                // Very important security improvements:
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
+                session_regenerate_id(true);        
                 $_SESSION["loggedin"] = true;
                 $_SESSION["Userid"] = $id;
                 $_SESSION["username"] = $username;
@@ -115,10 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
                 $_SESSION['Role'] = $role;
-
-                // Very important security improvements:
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
-                session_regenerate_id(true);                    // prevents session fixation
 
                 header("Location: index.php?page=home");
               } else {

@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 	]);
 }
 
-include_once('CMeritBadges.php');
+include_once(SHARED_PATH . '/src/classes/CMeritBadges.php');
 
 class CAdmin extends CMeritBadges
 {

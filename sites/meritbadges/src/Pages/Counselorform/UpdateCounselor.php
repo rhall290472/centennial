@@ -2,7 +2,7 @@
 if (!session_id()) {
   session_start();
 }
-include_once('../CMeritBadges.php');
+include_once(SHARED_PATH . '/src/Classes/CMeritBadges.php');
 
 // This code stops anyone for seeing this page unless they have logged in and
 // their account is enabled.

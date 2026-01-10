@@ -150,7 +150,7 @@ $CMBCollege = CMBCollege::getInstance();
                   <?php
                   $query = "SELECT DISTINCT MemberID, LastName, FirstName 
                             FROM mbccounselors 
-                            WHERE Active='Yes' AND Is_a_no='0' 
+                            WHERE Active='Yes' 
                             ORDER BY LastName, FirstName";
                   $result = $Counselor->doQuery($query);
 

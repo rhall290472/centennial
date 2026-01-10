@@ -30,7 +30,7 @@
 !/                                                                            \!
 !==============================================================================!
 */
-  include_once "CMeritBadges.php";
+  include_once SHARED_PATH . '/src/Classes/CMeritBadges.php';
 $CMeritBadges = CMeritBadges::getInstance();
 
 // Define variables and initialize with empty values
