@@ -6,7 +6,8 @@ $CMBCollege = CMBCollege::getInstance();
 
 // Redirect if not logged in
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $CMBCollege->GotoURL("index.php");
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Access denied, You must be logged in to access this page.'];
+  header("Location: index.php?page=home");
   exit;
 }
 ?>
