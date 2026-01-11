@@ -1,4 +1,7 @@
 <?php
+if (headers_sent($file, $line)) {
+    die("Headers already sent in $file on line $line");
+}
 ob_start();
 /*
  * Main entry point for the Centennial District Advancement website.
