@@ -34,6 +34,7 @@ $CMBCollege = CMBCollege::getInstance();
 // This code stops anyone for seeing this page unless they have logged in and
 // they account is enabled.
 if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Access denied, You must be logged in to access this page.'];
   header("Location: index.php?page=home");
   exit;
 }
