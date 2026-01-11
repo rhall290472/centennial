@@ -79,12 +79,12 @@ if (!in_array($page, $valid_pages)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   error_log("POST csrf: " . ($_POST['csrf_token'] ?? 'MISSING'));
   error_log("SESSION csrf: " . ($_SESSION['csrf_token'] ?? 'MISSING'));
-//  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
-//    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-//    error_log("Error: " . $_POST['csrf_token'] . " != " . $_SESSION['csrf_token']);
-//    header("Location: index.php?page=$page");
-//    exit;
-//  }
+  //  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+  //    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+  //    error_log("Error: " . $_POST['csrf_token'] . " != " . $_SESSION['csrf_token']);
+  //    header("Location: index.php?page=$page");
+  //    exit;
+  //  }
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               if (password_verify($password, $hashed_password) && $enabled) {
                 // Very important security improvements:
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
-                session_regenerate_id(true);        
+                session_regenerate_id(true);
                 $_SESSION["loggedin"] = true;
                 $_SESSION["Userid"] = $id;
                 $_SESSION["username"] = $username;
@@ -173,10 +173,15 @@ unset($_SESSION['feedback']);
 
 <body>
   <!-- Navbar -->
-  <?php load_template("/src/Templates/navbar.php"); ?>
+  <?php load_template("/src/Templates/navbar.php", ['page' => $page]); ?>
 
   <!-- Sidebar -->
-  <?php load_template("/src/Templates/sidebar.php"); ?>
+  <?php load_template("/src/Templates/sidebar.php", [
+    'page'      => $page,
+    'username'  => $_SESSION['username'] ?? null,
+    'logged_in' => isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true
+  ]);
+  ?>
 
   <!-- Main Content -->
   <main class="main-content">
@@ -259,7 +264,7 @@ unset($_SESSION['feedback']);
         case 'counselor-schedule':
           include('../src/Pages/ViewByCounselorSchedule.php');
           break;
-        case 'counselor-emails':  
+        case 'counselor-emails':
           include('../src/Pages/EmailCounselors.php');
           break;
         case 'counselor-stats':
@@ -278,7 +283,7 @@ unset($_SESSION['feedback']);
         case 'rpt-doubleknot':
           include('../src/Pages/DoubleKnot.php');
           break;
-        case 'rpt-details': 
+        case 'rpt-details':
           include('../src/Pages/CollegeDetails.php');
           break;
 
@@ -317,4 +322,5 @@ unset($_SESSION['feedback']);
   </script>
 </body>
 <?php ob_end_flush(); ?>
+
 </html>

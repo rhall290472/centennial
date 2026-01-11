@@ -14,14 +14,14 @@ defined('BASE_PATH') or define('BASE_PATH', dirname(__DIR__));
 // Ensure upload directory exists
 $uploadDir = BASE_PATH . '/Data/';
 if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+  mkdir($uploadDir, 0755, true);
 }
 define('UPLOAD_DIRECTORY', $uploadDir);
 
 // Create log directory if it doesn't exist
 $logDir = BASE_PATH . '/../../shared/logs';
 if (!is_dir($logDir)) {
-    mkdir($logDir, 0755, true);
+  mkdir($logDir, 0755, true);
 }
 
 
@@ -57,24 +57,24 @@ define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
 define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 
-$pageHome = SITE_URL.'/centennial/sites/meritbadgecollege/public/index.php';
+$pageHome = SITE_URL . '/centennial/sites/meritbadgecollege/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/meritbadgecollege/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
-    [
-        'href' => $pageHome,
-        'text' => 'Home',
-        'active' => false,
-        'rel' => 'nofollow',
-        'aria-label' => 'Home'
-    ],
-    [
-        'href' => $pageContact,
-        'text' => 'Contact',
-        'active' => false,
-        'rel' => 'nofollow',
-        'aria-label' => 'Contact'
-    ],
+  [
+    'href' => $pageHome,
+    'text' => 'Home',
+    'active' => false,
+    'rel' => 'nofollow',
+    'aria-label' => 'Home'
+  ],
+  [
+    'href' => $pageContact,
+    'text' => 'Contact',
+    'active' => false,
+    'rel' => 'nofollow',
+    'aria-label' => 'Contact'
+  ],
 ]);
 
 // Environment configuration  // development
@@ -94,15 +94,15 @@ if (defined('ENV') && ENV === 'development') {
 
 
 if ($is_localhost) {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'root');
-    define('DB_PASS', '');
-    define('DB_NAME', 'meritbadges');
+  define('DB_HOST', 'localhost');
+  define('DB_USER', 'root');
+  define('DB_PASS', '');
+  define('DB_NAME', 'meritbadges');
 } else {
-    define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-    define('DB_USER', 'mbcuser');
-    define('DB_PASS', 'ZCSCA?yrW7}L');
-    define('DB_NAME', 'meritbadges');
+  define('DB_HOST', 'rhall29047217205.ipagemysql.com');
+  define('DB_USER', 'mbcuser');
+  define('DB_PASS', 'ZCSCA?yrW7}L');
+  define('DB_NAME', 'meritbadges');
 }
 
 // File upload limits
@@ -112,35 +112,36 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-    function load_template($file)
-    {
-        $path = BASE_PATH . $file;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            error_log("Template $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
-        }
+  function load_template($file, $vars = [])
+  {
+    extract($vars);
+    $path = BASE_PATH . $file;
+    if (file_exists($path)) {
+      require_once $path;
+    } else {
+      error_log("Template $file is missing.");
+      if (defined('ENV') && ENV === 'development') {
+        echo 'Template ' . $path . ' is missing.</br>';
+        die('Template $file is missing.');
+      } else
+        die('An error occurred. Please try again later.');
     }
+  }
 }
 // Class loader function
 if (!function_exists('load_class')) {
-    function load_class($file)
-    {
-        $path = $file;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            error_log("Class $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
-        }
+  function load_class($file)
+  {
+    $path = $file;
+    if (file_exists($path)) {
+      require_once $path;
+    } else {
+      error_log("Class $file is missing.");
+      if (defined('ENV') && ENV === 'development') {
+        echo 'Template ' . $path . ' is missing.</br>';
+        die('Template $file is missing.');
+      } else
+        die('An error occurred. Please try again later.');
     }
+  }
 }
