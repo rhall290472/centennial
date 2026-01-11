@@ -3,16 +3,6 @@
 // src/Pages/ImportCounselor.php
 // Improved, professional layout that fits within index.php structure
 // ------------------------------------------------------------------
-
-// Secure session (already started in index.php, but safe to check)
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'use_strict_mode' => true,
-        'cookie_secure'   => isset($_SERVER['HTTPS'])
-    ]);
-}
-
 load_class(BASE_PATH . '/src/Classes/CScout.php');
 $Scout = cScout::getInstance();
 

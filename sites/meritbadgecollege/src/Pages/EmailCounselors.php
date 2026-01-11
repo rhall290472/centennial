@@ -1,12 +1,4 @@
 <?php
-// Secure session start
-if (session_status() === PHP_SESSION_NONE) {
-  session_start([
-    'cookie_httponly' => true,
-    'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
-  ]);
-}
 
 load_class(BASE_PATH . '/src/Classes/CCounselor.php');
 $Counselor = cCounselor::getInstance();

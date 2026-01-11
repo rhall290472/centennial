@@ -1,12 +1,4 @@
 <?php
-  // Secure session start
-  if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-      'cookie_httponly' => true,
-      'use_strict_mode' => true,
-      'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
-  }
 
   if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
