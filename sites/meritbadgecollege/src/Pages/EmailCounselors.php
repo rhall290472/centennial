@@ -1,12 +1,22 @@
 <?php
+// Secure session start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+
 load_class(BASE_PATH . '/src/Classes/CCounselor.php');
 $Counselor = cCounselor::getInstance();
 
 $CMBCollege = CMBCollege::getInstance();
 
 // Redirect if not logged in
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $CMBCollege->GotoURL("index.php");
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+  header('Location: index.php?page=login');
   exit;
 }
 
@@ -21,67 +31,67 @@ $bPreview = ($action === 'preview') || isset($_POST['Preview']);
 $collegeYearSet = false;
 
 if (isset($_POST['CollegeYear']) && !empty($_POST['CollegeYear'])) {
-    $CollegeYear = $_POST['CollegeYear'];
-    setYear($CollegeYear);
-    $collegeYearSet = true;
+  $CollegeYear = $_POST['CollegeYear'];
+  setYear($CollegeYear);
+  $collegeYearSet = true;
 }
 
 // Only proceed if form was submitted with a valid action
 if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_token'] ?? '')) {
-    if ($action === 'preview' || $action === 'send') {
-        if ($collegeYearSet || !empty($_POST['CounselorName'])) {
-            // Build safe query
-            $dbc = $Counselor->getDbConn();
-            $query = "SELECT * FROM college_counselors WHERE College = ? ";
-            $params = [$CollegeYear ?? $CMBCollege->GetYear()];
-            $types = "s";
+  if ($action === 'preview' || $action === 'send') {
+    if ($collegeYearSet || !empty($_POST['CounselorName'])) {
+      // Build safe query
+      $dbc = $Counselor->getDbConn();
+      $query = "SELECT * FROM college_counselors WHERE College = ? ";
+      $params = [$CollegeYear ?? $CMBCollege->GetYear()];
+      $types = "s";
 
-            if (!empty($_POST['CounselorName'])) {
-                $CounselorID = $_POST['CounselorName'];
-                $query .= "AND BSAId = ? ";
-                $params[] = $CounselorID;
-                $types .= "s";
-            }
+      if (!empty($_POST['CounselorName'])) {
+        $CounselorID = $_POST['CounselorName'];
+        $query .= "AND BSAId = ? ";
+        $params[] = $CounselorID;
+        $types .= "s";
+      }
 
-            $query .= "ORDER BY LastName, FirstName, MBPeriod";
+      $query .= "ORDER BY LastName, FirstName, MBPeriod";
 
-            // Escape values safely
-            $stmt_query = $query;
-            foreach ($params as $param) {
-                $stmt_query = preg_replace('/\?/', "'" . $dbc->real_escape_string($param) . "'", $stmt_query, 1);
-            }
+      // Escape values safely
+      $stmt_query = $query;
+      foreach ($params as $param) {
+        $stmt_query = preg_replace('/\?/', "'" . $dbc->real_escape_string($param) . "'", $stmt_query, 1);
+      }
 
-            $results = $Counselor->doQuery($stmt_query);
+      $results = $Counselor->doQuery($stmt_query);
 
-            if ($results && $results->num_rows > 0) {
-                $Counselor->EmailCounselors($results, $bPreview);
+      if ($results && $results->num_rows > 0) {
+        $Counselor->EmailCounselors($results, $bPreview);
 
-                if ($action === 'send' && !$bPreview) {
-                    $_SESSION['feedback'] = [
-                        'type' => 'success',
-                        'message' => 'Emails have been sent successfully!'
-                    ];
-                } elseif ($action === 'preview') {
-                    $_SESSION['feedback'] = [
-                        'type' => 'info',
-                        'message' => 'Preview mode: Emails displayed above (not sent).'
-                    ];
-                }
-
-                $results->free();
-            } else {
-                $_SESSION['feedback'] = [
-                    'type' => 'warning',
-                    'message' => 'No counselors found matching your selection.'
-                ];
-            }
-        } else {
-            $_SESSION['feedback'] = [
-                'type' => 'danger',
-                'message' => 'Please select a college year or counselor.'
-            ];
+        if ($action === 'send' && !$bPreview) {
+          $_SESSION['feedback'] = [
+            'type' => 'success',
+            'message' => 'Emails have been sent successfully!'
+          ];
+        } elseif ($action === 'preview') {
+          $_SESSION['feedback'] = [
+            'type' => 'info',
+            'message' => 'Preview mode: Emails displayed above (not sent).'
+          ];
         }
+
+        $results->free();
+      } else {
+        $_SESSION['feedback'] = [
+          'type' => 'warning',
+          'message' => 'No counselors found matching your selection.'
+        ];
+      }
+    } else {
+      $_SESSION['feedback'] = [
+        'type' => 'danger',
+        'message' => 'Please select a college year or counselor.'
+      ];
     }
+  }
 }
 
 // if (isset($_POST['CollegeYear']) && !empty($_POST['CollegeYear'])) {

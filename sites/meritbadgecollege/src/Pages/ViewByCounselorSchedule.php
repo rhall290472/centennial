@@ -1,12 +1,22 @@
 <?php
+// Secure session start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+
 load_class(BASE_PATH . '/src/Classes/CCounselor.php');
 $Counselor = cCounselor::getInstance();  // Fixed variable name consistency
 
 $CMBCollege = CMBCollege::getInstance();
 
 // Redirect if not logged in
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-    $Counselor->GotoURL("index.php");
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+    header('Location: index.php?page=login');
     exit;
 }
 

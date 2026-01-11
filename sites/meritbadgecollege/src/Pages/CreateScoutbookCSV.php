@@ -1,12 +1,12 @@
 <?php
-  // Secure session start
-  if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-      'cookie_httponly' => true,
-      'use_strict_mode' => true,
-      'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
-  }
+// Secure session start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
   /*
 !==============================================================================!
 !\                                                                            /!
@@ -37,12 +37,11 @@ $CScout = CScout::getInstance();
 $CCounselor = CCounselor::getInstance();
 // This code stops anyone for seeing this page unless they have logged in and
 // their account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $CScout->GotoURL("index.php");
-  header("location: index.php");
-  exit;
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+    header('Location: index.php?page=login');
+    exit;
 }
-
 ?>
 
 <!-- CreateScoutbookCSV.php

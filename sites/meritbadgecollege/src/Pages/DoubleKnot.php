@@ -1,13 +1,13 @@
 <?php
-  // Secure session start
-  if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-      'cookie_httponly' => true,
-      'use_strict_mode' => true,
-      'cookie_secure' => isset($_SERVER['HTTPS'])
-    ]);
-  }
-  /*
+// Secure session start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+/*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -34,8 +34,9 @@ $CMBCollege = CMBCollege::getInstance();
 
 // This code stops anyone for seeing this page unless they have logged in and
 // their account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-  $CMBCollege->GotoURL("index.php");
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+  header('Location: index.php?page=login');
   exit;
 }
 
@@ -47,6 +48,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
 -->
 <html>
+
 <body>
   <div class="container-fluid">
     <div class="row flex-nowrap">

@@ -46,9 +46,10 @@ $Scout = cScout::getInstance();
 
 // This code stops anyone for seeing this page unless they have logged in and
 // they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-	$Scout->GotoURL("index.php");
-	exit;
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+    header('Location: index.php?page=login');
+    exit;
 }
 
 if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {

@@ -34,9 +34,10 @@ load_class(BASE_PATH . '/src/Classes/CScout.php');
 $CScout = CScout::getInstance();
 // This code stops anyone for seeing this page unless they have logged in and
 // they account is enabled.
-if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
-	$CScout->GotoURL("index.php");
-	exit;
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+    header('Location: index.php?page=login');
+    exit;
 }
 ?>
 <html>
