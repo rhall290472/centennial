@@ -18,6 +18,10 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: 0");
 
+// Set CSRF token if not set
+if (!isset($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 
 
@@ -115,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION["Userid"] = $id;
                 $_SESSION["username"] = $username;
                 $_SESSION["enabled"] = $enabled;
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
                 $_SESSION['Role'] = $role;
 
@@ -158,10 +161,6 @@ if ($page === 'logout') {
 $feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
 unset($_SESSION['feedback']);
 
-// Set CSRF token if not set
-if (!isset($_SESSION['csrf_token'])) {
-  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
 ?>
 
