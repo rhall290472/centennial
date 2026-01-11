@@ -1,11 +1,4 @@
 <?php
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
-    header('Location: index.php?page=login');
-    exit;
-}
-
 require_once BASE_PATH . '/src/Classes/CCounselor.php';
 require_once BASE_PATH . '/src/Classes/CMBCollege.php';
 
