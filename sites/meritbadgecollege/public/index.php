@@ -1,14 +1,9 @@
 <?php
-if (headers_sent($file, $line)) {
-    die("Headers already sent in $file on line $line");
-}
 ob_start();
 /*
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
-ini_set('session.gc_maxlifetime', 14400);  // 4 hours
-ini_set('session.cookie_lifetime', 0);     // until browser close
 // Secure session start
 if (session_status() === PHP_SESSION_NONE) {
   session_start([
@@ -17,16 +12,6 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-// Set CSRF token if not set
-if (!isset($_SESSION['csrf_token'])) {
-  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-
 
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
@@ -37,8 +22,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 }
 
 // Load required classes for file uploads
-load_class('../src/Classes/CMBCollege.php');
-
+load_class(BASE_PATH.'/src/Classes/CMBCollege.php');
 $CMBCollege = CMBCollege::getInstance();
 
 
@@ -80,19 +64,31 @@ if (!in_array($page, $valid_pages)) {
 
 // Handle POST form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  error_log("POST csrf: " . ($_POST['csrf_token'] ?? 'MISSING'));
-  error_log("SESSION csrf: " . ($_SESSION['csrf_token'] ?? 'MISSING'));
-  //  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
-  //    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-  //    error_log("Error: " . $_POST['csrf_token'] . " != " . $_SESSION['csrf_token']);
-  //    header("Location: index.php?page=$page");
-  //    exit;
-  //  }
+  if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+    $post_token   = $_POST['csrf_token']   ?? '';
+    $session_token = $_SESSION['csrf_token'] ?? '';
+
+    echo "POST length:   " . strlen($post_token)   . "\n";
+    echo "SESSION length: " . strlen($session_token) . "\n\n";
+    echo "POST hex:   " . bin2hex($post_token)   . "\n";
+    echo "SESSION hex: " . bin2hex($session_token) . "\n\n";
+    echo "POST raw:   "; var_dump($post_token);
+    echo "SESSION raw: "; var_dump($session_token);
+    echo "\nStrict comparison result: ";
+    var_dump($post_token !== $session_token);
+    echo "\nAfter trim(): ";
+    var_dump(trim($post_token) !== trim($session_token));
+
+    //$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+    //header("Location: index.php?page=$page");
+    //exit;
+  }
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(__DIR__ . '/../src/Classes/CMBCollege.php');
+    load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
     $CMBCollege = CMBCollege::getInstance();
+
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     if (empty($username)) {
@@ -116,15 +112,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
                 // Very important security improvements:
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
-                session_regenerate_id(true);
+                //$_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
+                //session_regenerate_id(true);
                 $_SESSION["loggedin"] = true;
                 $_SESSION["Userid"] = $id;
                 $_SESSION["username"] = $username;
                 $_SESSION["enabled"] = $enabled;
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
                 $_SESSION['Role'] = $role;
-
                 header("Location: index.php?page=home");
               } else {
                 $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password or your account is not enabled.'];
@@ -153,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle logout
 if ($page === 'logout') {
+  echo "page = ". $page;
   $_SESSION = [];
   session_destroy();
   $_SESSION['feedback'] = ['type' => 'success', 'message' => 'You have been logged out.'];
@@ -163,6 +159,11 @@ if ($page === 'logout') {
 // Store form feedback
 $feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
 unset($_SESSION['feedback']);
+
+// Set CSRF token if not set
+if (!isset($_SESSION['csrf_token'])) {
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 
 ?>
@@ -179,11 +180,7 @@ unset($_SESSION['feedback']);
   <?php load_template("/src/Templates/navbar.php", ['page' => $page]); ?>
 
   <!-- Sidebar -->
-  <?php load_template("/src/Templates/sidebar.php", [
-    'page'      => $page,
-    'username'  => $_SESSION['username'] ?? null,
-    'logged_in' => isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true
-  ]);
+  <?php load_template("/src/Templates/sidebar.php", ['page' => $page]);
   ?>
 
   <!-- Main Content -->

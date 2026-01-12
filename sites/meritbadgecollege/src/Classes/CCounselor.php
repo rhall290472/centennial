@@ -1,13 +1,5 @@
 <?php
 ob_start();  // Start buffering at the beginning of CMeritBadges.php or the calling file
-// Secure session start
-if (session_status() === PHP_SESSION_NONE) {
-  session_start([
-    'cookie_httponly' => true,
-    'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
-  ]);
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -803,7 +795,7 @@ class CCounselor extends CMBCollege
 
               <label for='CounselorName'></label>
               <select class='form-control' id='CounselorName' name='CounselorName'>
-                <option value=\"\" </option>
+                <option value=""> </option>
                   <?php
                   while ($rowCerts = $result_ByCounselor->fetch_assoc()) {
                     echo "<option value=" . $rowCerts['BSAId'] . ">" . $rowCerts['LastName'] . " " . $rowCerts['FirstName'] . "</option>";

@@ -2,7 +2,6 @@
 
 load_class(BASE_PATH . '/src/Classes/CCounselor.php');
 $Counselor = cCounselor::getInstance();
-
 $CMBCollege = CMBCollege::getInstance();
 
 // Redirect if not logged in
@@ -16,7 +15,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 <head>
   <!-- Tom Select CSS (Bootstrap 5 theme) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <!-- Tom Select JS -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 </head>
@@ -44,7 +43,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         ?>
 
         <form method="post" class="mb-5">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
 
           <div class="row g-3 align-items-end">
             <div class="col-md-6">
@@ -95,7 +94,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         ?>
 
           <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" id="edit_counselor">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
 
             <h5 class="mt-4 mb-3">Counselor Information</h5>
             <div class="row g-3">
@@ -170,12 +169,15 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        new TomSelect('#CounselorName', {
-            sortField: { field: 'text', direction: 'asc' },  // Optional: sort alphabetically
-            maxOptions: null,                                // Show all options (no limit)
-            searchField: ['text'],                           // Search by name
-            placeholder: 'Type to search counselors...'
-        });
+  document.addEventListener('DOMContentLoaded', function() {
+    new TomSelect('#CounselorName', {
+      sortField: {
+        field: 'text',
+        direction: 'asc'
+      }, // Optional: sort alphabetically
+      maxOptions: null, // Show all options (no limit)
+      searchField: ['text'], // Search by name
+      placeholder: 'Type to search counselors...'
     });
+  });
 </script>

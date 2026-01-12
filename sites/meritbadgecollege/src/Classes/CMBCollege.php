@@ -1,12 +1,4 @@
 <?php
-// Secure session start
-if (session_status() === PHP_SESSION_NONE) {
-  session_start([
-    'cookie_httponly' => true,
-    'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
-  ]);
-}
 /*
 !==============================================================================!
 !\                                                                            /!
@@ -213,7 +205,7 @@ class CMBCollege
 
         <?php $yr = $_SESSION['year']; ?>
         <!--  First recod is blank "all" -->
-        <option value=\"\" </option>
+        <option value=""> </option>
           <?php
           if (!strcmp($yr, "2022"))
             $Selected = "selected";
@@ -1262,7 +1254,7 @@ class CMBCollege
 
           ?>
             <form method=post>
-              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
               <div class="row  d-print-none">
                 <div class="col-2">
                   <select class='form-control' id='CollegeYear' name='CollegeYear'>
@@ -1389,7 +1381,7 @@ class CMBCollege
           $result_CollegeYear = self::doQuery($queryCollegeYear);
   ?>
     <form method=post>
-      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
       <div class="row  py-3 d-print-none">
         <div class="col-2">
           <select class='form-control' id='CollegeYear' name='CollegeYear'>
