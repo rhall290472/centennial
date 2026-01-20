@@ -1294,7 +1294,7 @@ class CScout extends CMBCollege
     $Updated = 0;
     $row = 0;
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         if ($row < 2) {
           $row++;
           continue;

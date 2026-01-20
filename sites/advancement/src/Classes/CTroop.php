@@ -286,7 +286,7 @@ class CTroop extends CAdvancement
     //$TroopYear = date("Y");
     $TroopYear = self::GetYear();
     if (($handle = fopen($fileName, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         //assertCount(19, "Not enought columns in .csv file");
         if ($row < 11) { // Skip the first row(s), headers.
           if ($row == 7)

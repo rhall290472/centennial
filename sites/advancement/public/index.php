@@ -86,7 +86,7 @@ class FileUploader
     }
 
     $fileHandle = fopen($file['tmp_name'], 'r');
-    $firstLine = fgetcsv($fileHandle);
+    $firstLine = fgetcsv($fileHandle, 0, ',', '"', '') !== false;
     fclose($fileHandle);
     if ($firstLine === false || empty($firstLine)) {
       $errors[] = "File is not a valid CSV.";

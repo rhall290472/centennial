@@ -883,7 +883,7 @@ class CEagle
 
     $row = 0;
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         if ($row < 1) {
           $row++;
           continue;
@@ -1172,7 +1172,7 @@ class CEagle
     $UserName = $_SESSION['username'];
     $row = 0;
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         /* Skip down to row 3 [4] to get unit */
         if ($row < 3) {
           $row++;

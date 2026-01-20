@@ -250,7 +250,7 @@ class CCrew extends CAdvancement
     $Datestr = "";
     $CrewYear = self::GetYear();
     if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         if ($row < 11) { // Skip the first row(s), headers.
           if ($row == 7)
             $Datestr = $data[0]; // Get the report date.
@@ -363,7 +363,7 @@ class CCrew extends CAdvancement
     //$CrewYear = date("Y");
     $CrewYear = parent::GetYear();
     if (($handle = fopen($fileName, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         if ($row < 11) { // Skip the first row(s), headers.
           if ($row == 7)
             $Datestr = $data[0]; // Get the report date.

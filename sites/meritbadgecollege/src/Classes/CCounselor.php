@@ -913,7 +913,7 @@ class CCounselor extends CMBCollege
 
         $Row = 1;
         if (($handle = fopen($FileToOpen, "r")) !== FALSE) {
-          while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
+          while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
             if ($Row++ <= 9) {
               continue;
             } //Skip past the header stuff, first line of data is row 11
