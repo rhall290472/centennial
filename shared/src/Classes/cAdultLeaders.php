@@ -679,22 +679,22 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-public static function GetTotalIDCount($ID)
-{
+  public static function GetTotalIDCount($ID)
+  {
     $dbConn = self::getDbConn();
     if (!$dbConn) return 0;
 
     if (!empty($ID)) {
-        $sql = "SELECT COUNT(*) FROM trainedleader WHERE MemberID = ?";
+      $sql = "SELECT COUNT(*) FROM trainedleader WHERE MemberID = ?";
     } else {
-        $sql = "SELECT COUNT(*) FROM trainedleader";
+      $sql = "SELECT COUNT(*) FROM trainedleader";
     }
 
     $stmt = $dbConn->prepare($sql);
     if (!$stmt) return 0;
 
     if (!empty($ID)) {
-        $stmt->bind_param("s", $ID);
+      $stmt->bind_param("s", $ID);
     }
 
     $stmt->execute();
@@ -703,7 +703,7 @@ public static function GetTotalIDCount($ID)
     $stmt->close();
 
     return (int)($row[0] ?? 0);
-}
+  }
   /**
    * GetResultIDUnTrained()
    * Execute a quuery of the connected database and return a list of untrained leaders
@@ -744,34 +744,34 @@ public static function GetTotalIDCount($ID)
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-public static function GetUnTrainedPositionCount($position)
-{
+  public static function GetUnTrainedPositionCount($position)
+  {
     $dbConn = self::getDbConn();
     if (!$dbConn) {
-        error_log("GetUnTrainedPositionCount: No database connection - ".__FILE__." ".__LINE__ );
-        return 0;
+      error_log("GetUnTrainedPositionCount: No database connection - " . __FILE__ . " " . __LINE__);
+      return 0;
     }
 
     if (empty($position)) {
-        $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No'";
+      $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No'";
     } else {
-        $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No' AND Position = ?";
+      $sql = "SELECT COUNT(*) FROM trainedleader WHERE Trained = 'No' AND Position = ?";
     }
 
     $stmt = $dbConn->prepare($sql);
     if (!$stmt) {
-        error_log("GetUnTrainedPositionCount: Prepare failed: " . $dbConn->error ." - ".__FILE__." ".__LINE__ );
-        return 0;
+      error_log("GetUnTrainedPositionCount: Prepare failed: " . $dbConn->error . " - " . __FILE__ . " " . __LINE__);
+      return 0;
     }
 
     if (!empty($position)) {
-        $stmt->bind_param("s", $position);
+      $stmt->bind_param("s", $position);
     }
 
     if (!$stmt->execute()) {
-        error_log("GetUnTrainedPositionCount: Execute failed: " . $stmt->error ." - ".__FILE__." ".__LINE__ );
-        $stmt->close();
-        return 0;
+      error_log("GetUnTrainedPositionCount: Execute failed: " . $stmt->error . " - " . __FILE__ . " " . __LINE__);
+      $stmt->close();
+      return 0;
     }
 
     $result = $stmt->get_result();
@@ -780,7 +780,7 @@ public static function GetUnTrainedPositionCount($position)
 
     $stmt->close();
     return (int)$count;
-}
+  }
   /**
    * TODO:
    * GetTotalPositionCount()
@@ -877,42 +877,53 @@ public static function GetUnTrainedPositionCount($position)
    *****************************************************************************/
   public static function &formatUnitNumber($UnitNumber, $UnitGender)
   {
+    // Split on whitespace, filter out empty pieces
+    $parts = preg_split('/\s+/', trim($UnitNumber), -1, PREG_SPLIT_NO_EMPTY);
 
-    $Unit = strtok($UnitNumber, ' ');
-    $Number = strtok(' ');
-    $Gender = strtok(' ');
+    if (count($parts) < 2) {
+      return null; // or throw exception / handle invalid format
+    }
 
-    $Number = sprintf("%04d", $Number);
+    $Unit  = $parts[0];
+    $Number = sprintf("%04d", (int)$parts[1]); // safely convert to int first
+
+    // Gender might be in part 2 (if present)
+    $Gender = count($parts) >= 3 ? $parts[2] : '';
 
     $NewNumber = null;
+
     switch ($Unit) {
       case "Post":
-
       case "Crew":
-        $NewNumber =  $Unit . " " . $Number . "-NA";
+        $NewNumber = $Unit . " " . $Number . "-NA";
         break;
+
       case "Troop":
-        if ($UnitGender == null)
-          $UnitGender = $UnitNumber[12];
-        if (!strcmp($Gender, "(G)") || !strcmp($UnitGender, "G") || !strcmp($UnitGender, "Female"))
+        $effectiveGender = $UnitGender ?? ($Gender ?: ($UnitNumber[12] ?? ''));
+        if (in_array($effectiveGender, ['G', 'Female', '(G)'], true)) {
           $NewNumber = $Unit . " " . $Number . "-GT";
-        else
+        } else {
           $NewNumber = $Unit . " " . $Number . "-BT";
+        }
         break;
+
       case "Pack":
-        if ($UnitGender == null)
-          $UnitGender = $UnitNumber[11];
-        if (!strcmp($Gender, "(F)") || !strcmp($UnitGender, "F"))
+        $effectiveGender = $UnitGender ?? ($Gender ?: ($UnitNumber[11] ?? ''));
+        if (in_array($effectiveGender, ['F', '(F)'], true)) {
           $NewNumber = $Unit . " " . $Number . "-FP";
-        else
+        } else {
           $NewNumber = $Unit . " " . $Number . "-BP";
+        }
         break;
-      default;
+
+      default:
+        // Optionally: return null; or $UnitNumber unchanged
         break;
     }
 
     return $NewNumber;
   }
+
   /******************************************************************************
    * 
    * Read in the trained leader report from my.scouting.org
@@ -1182,7 +1193,7 @@ public static function GetUnTrainedPositionCount($position)
           throw new Exception("Invalid CSV format: Missing required columns.");
         }
 
-        while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== false) {
+        while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
           $row++;
           // Skip empty rows
 
