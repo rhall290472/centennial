@@ -130,7 +130,19 @@ if (!isset($_SESSION['csrf_token'])) {
           $ApprovedProject,
           $PreviewEagle
         );
-        echo "Statistics: ".$str;?>
+        echo "Statistics: ".$str;
+        
+        $sqlHours = "SELECT MIN(ProjectHours) AS min_hours, MAX(ProjectHours) AS max_hours, AVG(ProjectHours) AS avg_hours FROM scouts WHERE Eagled='1' AND BOR LIKE '%$year%'";
+
+        
+        $result = $cEagle->doQuery($sqlHours);
+        $row = $result->fetch_assoc();
+        echo "<br>Project Hours Statistics:<br>";
+        echo "Min: " . $row['min_hours'] . "<br>";
+        echo "Max: " . $row['max_hours'] . "<br>";
+        echo "Average: " . $row['avg_hours'] . "<br>";
+        
+        ?>
         </br></br>
 
       
