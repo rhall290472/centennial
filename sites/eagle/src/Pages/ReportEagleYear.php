@@ -133,8 +133,6 @@ if (!isset($_SESSION['csrf_token'])) {
         echo "Statistics: ".$str;
         
         $sqlHours = "SELECT MIN(ProjectHours) AS min_hours, MAX(ProjectHours) AS max_hours, AVG(ProjectHours) AS avg_hours FROM scouts WHERE Eagled='1' AND BOR LIKE '%$year%'";
-
-        
         $result = $cEagle->doQuery($sqlHours);
         $row = $result->fetch_assoc();
         echo "<br>Project Hours Statistics:<br>";
