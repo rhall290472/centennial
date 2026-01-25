@@ -38,9 +38,12 @@ unset($_SESSION['feedback']);
 
 // Handle unit selection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-  $Unit = filter_input(INPUT_POST, 'Unit', FILTER_SANITIZE_STRING);
+  $Unit = filter_input(INPUT_POST, 'Unit' ?? '');
   if ($Unit) {
-    [$UnitType, $UnitNum] = array_map('trim', explode(',', $Unit, 2));
+    $parts = array_map('trim', explode('-', $Unit, 2));
+
+    $UnitType = $parts[0] ?? '';
+    $UnitNum  = $parts[1] ?? '';   // or null, '0', 0, etc. depending on what you need
   }
   $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -60,10 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST[
         <?php echo htmlspecialchars($feedback['message']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-    <?php endif; 
+    <?php endif;
 
     $sqlUnits = "SELECT DISTINCT `UnitType`, `UnitNumber` FROM `scouts` ORDER BY `UnitType`, `UnitNumber`";
-     $cEagle->SelectUnit($sqlUnits, $_SESSION['csrf_token']); ?>
+    $cEagle->SelectUnit($sqlUnits, $_SESSION['csrf_token']); ?>
 
     <h4 class="text-center">Scouts who have Eagled (since 2017)</h4>
     <div class="table-responsive">
@@ -144,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['SubmitUnit'], $_POST[
             );
           }
           mysqli_stmt_close($stmt);
+
           ?>
         </tbody>
       </table>

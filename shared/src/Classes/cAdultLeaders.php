@@ -875,7 +875,7 @@ class AdultLeaders
    * Reports so, we will make our own standard.
    * 
    *****************************************************************************/
-  public static function &formatUnitNumber($UnitNumber, $UnitGender)
+  public static function formatUnitNumber($UnitNumber, $UnitGender)
   {
     // Split on whitespace, filter out empty pieces
     $parts = preg_split('/\s+/', trim($UnitNumber), -1, PREG_SPLIT_NO_EMPTY);
@@ -1115,24 +1115,24 @@ class AdultLeaders
         //$sqlInsertypt += $sqlInsertypt.sprintf("'%s', ", $Unit);
         //else
         $sqlInsertypt = "'" . $data[$colDistrict[0]] . "', "
-          . "'" . addslashes($data[$colProgram[0]]) . "', "
-          . "'" . addslashes($Unit) . "', "
-          . "'" . addslashes($data[$colGender[0]]) . "', "
-          . "'" . addslashes($data[$colCharteredOrg[0]]) . "', "
-          . "'" . addslashes($data[$colFirstName[0]]) . "', "
-          . "'" . addslashes($data[$colMiddleName[0]]) . "', "
-          . "'" . addslashes($data[$colLastName[0]]) . "', "
-          . "'" . addslashes($data[$colMemberID[0]]) . "', "
-          . "'" . addslashes($data[$colPosition[0]]) . "', "
-          . "'" . addslashes($data[$colStatus[0]]) . "', "
-          . "'" . addslashes($data[$colEffectiveThrough[0]]) . "', "
-          . "'" . addslashes($data[$colYPTCoce[0]]) . "', "
-          . "'" . addslashes($data[$colYPTCompleted[0]]) . "', "
-          . "'" . addslashes($data[$colYPTExpired[0]]) . "', "
-          . "'" . addslashes($data[$colEmail[0]]) . "', "
-          . "'" . addslashes($data[$colPhone[0]]) . "', "
-          . "'" . addslashes($data[$colRegistrationDate[0]]) . "', "
-          . "'" . addslashes($data[$colOnlineCourses[0]]) . "'";
+              . "'" . addslashes((string)($data[$colProgram[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($Unit ?? '')) . "', "               // $Unit probably never null, but safe
+              . "'" . addslashes((string)($data[$colGender[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colCharteredOrg[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colFirstName[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colMiddleName[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colLastName[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colMemberID[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colPosition[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colStatus[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colEffectiveThrough[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colYPTCoce[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colYPTCompleted[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colYPTExpired[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colEmail[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colPhone[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colRegistrationDate[0]] ?? '')) . "', "
+              . "'" . addslashes((string)($data[$colOnlineCourses[0]] ?? '')) . "'";
 
 
 
