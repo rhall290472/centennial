@@ -63,6 +63,8 @@ if (defined('ENV') && ENV === 'development') {
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
 define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
 define('SHARED_PATH', __DIR__ . '/../../../shared/');
+define('SHARED_CLASS_PATH', SRC_PATH . '/Classes');
+
 
 // Site metadata
 define('PAGE_TITLE', 'Centennial District Merit Badges');
