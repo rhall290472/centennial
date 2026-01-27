@@ -33,12 +33,12 @@ if (!isset($_SESSION['csrf_token'])) {
 
 <head>
   <!-- jQuery (required for DataTables) -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
   <!-- DataTables CSS -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" /> -->
   <!-- Custom CSS for button styling and spinner -->
-  <style>
+  <!-- <style>
     .dt-button.btn-primary:hover {
       background-color: #0056b3 !important;
       border-color: #004085 !important;
@@ -64,7 +64,7 @@ if (!isset($_SESSION['csrf_token'])) {
         transform: rotate(360deg);
       }
     }
-  </style>
+  </style> -->
 </head>
 
 <body>

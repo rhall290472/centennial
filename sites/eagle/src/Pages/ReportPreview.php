@@ -35,12 +35,12 @@ if (!isset($_SESSION['csrf_token'])) {
   <!-- Bootstrap CSS -->
   <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
   <!-- jQuery (required for DataTables) -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
   <!-- DataTables CSS -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" /> -->
   <!-- Custom CSS for button styling, spinner, and layout -->
-  <style>
+  <!-- <style>
     .dt-button.btn-primary:hover {
       background-color: #0056b3 !important;
       border-color: #004085 !important;
@@ -75,7 +75,7 @@ if (!isset($_SESSION['csrf_token'])) {
       width: 360px;
       padding: 20px;
     }
-  </style>
+  </style> -->
 </head>
 
 <body>
