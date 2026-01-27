@@ -1,6 +1,6 @@
 <?php
-load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
-$CAdvancement = CAdvancement::getInstance();
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
+$CEagle = CEagle::getInstance();
 
 
 // Define variables and initialize with empty values
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Prepare a select statement
     $sql = "SELECT Userid FROM users WHERE username = ?";
 
-    if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
+    if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
       // Bind variables to the prepared statement as parameters
       mysqli_stmt_bind_param($stmt, "s", $param_username);
 
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Prepare an insert statement
     $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
 
-    if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
+    if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
       // Bind variables to the prepared statement as parameters
       mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
 
@@ -83,10 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (mysqli_stmt_execute($stmt)) {
         // 
         $msg = "Once your account has been enabled you will be able to log in.";
-        $CAdvancement->function_alert($msg);
+        $CEagle->function_alert($msg);
         $str = sprintf("New Eagle registration, at %s\n", Date('Y-m-d H:i:s'));
         error_log($str, 1, "richard.hall@centennialdistrict.co");
-        header("Location: index.php?page=index");
+        //header("Location: index.php?page=index");
       } else {
         echo "Oops! Something went wrong. Please try again later.";
       }
