@@ -55,7 +55,7 @@ define('SMTP_PASS', 'wmksqamucgzvlsil');
 define('SMTP_PORT', '587');
 
 
-$pageHome = SITE_URL . '/centennial/sites/eagle/public/index.php';
+$pageHome = SITE_URL . '/eagle.centennialdistrict.co/index.php';
 $pageContact = SITE_URL . '/centennial/sites/eagle/src/Pages/contact.php';
 // Navigation links
 define('NAV_LINKS', [
