@@ -51,7 +51,7 @@ define('CONTACT_EMAIL', 'richard.hall@centennialdistrict.co');
 // SMTP settings
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_USER', 'richard.hall@centennialdistrict.co');
-define('SMTP_PASS', 'drjp eype vygg endr'); 
+define('SMTP_PASS', 'wmksqamucgzvlsil'); 
 define('SMTP_PORT', '587');
 
 

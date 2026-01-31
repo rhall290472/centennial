@@ -5,6 +5,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 } else {
   die('An error occurred. Please try again later.');
 }
+$page = $page ?? 'home';
 ?>
 <!-- Sidebar -->
 <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-light" id="sidebar">

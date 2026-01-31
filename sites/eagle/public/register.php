@@ -1,6 +1,7 @@
 <?php
-load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
-$CAdvancement = CAdvancement::getInstance();
+ob_start();
+load_class(BASE_PATH . '/src/Classes/CEagle.php');
+$CEagle = CEagle::getInstance();
 load_class(BASE_PATH . '/src/Classes/CEmail.php');
 $CEmail = CEmail::getInstance();
 
@@ -100,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (mysqli_stmt_execute($stmt)) {
         // 
         $msg = "Your account request has been received. An administrator will review it shortly.";
-        $CAdvancement->function_alert($msg);
+        $CEagle->function_alert($msg);
 
         // Prepare admin notification email
         $subject    = "New Eagle Account Request - " . htmlspecialchars($username);
@@ -137,6 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirect to a clean landing page
+        $CEagle->GotoURL("index.php");
         header("Location: index.php?page=index");
         exit;
       } else {
@@ -215,5 +217,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </center>
 </body>
-
+<?php ob_end_flush(); ?>
 </html>
