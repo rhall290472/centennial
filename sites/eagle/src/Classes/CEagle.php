@@ -177,7 +177,7 @@ class CEagle
 
     $sqlHours = "SELECT DISTINCT YEAR(STR_TO_DATE(`BOR`, '%m/%d/%Y')) AS year FROM `scouts` WHERE `BOR` IS NOT NULL AND `BOR` != '' ORDER BY year DESC;";
     $result = self::doQuery($sqlHours);
-    $row = $result->fetch_assoc();
+    //$row = $result->fetch_assoc();
 
 ?>
     <form method=post>
