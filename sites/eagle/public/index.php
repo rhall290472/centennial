@@ -23,7 +23,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 
 // Define SITE_URL fallback if not set
 if (!defined('SITE_URL')) {
-  define('SITE_URL', 'https://' . $_SERVER['HTTP_HOST'] . '/centennial/sites/eagle/public');
+  define('SITE_URL', 'https://' . $_SERVER['HTTP_HOST'] . '/eagle.centennialdistrict.co/index.php');
 }
 
 // Load required classes for file uploads
