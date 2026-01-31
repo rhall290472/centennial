@@ -50,12 +50,10 @@ define('CONTACT_EMAIL', 'richard.hall@centennialdistrict.co');
 
 // SMTP settings
 define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'rhall290472@gmail.com');
-define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
+define('SMTP_USER', 'richard.hall@centennialdistrict.co');
+define('SMTP_PASS', 'drjp eype vygg endr'); 
+define('SMTP_PORT', '587');
 
-define('ALLOWED_FILE_EXTENSIONS', ['csv']);
-define('MAX_FILE_SIZE', 4000000); // 4MB
-define('UPLOAD_DIRECTORY', __DIR__ . '/Data/');
 
 $pageHome = SITE_URL . '/centennial/sites/eagle/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/eagle/src/Pages/contact.php';

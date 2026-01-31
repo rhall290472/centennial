@@ -46,6 +46,13 @@
       "webRoot": "${workspaceFolder}"
     },
     {
+      "name": "Test Email",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost/centennial/sites/eagle/public/test-mail.php",
+      "webRoot": "${workspaceFolder}"
+    }
+    {
       "name": "Launch currently open script",
       "type": "php",
       "request": "launch",
