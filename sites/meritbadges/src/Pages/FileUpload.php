@@ -19,7 +19,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 }
 
 load_class(BASE_PATH . '/src/Classes/CReports.php');
-load_class(SHARED_PATH . '/src/Classes/CMeritBadges.php');
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
 // Load dependencies (use Composer autoloader if possible)
 //require_once __DIR__ . '/sqlStatements.php';
 //require_once __DIR__ . '/CMeritBadges.php';

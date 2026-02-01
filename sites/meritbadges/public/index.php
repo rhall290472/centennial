@@ -22,10 +22,11 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
   die('An error occurred. Please try again later.');
 }
 
+//SHARED_PATH . 'src/Classes/cAdultLeaders.php',
 $files = [
-  SHARED_PATH . 'src/Classes/cAdultLeaders.php',
   __DIR__ . '/../src/Classes/CAdmin.php',
-  SHARED_PATH . 'src/Classes/CMeritBadges.php'
+  SHARED_CLASS_PATH . '/CMeritBadges.php',
+  SHARED_CLASS_PATH . '/cAdultLeaders.php'
 ];
 foreach ($files as $file) {
   if (!file_exists($file)) {
@@ -43,7 +44,7 @@ if (!defined('SITE_URL')) {
 $page = $_GET['page'] ?? 'home';
 
 // Load required classes for file uploads
-load_class(SHARED_PATH . 'src/Classes/CMeritBadges.php');
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php', __FILE__, __LINE__);
 
 // FileUploader class for secure file uploads
 class FileUploader
@@ -177,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(SHARED_PATH . 'src/Classes/CMeritBadges.php');
+    load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
     $CMeritBadges = CMeritBadges::getInstance();
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -317,7 +318,7 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/FileUpload.php');
           break;
           // Load CMeritBadges to get database connection
-          load_class(SHARED_PATH .  'src/Classes/CMeritBadges.php');
+          load_class(SHARED_PATH .  'src/Classes/CMeritBadges.php', __FILE__, __LINE__);
           $CMeritBadges = CMeritBadges::getInstance();
           // Query to get counselors with more than 15 merit badges
           $sql = "SELECT counselors.Unit1, counselors.FirstName, counselors.LastName, counselors.Email, counselors.MemberID, counselors.ValidationDate, counselors.Active

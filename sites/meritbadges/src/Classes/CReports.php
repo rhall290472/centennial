@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
-include_once(SHARED_PATH . 'src/Classes/CMeritBadges.php');
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
 //include_once('cAdultLeaders.php');
 
 class CReports extends CMeritBadges
