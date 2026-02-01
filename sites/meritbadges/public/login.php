@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_class(SHARED_CLASS_PATH . '/CMeritBadges.php', __FILE__, __LINE__);
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
 $CMeritBadges = CMeritBadges::getInstance();
 
 // Check if the user is already logged in, redirect to home page
