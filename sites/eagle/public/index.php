@@ -196,7 +196,12 @@ if (!isset($_SESSION['csrf_token'])) {
               <p class="fs-4"><?php echo PAGE_DESCRIPTION; ?></p>
               <hr>
               <?php if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) { ?>
-                <img class="EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
+                <!-- <img class="EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
+                <!-- <img class="EagleScoutimage d-block mx-auto" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
+                 <!-- <img class="EagleScoutimage img-fluid mx-auto d-block" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
+                  <div class="text-center">
+  <img class="EagleScoutimage d-block mx-auto" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
+</div>
               <?php } else { ?>
                 <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
               <?php } ?>
