@@ -520,8 +520,7 @@ class CMBCollege
 
             while ($rowMB = $Result_MB->fetch_assoc()) {
 
-              echo "<h3>", $rowMB['MeritName'], "</h3>", "Requirments: ", $rowMB['RequirementsRevised'],
-              "<a href='" . $rowMB['URL'] . "'>" . "<img src='" . $rowMB['Logo'] . "'" . " width='50' height='50'></a>";
+              echo "<h3>", $rowMB['MeritName'], "</h3>", "Requirments: ", $rowMB['RequirementsRevised'];
             }
             echo "<br>";
             echo "<table class='table table-light tl1 tl2 tl3 tc4 tc5' style='width:600px';>";

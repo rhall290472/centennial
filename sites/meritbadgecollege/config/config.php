@@ -112,36 +112,54 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-  function load_template($file, $vars = [])
-  {
-    extract($vars);
-    $path = BASE_PATH . $file;
-    if (file_exists($path)) {
-      require_once $path;
-    } else {
-      error_log("Template $file is missing.");
-      if (defined('ENV') && ENV === 'development') {
-        echo 'Template ' . $path . ' is missing.</br>';
-        die('Template $file is missing.');
-      } else
-        die('An error occurred. Please try again later.');
+    function load_template(string $classFile): void
+    {
+        $path = BASE_PATH . $classFile;
+        if (file_exists($path)) {
+            require_once $path;
+            return;
+        }
+
+        // Get caller information
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+        $message = "Cannot load class file: {$classFile}\n"
+                 . "Called from: {$caller['file']}:{$caller['line']}";
+
+        error_log($message);
+
+        if (defined('ENV') && ENV === 'development') {
+            header('Content-Type: text/plain; charset=utf-8');
+            die($message);
+        }
+
+        die('An internal error occurred. Please try again later.');
     }
-  }
 }
 // Class loader function
 if (!function_exists('load_class')) {
-  function load_class($file)
-  {
-    $path = $file;
-    if (file_exists($path)) {
-      require_once $path;
-    } else {
-      error_log("Class $file is missing.");
-      if (defined('ENV') && ENV === 'development') {
-        echo 'Template ' . $path . ' is missing.</br>';
-        die('Template $file is missing.');
-      } else
-        die('An error occurred. Please try again later.');
+    function load_class(string $classFile): void
+    {
+        if (file_exists($classFile)) {
+            require_once $classFile;
+            return;
+        }
+
+        // Get caller information
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+        $message = "Cannot load class file: {$classFile}\n"
+                 . "Called from: {$caller['file']}:{$caller['line']}";
+
+        error_log($message);
+
+        if (defined('ENV') && ENV === 'development') {
+            header('Content-Type: text/plain; charset=utf-8');
+            die($message);
+        }
+
+        die('An internal error occurred. Please try again later.');
     }
-  }
 }
