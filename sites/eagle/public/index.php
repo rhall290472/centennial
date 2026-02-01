@@ -61,6 +61,8 @@ $valid_pages = [
   'logout',
   'register',
   'changepassword',
+  'viewuser',
+  'edituser',
   ''
 ];
 if (!in_array($page, $valid_pages)) {
@@ -99,20 +101,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
-      $sql = "SELECT Userid, username, password, enabled FROM users WHERE username = ?";
+      $sql = "SELECT Userid, username, password, enabled, Role FROM users WHERE username = ?";
       if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
           if (mysqli_stmt_num_rows($stmt) == 1) {
-            mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
+            mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled, $role);
             if (mysqli_stmt_fetch($stmt)) {
               //$newPassword = password_hash($password, PASSWORD_DEFAULT);
               if (password_verify($password, $hashed_password) && $enabled) {
+              // Update lastlogged in
+              $updateSql = "UPDATE users SET LastLogin = NOW() WHERE Userid = ?";
+              if ($updateStmt = mysqli_prepare($CEagle->getDbConn(), $updateSql)) {
+                mysqli_stmt_bind_param($updateStmt, "i", $id);
+                mysqli_stmt_execute($updateStmt);
+                mysqli_stmt_close($updateStmt);
+                // You can silently ignore failure here — logging in is more important
+              } else {
+                error_log("Failed to prepare LastLogin update: " . mysqli_error($CEagle->getDbConn()));
+              }
+
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;
                 $_SESSION["username"] = $username;
                 $_SESSION["enabled"] = $enabled;
+                $_SESSION["role"] = $role;
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Login successful.'];
                 header("Location: index.php?page=home");
@@ -280,7 +294,12 @@ if (!isset($_SESSION['csrf_token'])) {
          case 'changepassword':
             include('../src/Pages/changepassword.php');
             break;
-
+        case 'viewuser':
+            include('../src/Pages/ViewUsers.php');
+            break;
+        case 'edituser':
+            include('../src/Pages/EditUser.php');
+            break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }
