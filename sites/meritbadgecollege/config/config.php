@@ -84,7 +84,7 @@ define('ENV', 'development'); // Set to 'production' on live server
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 ini_set('log_errors', '1');
-//ini_set('session.save_path', '/tmp');
+ini_set('session.save_path', '/tmp');
 error_reporting(E_ALL);
 
 
