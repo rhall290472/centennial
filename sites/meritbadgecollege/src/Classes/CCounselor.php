@@ -860,17 +860,17 @@ class CCounselor extends CMBCollege
         $colOrganizations = 0;
         $colFirst_Name = 1;
         $colLast_Name = 2;
-        $colmemberid = 3;
-        $colStrexpirydt = 4;
-        $colYPT_Status = 5;
-        $colStryptexpirydt = 6;
-        $colTroopnos = 7;
-        $colPhone = 8;
-        $colEmail = 9;
-        $colCity = 11;
-        $colZip = 12;
-        $colNumber_Badges_Counsel = 13;
-        $colAwards = 14;
+        // $colmemberid = 3;
+        // $colStrexpirydt = 4;
+        // $colYPT_Status = 5;
+        // $colStryptexpirydt = 6;
+        // $colTroopnos = 7;
+        // $colPhone = 8;
+        $colEmail = 3;
+        // $colCity = 11;
+        // $colZip = 12;
+        // $colNumber_Badges_Counsel = 13;
+        $colAwards = 4;
 
         // File does not contain BSA Member ID so we create fake one
         //$BSAMemberID = -100;
@@ -914,7 +914,7 @@ class CCounselor extends CMBCollege
         $Row = 1;
         if (($handle = fopen($FileToOpen, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
-            if ($Row++ <= 9) {
+            if ($Row++ <= 2) {
               continue;
             } //Skip past the header stuff, first line of data is row 11
             // First need to check if this will be an UPDATE or INSERT
@@ -926,17 +926,18 @@ class CCounselor extends CMBCollege
             $District = filter_var($data[$colOrganizations]);
             $FirstName = filter_var($data[$colFirst_Name]);
             $LastName = filter_var($data[$colLast_Name]);
-            $MemberID = filter_var($data[$colmemberid]);
-            $YPT = filter_var($data[$colStrexpirydt]);
+            // $MemberID = filter_var($data[$colmemberid]);
+            // $YPT = filter_var($data[$colStrexpirydt]);
             //$StrYPTExp = $data[$colStrYPTExp];
             //$MemberID = $data[$colMember_ID];
             //$Troop_s = $data[$colTroopnos];
             //$Phone = $data[$colPhone];
             //$Phone = self::right($Phone, 10);
             $Email = filter_var($data[$colEmail], FILTER_SANITIZE_EMAIL);
-            $City = filter_var($colCity);
-            $NumOfBadges = filter_var($data[$colNumber_Badges_Counsel], FILTER_SANITIZE_NUMBER_INT);
+            // $City = filter_var($colCity);
+            //$NumOfBadges = filter_var($data[$colNumber_Badges_Counsel], FILTER_SANITIZE_NUMBER_INT);
 
+            $NumOfBadges = 1;
             if ($NumOfBadges == 0) {
               // TODO: Mark the counselors as Not Active.
               //if (!self::MarkCounselorNotActive($MemberID)) {
@@ -944,6 +945,7 @@ class CCounselor extends CMBCollege
               //    self::function_alert($msg);
               //}
             }
+
 
             $awardsString = trim($data[$colAwards]);
             $badges = [];
@@ -988,30 +990,31 @@ class CCounselor extends CMBCollege
                 // Now update Counselor information
                 if ($i == 0) {
                   $sqlCounselorInsert = sprintf(
-                    "INSERT INTO `mbccounselors`(`LastName`, `HomeDistrict`, `FirstName`, `HomePhone`, `MemberID`,  
-                             `Active`, `YPT`, `Email`,`City`, `ValidationDate`,  `NumOfBadges`) 
-                            VALUES ('%s', '%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                    "INSERT INTO `mbccounselors`(`LastName`, `HomeDistrict`, `FirstName`,   
+                             `Active`, `Email`, `ValidationDate`) 
+                            VALUES ('%s', '%s', '%s', '%s','%s', '%s' )",
                     addslashes($LastName),
                     $District,
                     $FirstName,
-                    "",
-                    $MemberID,
+                    // "",
+                    // $MemberID,
                     "Yes",
-                    $YPT,
+                    // $YPT,
                     //$StrYPTExp = $data[$colStrYPTExp];
                     //$MemberID = $data[$colMember_ID];
                     //$Troop_s = $data[$colTroopnos];
                     //$Phone = $data[$colPhone];
                     //$Phone = self::right($Phone, 10);
                     $Email = $data[$colEmail],
-                    $City,
+                    //$City,
                     date("d/M/Y"),
-                    $NumOfBadges = $data[$colNumber_Badges_Counsel]
+                    //$NumOfBadges = $data[$colNumber_Badges_Counsel]
                   );
                   $AddCounselor++;
                   if (!self::doQuery($sqlCounselorInsert)) {
-                    $msg = sprintf("Error: %s ", $sqlCounselorInsert);
-                    echo "Error: " . $sqlCounselorInsert . $MeritBadge . "<br/>";
+                    $msg = "Error: " . $sqlCounselorInsert . $MeritBadge . __FILE__ . " " . __LINE__ . "<br/>";
+                    echo $msg;
+                    error_log($msg);
                     self::function_alert($msg);
                   }
                 }
@@ -1021,7 +1024,9 @@ class CCounselor extends CMBCollege
                         VALUES ('%s', '%s', '%s', 'ADD', '%s')", addslashes($LastName), $FirstName, $MeritBadge, date("d/M/Y"));
                 if (!self::doQuery($sqlInsert)) {
                   $RecordsInError++;
-                  echo "Error: " . $sqlInsert . "<br/>";
+                  $msg =  "Error: " . $sqlInsert . __FILE__ . " " . __LINE__ . "<br/>";
+                  echo $msg;
+                  error_log($msg);
                 } else {
                   $RecordsInsert++;
                   $Inserted++;
@@ -1042,7 +1047,9 @@ class CCounselor extends CMBCollege
                 );
                 if (!self::doQuery($sqlUpdate)) {
                   $msg = sprintf("Error: %s ", $sqlUpdate);
-                  echo "Error: " . $sqlUpdate . "<br/>";
+                  $msg = "Error: " . $sqlUpdate . __FILE__ . " " . __LINE__ . "<br/>";
+                  echo $msg;
+                  error_log($msg);
                   self::function_alert($msg);
                   $RecordsInError++;
                 } else
@@ -1051,21 +1058,25 @@ class CCounselor extends CMBCollege
                 if ($i == 0) {
                   // Now update Counselor information
                   $sqlUpdate = sprintf(
-                    "UPDATE `mbccounselors` SET `ValidationDate`='%s', `MemberID`='%s', 
-                                    `HomePhone`='%s', `Email`='%s', `Active`='%s', `YPT`='%s', `NumOfBadges`='%s'
+                    "UPDATE `mbccounselors` SET `ValidationDate`='%s',  
+                                    `Email`='%s', `Active`='%s',  `NumOfBadges`='%s'
                                      WHERE `LastName`='%s' AND `FirstName`='%s'",
                     date("d/M/Y"),
-                    $MemberID,
+                    // $MemberID,
                     "",
                     $Email,
                     "Yes",
-                    $data[$colYPT_Status],
-                    $NumOfBadges,
+                    //$data[$colYPT_Status],
+                    count($badges),
                     addslashes($LastName),
                     $FirstName
                   );
                   if (!self::doQuery($sqlUpdate)) {
                     $msg = sprintf("Error: %s ", $sqlUpdate);
+                    $msg = "Error: " . $sqlUpdate . __FILE__ . " " . __LINE__ . "<br/>";
+                    echo $msg;
+                    error_log($msg);
+                    $RecordsInError++;
                     $RecordsInErrorDebug++;
                     self::function_alert($msg);
                   }
@@ -1077,7 +1088,7 @@ class CCounselor extends CMBCollege
             }
           }
           fclose($handle);
-          $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Records Updated Inserted: ' . $Inserted . ' Updated: ' . $Updated . ' Errors: ' . $RecordsInErrorDebug];
+          $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Records Updated Inserted: ' . $Inserted . ' Updated: ' . $Updated . ' Errors: ' . $RecordsInError];
           // $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInErrorDebug;
           // self::function_alert($Usermsg);
           if ($RecordsInError == 0 && $RecordsInsert != 0 && $AddCounselor == 0) echo "<script>window.location.href = 'index.php';</script>";
@@ -1134,7 +1145,8 @@ class CCounselor extends CMBCollege
           "Truck Trans." => "Truck Transportation",
           "Amer. Labor" => "American Labor",
           "Motorboating" => "Motorboating",
-          "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine"
+          "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine",
+          "Computers  Discontinued 12/31/14" => "Digital Technology",
         ];
         return $map[$badge] ?? $badge;
       }

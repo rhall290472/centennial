@@ -82,14 +82,14 @@ define('ENV', 'development'); // Set to 'production' on live server
 // Enable error reporting in development only
 
 if (defined('ENV') && ENV === 'development') {
-  ini_set('display_errors', 1);
-  ini_set('log_errors', 1);
-  ini_set('error_log', SHARED_PATH . '/logs/php_errors.log');
-  error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
+    ini_set('error_log', BASE_PATH . '/../../shared/logs');
+    error_reporting(E_ALL);
 } else {
-  ini_set('display_errors', 0);
-  ini_set('log_errors', 1);
-  ini_set('error_log', SHARED_PATH . '/logs/php_errors.log');
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
