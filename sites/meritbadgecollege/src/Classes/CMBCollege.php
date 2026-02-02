@@ -107,7 +107,7 @@ class CMBCollege
   private static function initConnection()
   {
     $db = self::getInstance();
-    
+
     $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     // Check for connection errors (prevents silent failures)
@@ -133,6 +133,32 @@ class CMBCollege
       $strError = "I was unable to open a connection to the database. " . $ex->getMessage();
       error_log($strError, 0);
       return null;
+    }
+  }
+  public static function getPdoConn()
+  {
+    // Build DSN (Data Source Name) - using utf8mb4 is strongly recommended
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+
+    try {
+      $pdo = new PDO(
+       $dsn,
+        DB_USER,
+        DB_PASS,
+        [
+          PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+          PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+      );
+       return $pdo;
+    } catch (PDOException $e) {
+      // In development: show error
+      die("Database connection failed: " . $e->getMessage());
+      // In production: log and show friendly message
+      // error_log($e->getMessage());
+      // http_response_code(500);
+      // echo "Service unavailable. Please try again later.";
     }
   }
 
@@ -206,12 +232,12 @@ class CMBCollege
         <?php $yr = $_SESSION['year']; ?>
         <!--  First recod is blank "all" -->
         <option value=""> </option>
-          <?php
-          if (!strcmp($yr, "2022"))
-            $Selected = "selected";
-          else
-            $Selected = "";
-          ?>
+        <?php
+        if (!strcmp($yr, "2022"))
+          $Selected = "selected";
+        else
+          $Selected = "";
+        ?>
         <option value='2022' " . $Selected . ">2022</option>
 
       <?php
@@ -1507,10 +1533,11 @@ class CMBCollege
       }
 
 
-// Helper function (put somewhere in utils or CMBCollege class)
-function get_csrf_token(): string {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}      
+      // Helper function (put somewhere in utils or CMBCollege class)
+      function get_csrf_token(): string
+      {
+        if (empty($_SESSION['csrf_token'])) {
+          $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+      }
