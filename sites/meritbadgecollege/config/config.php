@@ -168,8 +168,20 @@ if (!function_exists('load_class')) {
 // Helper function 
 function get_csrf_token(): string
 {
-  if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-  }
-  return $_SESSION['csrf_token'];
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Optional: very helpful during debugging – remove or comment out in production
+    error_log("get_csrf_token() called from: " . debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['file'] . ":" . debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['line']);
+
+    if (empty($_SESSION['csrf_token'])) {
+        // Use random_bytes() → bin2hex() is still fine and very common
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        
+        // Optional debug log (comment out in production)
+        error_log("Generated new CSRF token: " . $_SESSION['csrf_token']);
+    }
+
+    return $_SESSION['csrf_token'];
 }

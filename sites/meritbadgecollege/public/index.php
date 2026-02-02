@@ -10,13 +10,13 @@ ob_start();
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
 // Secure session start
-if (session_status() === PHP_SESSION_NONE) {
-  session_start([
-    'cookie_httponly' => true,
-    'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
-  ]);
-}
+// if (session_status() === PHP_SESSION_NONE) {
+//   session_start([
+//     'cookie_httponly' => true,
+//     'use_strict_mode' => true,
+//     'cookie_secure' => isset($_SERVER['HTTPS'])
+//   ]);
+// }
 error_log("Session save path = " . session_save_path());
 error_log("Session ID = " . session_id());
 // Load configuration
