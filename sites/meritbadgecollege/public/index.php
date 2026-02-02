@@ -1,7 +1,8 @@
 <?php
 ini_set('display_errors', 1);
-ini_set('log_errors', '1');
 ini_set('display_startup_errors', 1);
+ini_set('log_errors', '1');
+ini_set('session.save_path', '/tmp');
 error_reporting(E_ALL);
 ob_start();
 /*
@@ -16,7 +17,8 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
-
+error_log("Session save path = " . session_save_path());
+error_log("Session ID = " . session_id());
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -85,9 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "\nAfter trim(): ";
     var_dump(trim($post_token) !== trim($session_token));
 
-    //$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    //header("Location: index.php?page=$page");
-    //exit;
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+    header("Location: index.php?page=$page");
+    exit;
   }
 
   // Login
@@ -117,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled, $role);
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
+                error_log("LOGIN SUCCESS - id=$id  username=$username");
                 // Very important security improvements:
                 //$_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
                 //session_regenerate_id(true);
@@ -133,6 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               }
             }
           } else {
+            error_log("LOGIN FAIL - verify=" . (password_verify($password, $hashed_password) ? 'true' : 'false') .
+              "  enabled=" . ($enabled ? 'true' : 'false'));
             $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password.'];
             header("Location: index.php?page=login");
           }
@@ -144,9 +149,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         throw new Exception("Failed to prepare statement: " . mysqli_error($CMBCollege->getDbConn()));
       }
     } catch (Exception $e) {
-      error_log("index.php - Login error: " . $e->getMessage(), 0);
+      error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
       header("Location: index.php?page=login");
+      exit;
     }
     exit;
   }

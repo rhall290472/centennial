@@ -136,7 +136,7 @@ $CMBCollege = CMBCollege::getInstance();
         <!-- Counselor selection form -->
         <div class="form-section">
           <p>To limit the number of scouts in your class, enter a value (default is 15 scouts).</p>
-          <p>Specify any prerequisites in the Prerequisites field.</p>
+          <p>Specify any rerequisites in the rerequisites field.</p>
           <p>Include any material charges in the class fee.</p>
           <p>If your name is not in the Counselor list, missing a Merit Badge, want to offer a NOVA class, or need to edit your merit badges, please <a href="mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College">contact us</a>.</p>
 
@@ -290,7 +290,7 @@ $CMBCollege = CMBCollege::getInstance();
                     <?php endif; ?>
 
                     <div class="col-md-3">
-                      <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
+                      <label for="MB<?= $i ?>Prerequisities" class="form-label">rerequisites</label>
                       <?php $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
                     </div>
 
