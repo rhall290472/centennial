@@ -1,24 +1,19 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-ini_set('log_errors', '1');
-ini_set('session.save_path', '/tmp');
-error_reporting(E_ALL);
 ob_start();
 /*
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
 // Secure session start
-// if (session_status() === PHP_SESSION_NONE) {
-//   session_start([
-//     'cookie_httponly' => true,
-//     'use_strict_mode' => true,
-//     'cookie_secure' => isset($_SERVER['HTTPS'])
-//   ]);
-// }
-error_log("Session save path = " . session_save_path());
-error_log("Session ID = " . session_id());
+if (session_status() === PHP_SESSION_NONE) {
+  session_start([
+    'cookie_httponly' => true,
+    'use_strict_mode' => true,
+    'cookie_secure' => isset($_SERVER['HTTPS'])
+  ]);
+}
+// error_log("Session save path = " . session_save_path());
+// error_log("Session ID = " . session_id());
 // Load configuration
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -94,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
-    $CMBCollege = CMBCollege::getInstance();
+    // load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
+    // $CMBCollege = CMBCollege::getInstance();
 
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);

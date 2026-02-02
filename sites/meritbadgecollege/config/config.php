@@ -81,11 +81,18 @@ define('NAV_LINKS', [
 // Environment configuration  // development
 define('ENV', 'development'); // Set to 'production' on live server
 // Enable error reporting in development only
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+ini_set('log_errors', '1');
+//ini_set('session.save_path', '/tmp');
+error_reporting(E_ALL);
+
 
 if (defined('ENV') && ENV === 'development') {
   ini_set('display_errors', 1);
   ini_set('log_errors', 1);
-  ini_set('error_log', SHARED_PATH . '/shared/logs');
+  ini_set('error_log', SHARED_PATH . '/shared/logs/php_errors.log');
+  $pgLog = SHARED_PATH . '/shared/logs';
   error_reporting(E_ALL);
 } else {
   ini_set('display_errors', 0);
@@ -112,32 +119,37 @@ ini_set('post_max_size', '4M');
 
 
 // Template loader function
+
+/**
+ * Loads a template file and makes variables available in its scope
+ * 
+ * @param string $templatePath Relative path from BASE_PATH (e.g. '/src/Templates/navbar.php')
+ * @param array  $vars        Associative array of variables to extract into the template scope
+ */
 if (!function_exists('load_template')) {
-  function load_template(string $classFile): void
+  function load_template(string $templatePath, array $vars = []): void
   {
-    $path = BASE_PATH . $classFile;
-    if (file_exists($path)) {
-      require_once $path;
-      return;
+    $fullPath = BASE_PATH . $templatePath;
+
+    if (!file_exists($fullPath)) {
+      $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+      $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+      $message = "Template not found: {$fullPath}\nCalled from: {$caller['file']}:{$caller['line']}";
+      error_log($message);
+
+      if (defined('ENV') && ENV === 'development') {
+        die($message);
+      }
+      die('Template error. Please contact support.');
     }
 
-    // Get caller information
-    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-    $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+    // Make passed variables available in the template
+    extract($vars, EXTR_SKIP);   // ← This is the key line
 
-    $message = "Cannot load class file: {$classFile}\n"
-      . "Called from: {$caller['file']}:{$caller['line']}";
-
-    error_log($message);
-
-    if (defined('ENV') && ENV === 'development') {
-      header('Content-Type: text/plain; charset=utf-8');
-      die($message);
-    }
-
-    die('An internal error occurred. Please try again later.');
+    require $fullPath;            // or require_once if you prefer
   }
 }
+
 // Class loader function
 if (!function_exists('load_class')) {
   function load_class(string $classFile): void
@@ -168,20 +180,26 @@ if (!function_exists('load_class')) {
 // Helper function 
 function get_csrf_token(): string
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+  // Most robust way in 2024–2025
+  if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    session_start([
+      'cookie_secure'   => isset($_SERVER['HTTPS']),
+      'cookie_httponly' => true,
+      'cookie_samesite' => 'Lax',     // or 'Strict' depending on your needs
+    ]);
+  }
 
-    // Optional: very helpful during debugging – remove or comment out in production
-    error_log("get_csrf_token() called from: " . debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['file'] . ":" . debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['line']);
+  // If session is still not active → big problem (log + fallback)
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    // You can throw exception in development
+    // or return some fallback token (not ideal)
+    error_log("CRITICAL: Could not start session for CSRF token");
+    return bin2hex(random_bytes(16)); // degraded mode – but at least no crash
+  }
 
-    if (empty($_SESSION['csrf_token'])) {
-        // Use random_bytes() → bin2hex() is still fine and very common
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        
-        // Optional debug log (comment out in production)
-        error_log("Generated new CSRF token: " . $_SESSION['csrf_token']);
-    }
+  if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  }
 
-    return $_SESSION['csrf_token'];
+  return $_SESSION['csrf_token'];
 }
