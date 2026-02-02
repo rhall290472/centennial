@@ -1519,14 +1519,14 @@ class CCounselor extends CMBCollege
               $cleanBadge = CCounselor::FixMeritBadgeName($badgeName);
 
               $stmt = $this->pdo->prepare("
-        INSERT INTO mbccounselormerit 
-            (LastName, FirstName, MeritName, Status, StatusDate)
-        VALUES 
-            (:last, :first, :merit, 'ADD', :date)
-        ON DUPLICATE KEY UPDATE
-            Status     = IF(Status = 'DROP', 'ADD', 'UPDATED'),
-            StatusDate = :date_upd          -- ← different name here
-    ");
+                  INSERT INTO mbccounselormerit 
+                      (LastName, FirstName, MeritName, Status, StatusDate)
+                  VALUES 
+                      (:last, :first, :merit, 'ADD', :date)
+                  ON DUPLICATE KEY UPDATE
+                      Status     = 'UPDATED',
+                      StatusDate = :date_upd 
+              ");
 
               $stmt->execute([
                 'last'     => $last,

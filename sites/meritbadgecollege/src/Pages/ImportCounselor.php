@@ -47,7 +47,7 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
               class="form-control form-control-lg"
               name="the_file"
               id="the_file"
-              accept=".csv,.xlsx,.xls"
+              accept=".csv"
               required>
             <div class="form-text">
               Supported formats: CSV, XLSX, XLS.
@@ -76,9 +76,3 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
     </div>
   </div>
 </div>
-
-<?php
-// Optional: Add Font Awesome if not already loaded in header.php
-// If your header.php doesn't include Font Awesome, uncomment the line below:
-// <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-?>
