@@ -173,9 +173,7 @@ $feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
 unset($_SESSION['feedback']);
 
 // Set CSRF token if not set
-if (!isset($_SESSION['csrf_token'])) {
-  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+get_csrf_token();
 
 
 ?>

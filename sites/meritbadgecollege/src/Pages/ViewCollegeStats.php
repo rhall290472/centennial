@@ -44,7 +44,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         $result_CollegeYear = $CMBCollege->doQuery($queryCollegeYear);
         ?>
         <form method=post>
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="row  d-print-none">
           <div class="col-2">
             <label for='UnitName'>&nbsp;</label>

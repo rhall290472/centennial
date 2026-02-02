@@ -83,14 +83,14 @@ define('ENV', 'development'); // Set to 'production' on live server
 // Enable error reporting in development only
 
 if (defined('ENV') && ENV === 'development') {
-    ini_set('display_errors', 1);
-    ini_set('log_errors', 1);
-    ini_set('error_log', SHARED_PATH . '/shared/logs');
-    error_reporting(E_ALL);
+  ini_set('display_errors', 1);
+  ini_set('log_errors', 1);
+  ini_set('error_log', SHARED_PATH . '/shared/logs');
+  error_reporting(E_ALL);
 } else {
-    ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+  ini_set('display_errors', 0);
+  ini_set('log_errors', 1);
+  ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
 }
 
 
@@ -113,54 +113,63 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-    function load_template(string $classFile): void
-    {
-        $path = BASE_PATH . $classFile;
-        if (file_exists($path)) {
-            require_once $path;
-            return;
-        }
-
-        // Get caller information
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
-
-        $message = "Cannot load class file: {$classFile}\n"
-                 . "Called from: {$caller['file']}:{$caller['line']}";
-
-        error_log($message);
-
-        if (defined('ENV') && ENV === 'development') {
-            header('Content-Type: text/plain; charset=utf-8');
-            die($message);
-        }
-
-        die('An internal error occurred. Please try again later.');
+  function load_template(string $classFile): void
+  {
+    $path = BASE_PATH . $classFile;
+    if (file_exists($path)) {
+      require_once $path;
+      return;
     }
+
+    // Get caller information
+    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+    $message = "Cannot load class file: {$classFile}\n"
+      . "Called from: {$caller['file']}:{$caller['line']}";
+
+    error_log($message);
+
+    if (defined('ENV') && ENV === 'development') {
+      header('Content-Type: text/plain; charset=utf-8');
+      die($message);
+    }
+
+    die('An internal error occurred. Please try again later.');
+  }
 }
 // Class loader function
 if (!function_exists('load_class')) {
-    function load_class(string $classFile): void
-    {
-        if (file_exists($classFile)) {
-            require_once $classFile;
-            return;
-        }
-
-        // Get caller information
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
-
-        $message = "Cannot load class file: {$classFile}\n"
-                 . "Called from: {$caller['file']}:{$caller['line']}";
-
-        error_log($message);
-
-        if (defined('ENV') && ENV === 'development') {
-            header('Content-Type: text/plain; charset=utf-8');
-            die($message);
-        }
-
-        die('An internal error occurred. Please try again later.');
+  function load_class(string $classFile): void
+  {
+    if (file_exists($classFile)) {
+      require_once $classFile;
+      return;
     }
+
+    // Get caller information
+    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+    $message = "Cannot load class file: {$classFile}\n"
+      . "Called from: {$caller['file']}:{$caller['line']}";
+
+    error_log($message);
+
+    if (defined('ENV') && ENV === 'development') {
+      header('Content-Type: text/plain; charset=utf-8');
+      die($message);
+    }
+
+    die('An internal error occurred. Please try again later.');
+  }
+}
+
+// Helper function 
+function get_csrf_token(): string
+{
+  if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+  }
+  return $_SESSION['csrf_token'];
 }
