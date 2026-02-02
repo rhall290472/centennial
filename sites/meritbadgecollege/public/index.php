@@ -1,5 +1,6 @@
 <?php
 ini_set('display_errors', 1);
+ini_set('log_errors', '1');
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ob_start();
@@ -25,7 +26,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 }
 
 // Load required classes for file uploads
-load_class(BASE_PATH.'/src/Classes/CMBCollege.php');
+load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
 $CMBCollege = CMBCollege::getInstance();
 
 
@@ -75,8 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "SESSION length: " . strlen($session_token) . "\n\n";
     echo "POST hex:   " . bin2hex($post_token)   . "\n";
     echo "SESSION hex: " . bin2hex($session_token) . "\n\n";
-    echo "POST raw:   "; var_dump($post_token);
-    echo "SESSION raw: "; var_dump($session_token);
+    echo "POST raw:   ";
+    var_dump($post_token);
+    echo "SESSION raw: ";
+    var_dump($session_token);
     echo "\nStrict comparison result: ";
     var_dump($post_token !== $session_token);
     echo "\nAfter trim(): ";
@@ -151,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle logout
 if ($page === 'logout') {
-  echo "page = ". $page;
+  echo "page = " . $page;
   $_SESSION = [];
   session_destroy();
   $_SESSION['feedback'] = ['type' => 'success', 'message' => 'You have been logged out.'];

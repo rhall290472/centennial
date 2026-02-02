@@ -19,6 +19,7 @@ if (!is_dir($uploadDir)) {
 define('UPLOAD_DIRECTORY', $uploadDir);
 
 // Create log directory if it doesn't exist
+//$logDir = BASE_PATH . '/../../shared/logs';
 $logDir = BASE_PATH . '/../../shared/logs';
 if (!is_dir($logDir)) {
   mkdir($logDir, 0755, true);
@@ -84,7 +85,7 @@ define('ENV', 'development'); // Set to 'production' on live server
 if (defined('ENV') && ENV === 'development') {
     ini_set('display_errors', 1);
     ini_set('log_errors', 1);
-    ini_set('error_log', BASE_PATH . '/../../shared/logs');
+    ini_set('error_log', SHARED_PATH . '/shared/logs');
     error_reporting(E_ALL);
 } else {
     ini_set('display_errors', 0);

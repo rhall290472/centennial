@@ -796,10 +796,10 @@ class CCounselor extends CMBCollege
               <label for='CounselorName'></label>
               <select class='form-control' id='CounselorName' name='CounselorName'>
                 <option value=""> </option>
-                  <?php
-                  while ($rowCerts = $result_ByCounselor->fetch_assoc()) {
-                    echo "<option value=" . $rowCerts['BSAId'] . ">" . $rowCerts['LastName'] . " " . $rowCerts['FirstName'] . "</option>";
-                  } ?>
+                <?php
+                while ($rowCerts = $result_ByCounselor->fetch_assoc()) {
+                  echo "<option value=" . $rowCerts['BSAId'] . ">" . $rowCerts['LastName'] . " " . $rowCerts['FirstName'] . "</option>";
+                } ?>
               </select>
             </div>
             <?php
@@ -1289,246 +1289,252 @@ class CCounselor extends CMBCollege
 
 
 
-class MeritBadgeCouncilImporter
-{
-    private PDO $pdo;
-    private string $uploadDirectory;
+        class MeritBadgeCouncilImporter
+        {
+          private PDO $pdo;
+          private string $uploadDirectory;
 
-    public function __construct(PDO $pdo, string $uploadDirectory)
-    {
-        $this->pdo = $pdo;
-        $this->uploadDirectory = rtrim($uploadDirectory, '/');
-    }
+          public function __construct(PDO $pdo, string $uploadDirectory)
+          {
+            $this->pdo = $pdo;
+            $this->uploadDirectory = rtrim($uploadDirectory, '/');
+          }
 
-    /**
-     * @throws Exception on critical failure
-     */
-    public function updateCouncilList(string $uploadPath): array
-    {
-        $fullPath = $this->uploadDirectory . '/' . ltrim($uploadPath, '/');
+          /**
+           * @throws Exception on critical failure
+           */
+          public function updateCouncilList(string $uploadPath): array
+          {
+            $fullPath = $this->uploadDirectory . '/' . ltrim($uploadPath, '/');
 
-        if (!file_exists($fullPath) || !is_readable($fullPath)) {
-            throw new Exception("Cannot read uploaded file: $fullPath");
-        }
+            if (!file_exists($fullPath) || !is_readable($fullPath)) {
+              throw new Exception("Cannot read uploaded file: $fullPath");
+            }
 
-        $this->markAllForDropAndInactive();
+            $this->markAllForDropAndInactive();
 
-        $stats = [
-            'inserted'      => 0,
-            'updated'       => 0,
-            'errors'        => 0,
-            'counselors_added' => 0,
-        ];
+            $stats = [
+              'inserted'      => 0,
+              'updated'       => 0,
+              'errors'        => 0,
+              'counselors_added' => 0,
+            ];
 
-        $this->pdo->beginTransaction();
+            $this->pdo->beginTransaction();
 
-        try {
-            $handle = fopen($fullPath, 'r');
-            if ($handle === false) {
+            try {
+              $handle = fopen($fullPath, 'r');
+              if ($handle === false) {
                 throw new Exception("Failed to open CSV file");
-            }
+              }
 
-            // Read header
-            $header = fgetcsv($handle);
-            if ($header === false) {
+              // Read header
+              $header = fgetcsv($handle, 0, ',', '"', '');
+              if ($header === false) {
                 throw new Exception("CSV file is empty or invalid");
-            }
+              }
 
-            $columnMap = $this->buildColumnMap($header);
+              $columnMap = $this->buildColumnMap($header);
 
-            $rowNumber = 1;
+              $rowNumber = 1;
 
-            while (($row = fgetcsv($handle)) !== false) {
+              while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) {
                 $rowNumber++;
 
                 // Skip empty rows or header-like rows
                 if (count($row) < 5 || empty(trim(implode('', $row)))) {
-                    continue;
+                  continue;
                 }
 
                 try {
-                    $counselor = $this->parseCounselorRow($row, $columnMap);
+                  $counselor = $this->parseCounselorRow($row, $columnMap);
 
-                    if (!$counselor['first_name'] || !$counselor['last_name']) {
-                        throw new Exception("Missing name");
-                    }
+                  if (!$counselor['first_name'] || !$counselor['last_name']) {
+                    throw new Exception("Missing name");
+                  }
 
-                    $this->processCounselor($counselor);
-                    $stats['updated']++; // rough count — refined inside processCounselor
+                  $this->processCounselor($counselor);
+                  $stats['updated']++; // rough count — refined inside processCounselor
 
                 } catch (Exception $e) {
-                    $stats['errors']++;
-                    error_log(sprintf(
-                        "Row %d failed: %s | Data: %s",
-                        $rowNumber,
-                        $e->getMessage(),
-                        json_encode($row, JSON_UNESCAPED_SLASHES)
-                    ));
+                  $stats['errors']++;
+                  error_log(sprintf(
+                    "Row %d failed: %s | Data: %s",
+                    $rowNumber,
+                    $e->getMessage(),
+                    json_encode($row, JSON_UNESCAPED_SLASHES)
+                  ));
                 }
+              }
+
+              fclose($handle);
+              $this->pdo->commit();
+
+              return $stats;
+            } catch (Exception $e) {
+              $this->pdo->rollBack();
+              error_log("Import transaction failed: " . $e->getMessage());
+              throw $e;
             }
+          }
 
-            fclose($handle);
-            $this->pdo->commit();
+          private function markAllForDropAndInactive(): void
+          {
+            $date = date('Y-m-d');
 
-            return $stats;
-
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            error_log("Import transaction failed: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    private function markAllForDropAndInactive(): void
-    {
-        $date = date('Y-m-d');
-
-        $this->pdo->exec("
+            $this->pdo->exec("
             UPDATE mbccounselormerit 
             SET Status = 'DROP', StatusDate = '$date' 
             WHERE Status != 'DROP'
         ");
 
-        $this->pdo->exec("
+            $this->pdo->exec("
             UPDATE mbccounselors 
             SET Active = 'No', ValidationDate = '$date' 
             WHERE Active != 'No'
         ");
 
-        $this->pdo->exec("
+            $this->pdo->exec("
             UPDATE mbccounselors 
             SET Is_a_no = '0' 
             WHERE Is_a_no != '0'
         ");
-    }
+          }
 
-    private function buildColumnMap(array $header): array
-    {
-        $map = [];
-        foreach ($header as $i => $col) {
-            $col = trim(strtolower($col));
-            if (str_contains($col, 'organization') || str_contains($col, 'district')) {
+          private function buildColumnMap(array $header): array
+          {
+            $map = [];
+            foreach ($header as $i => $col) {
+              $col = trim(strtolower($col));
+              if (str_contains($col, 'organization') || str_contains($col, 'district')) {
                 $map['district'] = $i;
-            }
-            if (str_contains($col, 'first')) {
+              }
+              if (str_contains($col, 'first')) {
                 $map['first_name'] = $i;
-            }
-            if (str_contains($col, 'last')) {
+              }
+              if (str_contains($col, 'last')) {
                 $map['last_name'] = $i;
-            }
-            if (str_contains($col, 'email')) {
+              }
+              if (str_contains($col, 'email')) {
                 $map['email'] = $i;
-            }
-            if (str_contains($col, 'award') || str_contains($col, 'badge') || str_contains($col, 'merit')) {
+              }
+              if (str_contains($col, 'award') || str_contains($col, 'badge') || str_contains($col, 'merit')) {
                 $map['awards'] = $i;
+              }
             }
-        }
 
-        $required = ['first_name', 'last_name', 'awards'];
-        foreach ($required as $key) {
-            if (!isset($map[$key])) {
+            $required = ['first_name', 'last_name', 'awards'];
+            foreach ($required as $key) {
+              if (!isset($map[$key])) {
                 throw new Exception("Required column not found: $key");
+              }
             }
-        }
 
-        return $map;
-    }
+            return $map;
+          }
 
-    private function parseCounselorRow(array $row, array $map): array
-    {
-        $data = [
-            'district'   => isset($map['district']) ? trim($row[$map['district']] ?? '') : '',
-            'first_name' => trim($row[$map['first_name']] ?? ''),
-            'last_name'  => trim($row[$map['last_name']] ?? ''),
-            'email'      => isset($map['email']) ? filter_var($row[$map['email']] ?? '', FILTER_VALIDATE_EMAIL) : null,
-            'badges'     => [],
-        ];
+          private function parseCounselorRow(array $row, array $map): array
+          {
+            $data = [
+              'district'   => isset($map['district']) ? trim($row[$map['district']] ?? '') : '',
+              'first_name' => trim($row[$map['first_name']] ?? ''),
+              'last_name'  => trim($row[$map['last_name']] ?? ''),
+              'email'      => isset($map['email']) ? filter_var($row[$map['email']] ?? '', FILTER_VALIDATE_EMAIL) : null,
+              'badges'     => [],
+            ];
 
-        if (isset($map['awards'])) {
-            $awardsStr = trim($row[$map['awards']] ?? '');
-            $badges = $this->normalizeBadgeList($awardsStr);
-            $data['badges'] = array_filter(array_map('trim', $badges));
-        }
+            if (isset($map['awards'])) {
+              $awardsStr = trim($row[$map['awards']] ?? '');
+              $badges = $this->normalizeBadgeList($awardsStr);
+              $data['badges'] = array_filter(array_map('trim', $badges));
+            }
 
-        return $data;
-    }
+            return $data;
+          }
 
-    private function normalizeBadgeList(string $awardsStr): array
-    {
-        $parts = array_map('trim', explode(',', $awardsStr));
+          private function normalizeBadgeList(string $awardsStr): array
+          {
+            $parts = array_map('trim', explode(',', $awardsStr));
 
-        // Fix known split badge
-        $signsIndex = array_search('Signs', $parts, true);
-        if ($signsIndex !== false &&
-            isset($parts[$signsIndex + 1]) && $parts[$signsIndex + 1] === 'Signals' &&
-            isset($parts[$signsIndex + 2]) && $parts[$signsIndex + 2] === 'and Codes') {
-            $parts[$signsIndex] = 'Signs, Signals, and Codes';
-            unset($parts[$signsIndex + 1], $parts[$signsIndex + 2]);
-            $parts = array_values($parts);
-        }
+            // Fix known split badge
+            $signsIndex = array_search('Signs', $parts, true);
+            if (
+              $signsIndex !== false &&
+              isset($parts[$signsIndex + 1]) && $parts[$signsIndex + 1] === 'Signals' &&
+              isset($parts[$signsIndex + 2]) && $parts[$signsIndex + 2] === 'and Codes'
+            ) {
+              $parts[$signsIndex] = 'Signs, Signals, and Codes';
+              unset($parts[$signsIndex + 1], $parts[$signsIndex + 2]);
+              $parts = array_values($parts);
+            }
 
-        return array_filter($parts, fn($s) => $s !== '');
-    }
+            return array_filter($parts, fn($s) => $s !== '');
+          }
 
-    private function processCounselor(array $counselor): void
-    {
-        $first  = $counselor['first_name'];
-        $last   = $counselor['last_name'];
-        $email  = $counselor['email'] ?? '';
-        $district = $counselor['district'];
-        $badges = $counselor['badges'];
+          private function processCounselor(array $counselor): void
+          {
+            $first  = $counselor['first_name'];
+            $last   = $counselor['last_name'];
+            $email  = $counselor['email'] ?? '';
+            $district = $counselor['district'];
+            $badges = $counselor['badges'];
 
-        if (empty($badges)) {
-            return; // no badges → skip or mark inactive (your choice)
-        }
+            if (empty($badges)) {
+              return; // no badges → skip or mark inactive (your choice)
+            }
 
-        $date = date('Y-m-d');
+            $date = date('Y-m-d');
 
-        // Upsert counselor
-        $stmt = $this->pdo->prepare("
-            INSERT INTO mbccounselors 
-                (LastName, FirstName, HomeDistrict, Active, Email, ValidationDate, NumOfBadges)
-            VALUES 
-                (:last, :first, :district, 'Yes', :email, :date, :badgeCount)
-            ON DUPLICATE KEY UPDATE
-                HomeDistrict   = :district,
-                Email          = :email,
-                Active         = 'Yes',
-                ValidationDate = :date,
-                NumOfBadges    = :badgeCount
-        ");
-
-        $stmt->execute([
-            'last'       => $last,
-            'first'      => $first,
-            'district'   => $district,
-            'email'      => $email,
-            'date'       => $date,
-            'badgeCount' => count($badges),
-        ]);
-
-        $isNew = $this->pdo->lastInsertId() !== '0';
-
-        // Handle merit badges
-        foreach ($badges as $badgeName) {
-            $cleanBadge = self::FixMeritBadgeName($badgeName);
-
+            // Upsert counselor
             $stmt = $this->pdo->prepare("
-                INSERT INTO mbccounselormerit 
-                    (LastName, FirstName, MeritName, Status, StatusDate)
-                VALUES 
-                    (:last, :first, :merit, 'ADD', :date)
-                ON DUPLICATE KEY UPDATE
-                    Status     = IF(Status = 'DROP', 'ADD', 'UPDATED'),
-                    StatusDate = :date
-            ");
+    INSERT INTO mbccounselors 
+        (LastName, FirstName, HomeDistrict, Active, Email, ValidationDate, NumOfBadges)
+    VALUES 
+        (:last, :first, :district, 'Yes', :email, :date, :badgeCount)
+    ON DUPLICATE KEY UPDATE
+        HomeDistrict   = :district_upd,
+        Email          = :email_upd,
+        Active         = 'Yes',
+        ValidationDate = :date_upd,
+        NumOfBadges    = :badgeCount_upd
+");
 
             $stmt->execute([
-                'last'  => $last,
-                'first' => $first,
-                'merit' => $cleanBadge,
-                'date'  => $date,
+              'last'           => $last,
+              'first'          => $first,
+              'district'       => $district,
+              'email'          => $email,
+              'date'           => $date,
+              'badgeCount'     => count($badges),
+              'district_upd'   => $district,       // repeat the value
+              'email_upd'      => $email,
+              'date_upd'       => $date,
+              'badgeCount_upd' => count($badges),
             ]);
+
+            $isNew = $this->pdo->lastInsertId() !== '0';
+
+            // Handle merit badges
+            foreach ($badges as $badgeName) {
+              $cleanBadge = CCounselor::FixMeritBadgeName($badgeName);
+
+              $stmt = $this->pdo->prepare("
+        INSERT INTO mbccounselormerit 
+            (LastName, FirstName, MeritName, Status, StatusDate)
+        VALUES 
+            (:last, :first, :merit, 'ADD', :date)
+        ON DUPLICATE KEY UPDATE
+            Status     = IF(Status = 'DROP', 'ADD', 'UPDATED'),
+            StatusDate = :date_upd          -- ← different name here
+    ");
+
+              $stmt->execute([
+                'last'     => $last,
+                'first'    => $first,
+                'merit'    => $cleanBadge,
+                'date'     => $date,
+                'date_upd' => $date,               // ← bind it again with the new name
+              ]);
+            }
+          }
         }
-    }
-}
