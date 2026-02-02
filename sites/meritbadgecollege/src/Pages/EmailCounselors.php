@@ -144,7 +144,7 @@ if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_tok
         </div>
 
         <form method="post">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
 
           <!-- College Year Selector -->
           <?php $Counselor->SelectCollegeYear($CMBCollege->GetYear(), "Email Counselors", false); ?>

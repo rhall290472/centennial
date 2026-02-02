@@ -36,7 +36,7 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
 
         <form action="index.php?page=FileUpload" method="post" enctype="multipart/form-data">
           <!-- CSRF Token (required by your index.php POST handling) -->
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
 
           <div class="mb-4">
             <label for="the_file" class="form-label fw-semibold">
