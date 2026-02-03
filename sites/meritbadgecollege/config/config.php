@@ -50,16 +50,19 @@ define('PAGE_DESCRIPTION', 'Review Merit Badge College for the Centennial Distri
 // Contact email
 define('CONTACT_EMAIL', 'richard.hall@centennialdistrict.co');
 
-// SMTP settings
-define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_USERNAME', 'rhall290472@gmail.com');
-define('SMTP_PASSWORD', 'vicx cxho rywh ylok'); // Use .env in production
-
 define('ALLOWED_FILE_EXTENSIONS', ['csv']);
 define('MAX_FILE_SIZE', 4000000); // 4MB
 
 $pageHome = SITE_URL . '/centennial/sites/meritbadgecollege/public/index.php';
 $pageContact = SITE_URL . '/centennial/sites/meritbadgecollege/src/Pages/contact.php';
+
+// SMTP settings
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_USER', 'richard.hall@centennialdistrict.co');
+define('SMTP_PASS', 'wmksqamucgzvlsil'); 
+define('SMTP_PORT', '587');
+
+
 // Navigation links
 define('NAV_LINKS', [
   [
