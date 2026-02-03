@@ -238,7 +238,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($page === 'counselorsperbadge' && (isset($_POST['Submit']) || isset($_POST['SubmitCounselor']))) {
     $reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_DEFAULT) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_DEFAULT);
     $reportBy = is_string($reportBy) ? htmlspecialchars(strip_tags(trim($reportBy)), ENT_QUOTES, 'UTF-8') : '';
-    //$reportBy = filter_input(INPUT_GET, 'ReportBy', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'ReportBy', FILTER_SANITIZE_STRING);
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Refresh CSRF token
     header("Location: index.php?page=counselorsperbadge&ReportBy=" . urlencode($reportBy));
     exit;

@@ -138,7 +138,7 @@ if (empty($report)) {
         $results->free_result();
 
         if (isset($_POST['Submit']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-          $selectedTroop = filter_input(INPUT_POST, 'UnitName', FILTER_SANITIZE_STRING);
+          $selectedTroop = htmlspecialchars($_POST['UnitName'] ?? '', ENT_QUOTES,'UTF-8');
           if ($selectedTroop) {
             $method = $report === 'ForSelectedTroop' ? 'reportofSelectedTroop' : 'reportFullSelectedTroop';
             $reports->$method($selectedTroop);
@@ -178,7 +178,8 @@ if (empty($report)) {
         $results->free_result();
 
         if (isset($_POST['SubmitCounselor']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-          $selectedCounselor = filter_input(INPUT_POST, 'CounselorName', FILTER_SANITIZE_STRING);
+          // Safe for direct HTML output (recommended for most cases like reports)
+          $selectedCounselor = htmlspecialchars($_POST['CounselorName'] ?? '', ENT_QUOTES, 'UTF-8');
           if ($selectedCounselor) {
             $reports->reportofSelectedCounselor($selectedCounselor);
           } else {
