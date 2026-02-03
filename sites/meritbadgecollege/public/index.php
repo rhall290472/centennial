@@ -1,5 +1,4 @@
 <?php
-ob_start();
 /*
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
@@ -12,9 +11,9 @@ if (session_status() === PHP_SESSION_NONE) {
     'cookie_secure' => isset($_SERVER['HTTPS'])
   ]);
 }
-// error_log("Session save path = " . session_save_path());
-// error_log("Session ID = " . session_id());
-// Load configuration
+
+ob_start();
+
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
 } else {

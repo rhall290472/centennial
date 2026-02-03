@@ -84,7 +84,7 @@ define('ENV', 'development'); // Set to 'production' on live server
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 ini_set('log_errors', '1');
-ini_set('session.save_path', '/tmp');
+//ini_set('session.save_path', '/tmp');
 error_reporting(E_ALL);
 
 
@@ -181,13 +181,13 @@ if (!function_exists('load_class')) {
 function get_csrf_token(): string
 {
   // Most robust way in 2024–2025
-  if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
-    session_start([
-      'cookie_secure'   => isset($_SERVER['HTTPS']),
-      'cookie_httponly' => true,
-      'cookie_samesite' => 'Lax',     // or 'Strict' depending on your needs
-    ]);
-  }
+  // if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+  //   session_start([
+  //     'cookie_secure'   => isset($_SERVER['HTTPS']),
+  //     'cookie_httponly' => true,
+  //     'cookie_samesite' => 'Lax',     // or 'Strict' depending on your needs
+  //   ]);
+  // }
 
   // If session is still not active → big problem (log + fallback)
   if (session_status() !== PHP_SESSION_ACTIVE) {
