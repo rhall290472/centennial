@@ -290,7 +290,7 @@ $CMBCollege = CMBCollege::getInstance();
                     <?php endif; ?>
 
                     <div class="col-md-3">
-                      <label for="MB<?= $i ?>Prerequisities" class="form-label">rerequisites</label>
+                      <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
                       <?php $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
                     </div>
 

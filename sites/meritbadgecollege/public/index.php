@@ -1,18 +1,40 @@
 <?php
+
+// Custom session path – must be inside your home dir, writable by PHP
+$sessionDir = __DIR__ . '/../sessions';  // creates sessions/ sibling to public/ or wherever index.php lives
+
+if (!is_dir($sessionDir)) {
+    if (!mkdir($sessionDir, 0700, true)) {
+        error_log("Failed to create session dir: $sessionDir");
+    }
+}
+
+if (is_writable($sessionDir)) {
+    ini_set('session.save_path', $sessionDir);
+    // Optional: make sessions private
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? '1' : '0');
+    ini_set('session.use_strict_mode', '1');  // Helps prevent fixation
+} else {
+    error_log("Custom session path NOT writable: $sessionDir");
+}
+
+// Then your existing session_start()
+if (session_status() === PHP_SESSION_NONE) {
+    session_start([
+        'cookie_httponly' => true,
+        'use_strict_mode' => true,
+        'cookie_secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+    ]);
+}
+
+
 /*
  * Main entry point for the Centennial District Advancement website.
  * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
  */
-// Secure session start
-if (session_status() === PHP_SESSION_NONE) {
-  session_start([
-    'cookie_httponly' => true,
-    'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
-  ]);
-}
 
-ob_start();
+//ob_start();
 
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
@@ -325,6 +347,6 @@ get_csrf_token();
     });
   </script>
 </body>
-<?php ob_end_flush(); ?>
+<?php //ob_end_flush(); ?>
 
 </html>

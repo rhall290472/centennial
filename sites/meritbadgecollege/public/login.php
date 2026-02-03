@@ -17,10 +17,6 @@
 !/                                                                            \!
 !==============================================================================!
 */
-
-// load_template('/src/Classes/CMBCollege.php');
-// $CMBCollege = CMBCollege::getInstance();
-
 // Check if the user is already logged in, redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
   header("Location: index.php?page=home");
@@ -58,7 +54,6 @@ $username_err = $password_err = $login_err = "";
             <div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
           <?php endif; ?>
         </div>
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>

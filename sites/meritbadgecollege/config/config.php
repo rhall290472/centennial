@@ -180,15 +180,6 @@ if (!function_exists('load_class')) {
 // Helper function 
 function get_csrf_token(): string
 {
-  // Most robust way in 2024–2025
-  // if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
-  //   session_start([
-  //     'cookie_secure'   => isset($_SERVER['HTTPS']),
-  //     'cookie_httponly' => true,
-  //     'cookie_samesite' => 'Lax',     // or 'Strict' depending on your needs
-  //   ]);
-  // }
-
   // If session is still not active → big problem (log + fallback)
   if (session_status() !== PHP_SESSION_ACTIVE) {
     // You can throw exception in development
