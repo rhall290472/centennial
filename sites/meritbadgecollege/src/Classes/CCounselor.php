@@ -430,7 +430,7 @@ class CCounselor extends CMBCollege
         $resultYPT = self::doQuery($sqlYPT);
         if ($resultYPT) {
           $rowYPT = $resultYPT->fetch_assoc();
-          $Counselorsypt = strtotime($rowYPT['YPT']);
+          $Counselorsypt = strtotime($rowYPT['YPT'] ?? '');
           if ($TodaysDate > $Counselorsypt) {
             $Expired = true;
           }
