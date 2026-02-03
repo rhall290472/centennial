@@ -40,7 +40,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         <?php
         if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
           $CollegeYear = $_POST['CollegeYear'];
-          setYear($CollegeYear);
+          $CMBCollege->SetYear($CollegeYear);
         }
 
         // Display college year and allow user to select.
@@ -285,7 +285,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       $CollegeDetails['Notes']        = $CMBCollege->GetFormData('element_7_1');
 
       $CMBCollege->AddUpdateCollege($CollegeDetails);
-      header("Location: index.php?page=rpt-details");
+      $CMBCollege->GotoURL("index.php?page=rpt-details");
+      //header("Location: index.php?page=rpt-details");
       exit;
     }
 

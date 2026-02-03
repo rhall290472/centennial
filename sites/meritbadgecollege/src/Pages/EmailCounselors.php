@@ -85,48 +85,6 @@ if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_tok
     }
   }
 }
-
-// if (isset($_POST['CollegeYear']) && !empty($_POST['CollegeYear'])) {
-//   $CollegeYear = $_POST['CollegeYear'];
-//   setYear($CollegeYear);
-//   $collegeYearSet = true;
-// }
-
-// if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === ($_SESSION['csrf_token'] ?? '')) {
-//   if ($collegeYearSet || isset($_POST['CounselorName']) && !empty($_POST['CounselorName'])) {
-//     $query = "SELECT * FROM college_counselors WHERE College = ? ";
-//     $params = [$CollegeYear ?? $CMBCollege->GetYear()];
-//     $types = "s";
-
-//     if (isset($_POST['CounselorName']) && !empty($_POST['CounselorName'])) {
-//       $CounselorID = $_POST['CounselorName'];
-//       $query .= "AND BSAId = ? ";
-//       $params[] = $CounselorID;
-//       $types .= "s";
-//     }
-
-//     $query .= "ORDER BY LastName, FirstName, MBPeriod";
-
-//     // Use prepared statement for safety (assuming doQuery supports it; fallback to escaping if not)
-//     $results = $Counselor->doQuery($query);
-
-//     if ($results && $results->num_rows > 0) {
-//       $Counselor->EmailCounselors($results, $bPreview);
-//       if (!$bPreview) {
-//         $_SESSION['feedback'] = [
-//           'type' => 'success',
-//           'message' => 'Emails have been sent successfully!'
-//         ];
-//       }
-//       $results->free();
-//     } else {
-//       $_SESSION['feedback'] = [
-//         'type' => 'info',
-//         'message' => 'No counselors found to email for the selected criteria.'
-//       ];
-//     }
-//   }
-// }
 ?>
 
 <div class="row justify-content-center mt-4">

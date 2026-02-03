@@ -50,11 +50,13 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         $CollegeYear = $CMBCollege->getYear();
         $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details ORDER BY College DESC";
         $result_CollegeYear = $CMBCollege->doQuery($queryCollegeYear);
-
-        echo "<form method=post>";
-        echo "<a href='https://www.denverboyscouts.org/districts/centennial/' class='logo'>Merit Badge College</a>";
-        echo "<label for='UnitName'>&nbsp;</label>";
-        echo "<select class='selectWrapper' id= 'CollegeYear' name='CollegeYear' >";
+        ?>
+        <form method=post>
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+        <a href='https://www.denverboyscouts.org/districts/centennial/' class='logo'>Merit Badge College</a>
+        <label for='UnitName'>&nbsp;</label>
+        <select class='selectWrapper' id= 'CollegeYear' name='CollegeYear' >
+        <?php
         if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
           $CollegeYear = $_POST['CollegeYear'];
           $_SESSION['year'] = $_POST['CollegeYear'];

@@ -52,11 +52,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
               <?php
               if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
                 $CollegeYear = $_POST['CollegeYear'];
-                setYear($CollegeYear);
+                $CMBCollege->setYear($CollegeYear);
               }
               ?>
 
-              <option value=\"\" </option>
+              <option value=""></option>
                 <?php
                 while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
                   if (!strcmp($rowCollege['College'], $CollegeYear)) {

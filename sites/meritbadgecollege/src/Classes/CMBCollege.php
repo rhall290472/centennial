@@ -273,12 +273,12 @@ class CMBCollege
     /******************************************************************************
      *
      *****************************************************************************/
-    // public static function GotoURL($url)
-    // {
-    //   echo "<script>
-    //   location.replace('$url')
-    // </script>";
-    // }
+    public static function GotoURL($url)
+    {
+      echo "<script>
+      location.replace('$url')
+    </script>";
+    }
     /**************************************************************************
      **
      **
@@ -1217,7 +1217,7 @@ class CMBCollege
                 break;
             }
 
-            $Fee = sprintf("$%2.2f</td></tr>", number_format($row['MBFee'], 2, '.', ''));
+            $Fee = sprintf("$%.2f</td></tr>", (float)($row['MBFee'] ?? 0));
 
             echo "<tr><td>" .
               $Time . "</td><td>" .
@@ -1237,7 +1237,7 @@ class CMBCollege
             $csv_output .= $row['MBPrerequisities'] . "^";
             $csv_output .= $row['MBNotes'] . "^";
             $csv_output .= $row['MBCSL'] . "^";
-            $csv_output .= sprintf("$%2.2f\n", number_format($row['MBFee'], 2, '.', ''));
+            $csv_output .= '$' . number_format($row['MBFee'] ?? 0, 2) . "\n";
           }
           echo "</table>";
           ?>
