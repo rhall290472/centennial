@@ -63,18 +63,10 @@ try {
 
     $mpdf->WriteHTML($fullHtml);
     $mpdf->Output("DoubleKnot_Report_{$CollegeYear}.pdf", 'D');
-    redirectWithMessage("index.php?page=home", "success", "PDF generated successfully.");
 } catch (Exception $e) {
-    redirectWithMessage("index.php?page=doubleknot", "danger", "PDF generation failed: " . htmlspecialchars($e->getMessage()));
     die("PDF generation failed: " . htmlspecialchars($e->getMessage()));
 }
 
-function redirectWithMessage($url, $type, $message)
-  {
-    $_SESSION['feedback'] = compact('type', 'message');
-    header("Location: $url");
-    exit;
-  }
   ?>
 
 exit;
