@@ -45,20 +45,14 @@ $CMBCollege = CMBCollege::getInstance();
       }
 
       if (!$ErrorFlag) {
-      //   $Counselor->SendConfirmationEmail($Email, $FirstName, $LastName, $MBCollegeName);
-      //$Counselor->function_alert("$FirstName $LastName Thank you for supporting the Merit Badge College");
-      $_SESSION['feedback'] = ['type' => 'success', 'message' => htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College'];
+        redirectWithMessage("index.php?page=view-schedule", "success", htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College');
        } else{
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to save your reponses. Please try again.'];
+        redirectWithMessage("index.php?page=home", "danger", 'Failed to save your reponses. Please try again.');
        }
-      header("Location: index.php?page=home");
-      //$Counselor->GotoURL('index.php?page=home');
       exit;
     }
   }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +64,7 @@ $CMBCollege = CMBCollege::getInstance();
   <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
   <!-- Tom Select -->
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 
   <style>
@@ -91,7 +85,6 @@ $CMBCollege = CMBCollege::getInstance();
           </div>
           <?php exit(); ?>
         <?php endif; ?>
-
         <!-- Periods table section -->
         <div class="form-section">
           <h4>Merit Badge College Signup</h4>
@@ -212,12 +205,10 @@ $CMBCollege = CMBCollege::getInstance();
             echo '<div class="alert alert-info mt-3">This counselor has no merit badges assigned yet. You can still sign up below.</div>';
           }
           ?>
-
           <div class="form-section">
             <h5>Counselor Signup Information</h5>
             <form action="index.php?page=signup" method="post" id="add_nomination">
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-
               <div class="row g-3 mb-3">
                 <div class="col-md-2">
                   <label for="element_1_1" class="form-label">First Name</label>
@@ -288,7 +279,6 @@ $CMBCollege = CMBCollege::getInstance();
                         <?php $Counselor->Display_ClassRoom("MB{$i}Room", $i); ?>
                       </div>
                     <?php endif; ?>
-
                     <div class="col-md-3">
                       <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
                       <?php $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
@@ -301,7 +291,6 @@ $CMBCollege = CMBCollege::getInstance();
                   </div>
                 </div>
               <?php endfor; ?>
-
               <div class="text-center mt-3">
                 <input type="hidden" name="form_id" value="22772">
                 <button type="submit" name="SubmitForm" class="btn btn-primary">Submit</button>
@@ -320,6 +309,12 @@ $CMBCollege = CMBCollege::getInstance();
     if ((($number % 100) >= 11) && (($number % 100) <= 13)) return $number . 'th';
     return $number . $ends[$number % 10];
   }
+
+  function redirectWithMessage($url, $type, $message) {
+    $_SESSION['feedback'] = compact('type', 'message');
+    header("Location: $url");
+    exit;
+}
   ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -150,23 +150,17 @@
       } else {
         echo "Last updated: Unknown (API error)";
       }
-    }
-    ?>
-
-    <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
-
-  </div>
+    }?>
+<?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST'];?>
 </div>
-
-
-
+</div>
 <!-- Additional CSS for nested dropdowns -->
 <style>
   /* Base positioning for submenus (opens to the right) */
   .dropdown-submenu {
     position: relative;
   }
-
+/*  */
   .dropdown-submenu .dropdown-menu {
     top: 0;
     left: 100%;
@@ -181,24 +175,24 @@
   .dropdown-submenu:hover>.dropdown-menu {
     display: block;
   }
-
+/*  */
   /* Optional: Slight shadow and border for visual separation */
   .dropdown-menu {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
-
+/*  */
   /* Ensure sidebar doesn't clip children */
   #sidebar {
     overflow: visible !important;
   }
-
+/*  */
   /* Ensure main content doesn't overlap */
   .main-content {
     overflow: visible !important;
   }
 </style>
-
+<!--  -->
 <!-- JavaScript to handle nested dropdowns -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {

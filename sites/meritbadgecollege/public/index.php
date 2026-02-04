@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 // Custom session path – must be inside your home dir, writable by PHP
 $sessionDir = __DIR__ . '/../sessions';  // creates sessions/ sibling to public/ or wherever index.php lives
 
@@ -347,6 +347,5 @@ get_csrf_token();
     });
   </script>
 </body>
-<?php //ob_end_flush(); ?>
-
+<?php ob_end_flush(); ?>
 </html>
