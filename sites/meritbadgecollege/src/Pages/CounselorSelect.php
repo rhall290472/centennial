@@ -6,55 +6,56 @@ $Counselor = CCounselor::getInstance();  // Fixed class name case (was cCounselo
 $CMBCollege = CMBCollege::getInstance();
 
 
-  // Form submission handling
-  if (isset($_POST['SubmitForm'])) {
-    $ErrorFlag = false;
+// Form submission handling
+if (isset($_POST['SubmitForm'])) {
+  $ErrorFlag = false;
+  for ($i = 1; $i <= 4; $i++) {
+    if (!empty($_POST["MB{$i}Name"]) && empty($Counselor->GetFormData("MB{$i}Period"))) {
+      $Counselor->function_alert("ERROR: A period must be selected for Merit Badge $i");
+      $ErrorFlag = true;
+    }
+  }
+
+  if (!$ErrorFlag) {
+    $FirstName = $Counselor->GetFormData('element_1_1');
+    $LastName  = $Counselor->GetFormData('element_1_2');
+    $Email     = $Counselor->GetFormData('element_1_3');
+    $Phone     = $Counselor->GetFormData('element_1_4');
+    $BSAId     = $Counselor->GetFormData('element_1_5');
+    $MBCollegeName = $Counselor->getYear();
+
+    if ($Counselor->IsSignedUp($MBCollegeName, $LastName, $FirstName)) {
+      $Counselor->Delete($MBCollegeName);
+    }
+
+    $Counselor->AddInfo($FirstName, $LastName, $Email, $Phone, $BSAId, $MBCollegeName);
+
     for ($i = 1; $i <= 4; $i++) {
-      if (!empty($_POST["MB{$i}Name"]) && empty($Counselor->GetFormData("MB{$i}Period"))) {
-        $Counselor->function_alert("ERROR: A period must be selected for Merit Badge $i");
-        $ErrorFlag = true;
+      if (!empty($_POST["MB{$i}Name"])) {
+        $MBName        = $Counselor->GetFormData("MB{$i}Name");
+        $MBPeriod      = $Counselor->GetFormData("MB{$i}Period");
+        $MBClassSize   = $Counselor->GetFormData("MB{$i}CSL");
+        $MBFee         = $Counselor->GetFormData("MB{$i}Fee");
+        $MBRoom        = $Counselor->GetFormData("MB{$i}Room");
+        $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
+        $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
+
+        $Counselor->AddMBClass($MBName, $MBPeriod, $MBClassSize, $MBFee, $MBRoom, $MBPrerequisities, $MBNotes);
       }
     }
 
     if (!$ErrorFlag) {
-      $FirstName = $Counselor->GetFormData('element_1_1');
-      $LastName  = $Counselor->GetFormData('element_1_2');
-      $Email     = $Counselor->GetFormData('element_1_3');
-      $Phone     = $Counselor->GetFormData('element_1_4');
-      $BSAId     = $Counselor->GetFormData('element_1_5');
-      $MBCollegeName = $Counselor->getYear();
-
-      if ($Counselor->IsSignedUp($MBCollegeName, $LastName, $FirstName)) {
-        $Counselor->Delete($MBCollegeName);
-      }
-
-      $Counselor->AddInfo($FirstName, $LastName, $Email, $Phone, $BSAId, $MBCollegeName);
-
-      for ($i = 1; $i <= 4; $i++) {
-        if (!empty($_POST["MB{$i}Name"])) {
-          $MBName        = $Counselor->GetFormData("MB{$i}Name");
-          $MBPeriod      = $Counselor->GetFormData("MB{$i}Period");
-          $MBClassSize   = $Counselor->GetFormData("MB{$i}CSL");
-          $MBFee         = $Counselor->GetFormData("MB{$i}Fee");
-          $MBRoom        = $Counselor->GetFormData("MB{$i}Room");
-          $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
-          $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
-
-          $Counselor->AddMBClass($MBName, $MBPeriod, $MBClassSize, $MBFee, $MBRoom, $MBPrerequisities, $MBNotes);
-        }
-      }
-
-      if (!$ErrorFlag) {
-        redirectWithMessage("index.php?page=view-schedule", "success", htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College');
-       } else{
-        redirectWithMessage("index.php?page=home", "danger", 'Failed to save your reponses. Please try again.');
-       }
-      exit;
+      redirectWithMessage("index.php?page=view-schedule", "success", htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College');
+    } else {
+      redirectWithMessage("index.php?page=home", "danger", 'Failed to save your reponses. Please try again.');
     }
+    exit;
   }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,9 +69,19 @@ $CMBCollege = CMBCollege::getInstance();
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 
   <style>
-    .form-section { margin-bottom: 2rem; }
-    .merit-badge-section { padding: 1rem; border-radius: 5px; }
-    .error-message { color: red; font-size: 0.9em; }
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .merit-badge-section {
+      padding: 1rem;
+      border-radius: 5px;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 
@@ -248,8 +259,8 @@ $CMBCollege = CMBCollege::getInstance();
                         while ($rowCerts = $ResultsMB->fetch_assoc()):
                           $selected = $Counselor->MB_Match($rowCerts['MeritName'], $i) && !$firstBadgeFound ? 'selected' : '';
                           if ($selected) $firstBadgeFound = true;
-                          echo "<option $selected value='" . htmlspecialchars($rowCerts['MeritName']) . "'>" . 
-                               htmlspecialchars($rowCerts['MeritName']) . "</option>";
+                          echo "<option $selected value='" . htmlspecialchars($rowCerts['MeritName']) . "'>" .
+                            htmlspecialchars($rowCerts['MeritName']) . "</option>";
                         endwhile;
                         ?>
                       </select>
@@ -304,38 +315,41 @@ $CMBCollege = CMBCollege::getInstance();
 
   <?php
 
-  function ordinal($number) {
+  function ordinal($number)
+  {
     $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
     if ((($number % 100) >= 11) && (($number % 100) <= 13)) return $number . 'th';
     return $number . $ends[$number % 10];
   }
 
-  function redirectWithMessage($url, $type, $message) {
+  function redirectWithMessage($url, $type, $message)
+  {
     $_SESSION['feedback'] = compact('type', 'message');
     header("Location: $url");
     exit;
-}
+  }
   ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    new TomSelect('#CounselorName', {
-      create: true,
-      createOnBlur: true,
-      persist: false,
-      maxItems: 1,
-      placeholder: "Type name or select existing...",
-      searchField: ['text'],
-      sortField: 'text',
-      render: {
-        option_create: function(data, escape) {
-          return '<div class="create">Add new counselor: <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+    document.addEventListener('DOMContentLoaded', function() {
+      new TomSelect('#CounselorName', {
+        create: true,
+        createOnBlur: true,
+        persist: false,
+        maxItems: 1,
+        placeholder: "Type name or select existing...",
+        searchField: ['text'],
+        sortField: 'text',
+        render: {
+          option_create: function(data, escape) {
+            return '<div class="create">Add new counselor: <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+          }
         }
-      }
+      });
     });
-  });
   </script>
 </body>
+
 </html>

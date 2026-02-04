@@ -35,22 +35,22 @@ $username_err = $password_err = $login_err = "";
       <?php if (!empty($login_err)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($login_err); ?></div>
       <?php endif; ?>
-<form action="index.php?page=login" method="post">
+      <form action="index.php?page=login" method="post">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-<div class="mb-3">
+        <div class="mb-3">
           <label for="username" class="form-label">Username</label>
           <input type="text" name="username" id="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($username); ?>">
           <?php if (!empty($username_err)): ?>
-<div class="invalid-feedback"><?php echo htmlspecialchars($username_err); ?></div>
+            <div class="invalid-feedback"><?php echo htmlspecialchars($username_err); ?></div>
           <?php endif; ?>
-</div>
+        </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           <input type="password" name="password" id="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
           <?php if (!empty($password_err)): ?>
-<div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
+            <div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
           <?php endif; ?>
-</div>
+        </div>
         <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>
