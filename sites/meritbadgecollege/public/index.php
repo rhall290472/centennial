@@ -76,6 +76,7 @@ $valid_pages = [
   'rpt-details',
 
   'fileupload',
+  'doubleknot-pdf',
 
   'logout',
   'login'
@@ -316,7 +317,9 @@ get_csrf_token();
         case 'fileupload':
           include('../src/Pages/FileUpload.php');
           break;
-
+case 'doubleknot-pdf':
+    include('../src/Pages/doubleknot-pdf.php');
+    break;
         case 'login':
           include('login.php');
           break;

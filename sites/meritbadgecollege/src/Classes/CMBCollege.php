@@ -1153,139 +1153,102 @@ class CMBCollege
             }
           }
         }
-    /*=============================================================================
-    *
-    * This function will produce a report that maybe sent to Council for the 
-    * Double Knot signup
-    * 
-    *===========================================================================*/
-        public static function ReportDoubleKnot($results)
-        {
-          $csv_hdr = "Time^ Merit Badge^ Counselor^ Email^ Prerequisities^ Notes^ Class Size^ Fee";
-          $csv_output = null;
+/**
+ * Returns the Double Knot report as HTML string (table + header info).
+ * Does NOT echo anything — caller decides where/how to output it.
+ *
+ * @param mysqli_result $results Result set from the counselors query
+ * @return string HTML content (ready for echo or PDF)
+ */
+public static function ReportDoubleKnot($results)
+{
+    $CollegeYear = self::getYear();
 
-          $CollegeYear = self::getYear();
-          $queryByMBCollege = sprintf("SELECT * FROM college_details WHERE College='%s' AND College > 0", $CollegeYear);
+    // Fetch college details (safe query)
+    $queryByMBCollege = "SELECT * FROM college_details WHERE College = ? AND College > 0";
+    $stmt = self::getDbConn()->prepare($queryByMBCollege);
+    $stmt->bind_param("s", $CollegeYear);
+    $stmt->execute();
+    $report_results = $stmt->get_result();
 
-          $report_results = self::doQuery($queryByMBCollege, $CollegeYear);
+    $collegeInfo = '';
+    if ($rowCollegeDetails = $report_results->fetch_assoc()) {
+        $ContactPerson  = $rowCollegeDetails['Contact'] ?? '';
+        $CollegeName    = $rowCollegeDetails['College'] ?? '';
+        $CollegeLocation = $rowCollegeDetails['Location'] ?? '';
+        $CollegeAddress = $rowCollegeDetails['Address'] ?? '';
+        $LunchTime      = $rowCollegeDetails['Lunch'] ?? '';
+        $StartTime      = $rowCollegeDetails['StartTime'] ?? '';
+        $EndTime        = $rowCollegeDetails['EndTime'] ?? '';
+        $CollegeNotes   = $rowCollegeDetails['Notes'] ?? '';
 
-          if ($report_results) {
-            $rowCollegeDetails = $report_results->fetch_assoc();
+        $date = strtotime($rowCollegeDetails['Date'] ?? 'now');
+        $CollegeDate = date('m/d/Y', $date);
 
-            $ContactPerson = $rowCollegeDetails['Contact'];
-            $CollegeName = $rowCollegeDetails['College'];
-            $CollegeLocation = $rowCollegeDetails['Location'];
-            $CollegeAddress = $rowCollegeDetails['Address'];
-            $PeriodA = $rowCollegeDetails['PeriodA'];
-            $PeriodB = $rowCollegeDetails['PeriodB'];
-            $PeriodC = $rowCollegeDetails['PeriodC'];
-            $PeriodD = $rowCollegeDetails['PeriodD'];
-            $PeriodE = $rowCollegeDetails['PeriodE'];
-            $PeriodF = $rowCollegeDetails['PeriodF'];
-            $PeriodAB = $rowCollegeDetails['PeriodAB'];
-            $PeriodCD = $rowCollegeDetails['PeriodCD'];
-            $LunchTIme = $rowCollegeDetails['Lunch'];
-            $StartTime = $rowCollegeDetails['StartTime'];
-            $EndTime = $rowCollegeDetails['EndTime'];
-            $date = strtotime($rowCollegeDetails['Date']);
-            $CollegeDate = date('m/d/Y', $date);
-            $CollegeNotes = $rowCollegeDetails['Notes'];
-          }
-
-          ?>
+        // Build header part
+        $collegeInfo = "
             <h2>Centennial District Merit Badge College</h2>
-            <h4><?php echo "$CollegeLocation - $CollegeAddress"; ?></h4>
-            <h4>Date: <?php echo "$CollegeDate"; ?></h4>
-            <h5>Start Time: <?php echo "$StartTime"; ?> End Time: <?php echo "$EndTime"; ?></h5>
+            <h4>" . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
+            <h4>Date: " . htmlspecialchars($CollegeDate) . "</h4>
+            <h5>Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h5>
+        ";
+    }
 
-            <table class='table' style='width:1340' ;>
-              <td style='width:140px'>
-              <td style='width:200px'>
-              <td style='width:100px'>
-              <td style='width:10px'>
-              <td style='width:200px'>
-              <td style='width:200px'>
-              <td style='width:10px'>
-              <td style='width:60px'>
-                <tr>
-                  <th>Period</th>
-                  <th>Merit badge</th>
-                  <th>Counselor</th>
-                  <th>Email</th>
-                  <th>Prerequisities</th>
-                  <th>Notes</th>
-                  <th>Class Size</th>
-                  <th>MB Fee</th>
-                </tr>
+    // Start building the table
+    $html = $collegeInfo;
+    $html .= '<table class="table table-bordered table-striped" style="width:100%;">'; // removed fixed 1340px width
 
-                <?php
-                while ($row = $results->fetch_assoc()) {
-                  switch ($row['MBPeriod']) {
-                    case 'A':
-                      $Time = self::GetPeriodATime(self::GetYear());
-                      break;
-                    case 'B':
-                      $Time = self::GetPeriodBTime(self::GetYear());
-                      break;
-                    case 'C':
-                      $Time = self::GetPeriodCTime(self::GetYear());
-                      break;
-                    case 'D':
-                      $Time = self::GetPeriodDTime(self::GetYear());
-                      break;
-                    case 'E':
-                      $Time = self::GetPeriodETime(self::GetYear());
-                      break;
-                    case 'F':
-                      $Time = self::GetPeriodFTime(self::GetYear());
-                      break;
-                    case 'AB':
-                      $Time = self::GetPeriodABTime(self::GetYear());
-                      break;
-                    case 'CD':
-                      $Time = self::GetPeriodCDTime(self::GetYear());
-                      break;
-                    default:
-                      $Time = 'Unknow';
-                      break;
-                  }
+    // Table header
+    $html .= '
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>Merit Badge</th>
+                <th>Counselor</th>
+                <th>Email</th>
+                <th>Prerequisites</th>
+                <th>Notes</th>
+                <th>Class Size</th>
+                <th>MB Fee</th>
+            </tr>
+        </thead>
+        <tbody>';
 
-                  $Fee = sprintf("$%.2f</td></tr>", (float)($row['MBFee'] ?? 0));
+    // Table rows
+    while ($row = $results->fetch_assoc()) {
+        // Map period to time
+        switch ($row['MBPeriod'] ?? '') {
+            case 'A':   $Time = self::GetPeriodATime(self::getYear()); break;
+            case 'B':   $Time = self::GetPeriodBTime(self::getYear()); break;
+            case 'C':   $Time = self::GetPeriodCTime(self::getYear()); break;
+            case 'D':   $Time = self::GetPeriodDTime(self::getYear()); break;
+            case 'E':   $Time = self::GetPeriodETime(self::getYear()); break;
+            case 'F':   $Time = self::GetPeriodFTime(self::getYear()); break;
+            case 'AB':  $Time = self::GetPeriodABTime(self::getYear()); break;
+            case 'CD':  $Time = self::GetPeriodCDTime(self::getYear()); break;
+            default:    $Time = 'Unknown'; break;
+        }
 
-                  echo "<tr><td>" .
-                    $Time . "</td><td>" .
-                    $row['MBName'] . "</td><td>" .
-                    $row['FirstName'] . " " . $row['LastName'] . "</td><td>" .
-                    $row['Email'] . "</td><td>" .
-                    $row['MBPrerequisities'] . "</td><td>" .
-                    $row['MBNotes'] . "</td><td>" .
-                    $row['MBCSL'] . "</td><td>" .
-                    $Fee;
+        $fee = isset($row['MBFee']) ? sprintf("$%.2f", (float)$row['MBFee']) : '$0.00';
 
-                  //Now create for CSV file
-                  $csv_output .= $Time . "^";
-                  $csv_output .= $row['MBName'] . "^";
-                  $csv_output .= $row['FirstName'] . " " . $row['LastName'] . "^";
-                  $csv_output .= $row['Email'] . "^";
-                  $csv_output .= $row['MBPrerequisities'] . "^";
-                  $csv_output .= $row['MBNotes'] . "^";
-                  $csv_output .= $row['MBCSL'] . "^";
-                  $csv_output .= '$' . number_format($row['MBFee'] ?? 0, 2) . "\n";
-                }
-                echo "</table>";
-                ?>
-                <center>
-                  <form name="export" action="export.php" method="post">
-                    <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
-                    <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-                    <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-                  </form>
-                </center>
-                <br />
-              <?php
+        $html .= '<tr>';
+        $html .= '<td>' . htmlspecialchars($Time) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBName'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars(($row['FirstName'] ?? '') . ' ' . ($row['LastName'] ?? '')) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['Email'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBPrerequisities'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBNotes'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBCSL'] ?? '') . '</td>';
+        $html .= '<td>' . $fee . '</td>';
+        $html .= '</tr>';
+    }
 
-            }
-            /*=============================================================================
+    $html .= '</tbody></table>';
+
+    return $html;
+}
+
+/*=============================================================================
     *
     * This function will produce a list of which districts have signed up  for
     * the college.
