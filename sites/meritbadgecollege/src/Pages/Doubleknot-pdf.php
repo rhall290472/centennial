@@ -54,7 +54,7 @@ $fullHtml = '
 try {
     $mpdf = new Mpdf([
         'mode' => 'utf-8',
-        'format' => 'Letter',
+        'format' => 'Letter-L',
         'margin_left' => 15,
         'margin_right' => 15,
         'margin_top' => 20,
