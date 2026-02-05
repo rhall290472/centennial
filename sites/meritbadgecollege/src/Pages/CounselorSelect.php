@@ -247,12 +247,14 @@ if (isset($_POST['SubmitForm'])) {
                 $bgColor = $i % 2 ? 'var(--scouting-tan)' : 'var(--scouting-darktan)';
               ?>
                 <div class="merit-badge-section" style="background-color: <?= $bgColor ?>">
-                  <h6><?= ordinal($i) ?> Merit Badge</h6>
+                  <h5><?= ordinal($i) ?> Merit Badge</h5>
+
+                  <!-- First row: short/select/number fields -->
                   <div class="row g-3">
                     <div class="col-md-3">
                       <label for="MB<?= $i ?>Name" class="form-label">Merit Badge Name</label>
                       <select class="form-select" id="MB<?= $i ?>Name" name="MB<?= $i ?>Name">
-                        <option value="">Select Badge</option>
+                        <option value="" selected disabled hidden>Select Merit Badge</option>
                         <?php
                         mysqli_data_seek($ResultsMB, 0);
                         $firstBadgeFound = false;
@@ -269,40 +271,47 @@ if (isset($_POST['SubmitForm'])) {
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>Period" class="form-label">Period</label>
                       <select class="form-select" id="MB<?= $i ?>Period" name="MB<?= $i ?>Period">
-                        <option value="">Select Period</option>
+                        <option value="" selected disabled hidden>Select Period</option>
                         <?= $Counselor->DisplayPeriods($i) ?>
                       </select>
                     </div>
 
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>CSL" class="form-label">Class Size</label>
-                      <?php $Counselor->Display_ClassSize("MB{$i}CSL", $i); ?>
+                      <?php echo $Counselor->Display_ClassSize("MB{$i}CSL", $i); ?>
+                      <small class="form-text text-muted">Maximum number of Scouts for Badge</small>
                     </div>
 
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>Fee" class="form-label">Class Fee</label>
-                      <?php $Counselor->Display_ClassFee("MB{$i}Fee", $i); ?>
+                      <?php echo $Counselor->Display_ClassFee("MB{$i}Fee", $i); ?>
+                      <small class="form-text text-muted">Include any material charges (e.g. $5.00)</small>
                     </div>
 
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["Role"] === "Admin"): ?>
-                      <div class="col-md-2">
+                      <div class="col-md-3"> <!-- Slightly wider when Room is present -->
                         <label for="MB<?= $i ?>Room" class="form-label">Room</label>
                         <?php $Counselor->Display_ClassRoom("MB{$i}Room", $i); ?>
                       </div>
                     <?php endif; ?>
-                    <div class="col-md-3">
+                  </div>
+
+                  <!-- Second row: wider text fields (Prerequisites + Notes) -->
+                  <div class="row g-3 mt-3"> <!-- mt-3 adds nice spacing between rows -->
+                    <div class="col-md-6"> <!-- Wider column so textareas have more room -->
                       <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
-                      <?php $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
+                      <?php echo $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>  
+                      <small class="form-text text-muted">List any requirements scouts should complete before attending.</small>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                       <label for="MB<?= $i ?>Notes" class="form-label">Notes</label>
-                      <?php $Counselor->Display_Notes("MB{$i}Notes", $i); ?>
+                      <?php echo $Counselor->Display_Notes("MB{$i}Notes", $i); ?>
+                      <small class="form-text text-muted">Any notes for the college staff.</small>
                     </div>
                   </div>
                 </div>
-              <?php endfor; ?>
-              <div class="text-center mt-3">
+              <?php endfor; ?> <div class="text-center mt-3">
                 <input type="hidden" name="form_id" value="22772">
                 <button type="submit" name="SubmitForm" class="btn btn-primary">Submit</button>
               </div>
@@ -351,4 +360,28 @@ if (isset($_POST['SubmitForm'])) {
     });
   </script>
 </body>
+
 </html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Target ALL relevant selects: Merit Badge Name and Period
+    const selects = document.querySelectorAll('select[name^="MB"][name$="Name"], select[name^="MB"][name$="Period"]');
+
+    selects.forEach(select => {
+      function updatePlaceholder() {
+        if (select.value === '') {
+          select.classList.add('placeholder-shown');
+        } else {
+          select.classList.remove('placeholder-shown');
+        }
+      }
+
+      // Run immediately (handles pre-selected values from PHP)
+      updatePlaceholder();
+
+      // Run every time selection changes
+      select.addEventListener('change', updatePlaceholder);
+    });
+  });
+</script>

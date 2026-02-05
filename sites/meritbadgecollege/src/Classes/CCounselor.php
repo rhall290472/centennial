@@ -218,69 +218,82 @@ class CCounselor extends CMBCollege
     }
   }
 
-  /******************************************************************************
-   * 
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_ClassSize($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
-    $required = $nPeriod == 0 ? "required" : "";
-    $DefaultSize = 15;
+  /**
+ * Renders the class size input field for a given merit badge period.
+ *
+ * @param string $element   The HTML name/id of the input (e.g. "MB1CSL")
+ * @param int    $period    1-based period number (1–4)
+ * @return string           The HTML input string
+ */
+public function Display_ClassSize(string $element, int $period): string
+{
+    $zeroBasedIndex = $period - 1;
+    //$defaultSize    = 15;
 
-    // If we have class size limit, show it..
-    if ($nPeriod < count($this->MBCSL)) {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' value='%s' %s />",
-        $Element,
-        $Element,
-        $this->MBCSL[$nPeriod],
-        $required
-      );
-    } else {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' %s value='%s'/>",
-        $Element,
-        $Element,
-        $required,
-        $DefaultSize
-      );
-    }
-    echo $str;
-  }
-  /******************************************************************************
-   * 
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_ClassFee($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
-    //$required = $nPeriod == 0 ? "required" : "";
-    $required = "";
+    // Get stored value if available, otherwise use default
+    $value     = $zeroBasedIndex < count($this->MBCSL) ? (int) $this->MBCSL[$index] : null;
 
-    // If we have class fee, show it..
-    if ($nPeriod < count($this->MBFee)) {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' value='%s' %s />",
-        $Element,
-        $Element,
-        $this->MBFee[$nPeriod],
-        $required
-      );
-    } else {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' %s />",
-        $Element,
-        $Element,
-        $required
-      );
+    // Build attributes safely
+    $attributes = [
+        'type'        => 'number',
+        'class'       => 'form-control',
+        'id'          => $element,
+        'name'        => $element,
+        'value'       => $value,
+        'min'         => '1',
+        'maxlength'   => '3',
+        'size'        => '5',         // visual width (optional – can remove if using CSS)
+        'placeholder' => '15',        // ← this is what you asked for
+    ];
+
+    // Filter out empty attributes
+    $attrString = '';
+    foreach ($attributes as $key => $val) {
+        if ($val !== '' && $val !== false) {
+            $attrString .= sprintf(' %s="%s"', $key, htmlspecialchars((string)$val));
+        }
     }
-    echo $str;
-  }
+
+    return '<input' . $attrString . ' />';
+}
+
+/**
+ * Renders the class fee input field for a given merit badge period.
+ *
+ * @param string $element   The HTML name/id of the input (e.g. "MB1Fee")
+ * @param int    $period    1-based period number (1–4)
+ * @return string           The HTML input string
+ */
+public function Display_ClassFee(string $element, int $period): string
+{
+    $index     = $period - 1;
+    $isFirst   = $index === 0;
+
+    // Use stored value if available, otherwise leave empty (no default)
+    $value     = $index < count($this->MBFee ?? []) 
+        ? (float) $this->MBFee[$index] 
+        : null;
+
+    $attributes = array_filter([
+        'type'        => 'number',
+        'class'       => 'form-control',
+        'id'          => $element,
+        'name'        => $element,
+        'value'       => $value !== null ? number_format($value, 2, '.', '') : null,
+        'step'        => '0.01',
+        'min'         => '0',
+        'placeholder' => '$0.00',           // ← Added as requested
+    ], fn($v) => $v !== null && $v !== '');
+
+    $attrParts = [];
+    foreach ($attributes as $key => $val) {
+        $attrParts[] = sprintf('%s="%s"', $key, htmlspecialchars((string)$val));
+    }
+
+    return '<input ' . implode(' ', $attrParts) . ' />';
+}
+
+
   /******************************************************************************
    * 
    *
@@ -308,55 +321,55 @@ class CCounselor extends CMBCollege
     }
     echo $str;
   }
-  /******************************************************************************
-   *
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_Prerequisities($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
+public function Display_Prerequisities(string $element, int $period): string
+{
+    $index = $period - 1;
+    $value = ($index < count($this->MBPrerequisities ?? []))
+        ? htmlspecialchars($this->MBPrerequisities[$index] ?? '', ENT_QUOTES)
+        : '';
 
-    if ($nPeriod < count($this->MBPrerequisities)) {
-      $str = sprintf('<textarea rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s">%s</textarea>', $Element, $Element, $this->MBPrerequisities[$nPeriod]);
-    } else {
-      $str = sprintf(
-        '<textarea  rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s"></textarea>',
-        $Element,
-        $Element
-      );
-    }
-    echo $str;
-  }
+    return <<<HTML
+<textarea 
+    class="form-control w-100" 
+    id="{$element}" 
+    name="{$element}" 
+    rows="5" 
+    placeholder="Enter prerequisites (e.g., complete requirements 1-3 before class, bring notebook, etc.)"
+    style="min-height: 120px; resize: vertical;">
+{$value}
+</textarea>
+HTML;
+}
 
-  /******************************************************************************
-   *
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_Notes($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
+/**
+ * Renders the Notes textarea for a given merit badge period.
+ *
+ * @param string $element The HTML name/id attribute (e.g. "MB1Notes")
+ * @param int    $period  1-based period number (1–4)
+ * @return string         The <textarea> HTML
+ */
+public function Display_Notes(string $element, int $period): string
+{
+    $index = $period - 1;
+    
+    $value = ($index < count($this->MBNotes ?? []))
+        ? htmlspecialchars($this->MBNotes[$index] ?? '', ENT_QUOTES)
+        : '';
 
-    if ($nPeriod < count($this->MBNotes)) {
-      $str = sprintf(
-        '<textarea rows="10"  cols="30" class="textarea form-control-sm" id="%s" name="%s">%s</textarea>',
-        $Element,
-        $Element,
-        $this->MBNotes[$this->nIndex]
-      );
-    } else {
-      $str = sprintf(
-        '<textarea rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s"></textarea>',
-        $Element,
-        $Element
-      );
-    }
-    echo $str;
-  }
-  /*=============================================================================
+    return <<<HTML
+<textarea 
+    class="form-control w-100" 
+    id="{$element}" 
+    name="{$element}" 
+    rows="5" 
+    placeholder="Enter any additional notes (special instructions, equipment needed, etc.)"
+    style="min-height: 120px; resize: vertical;">
+{$value}
+</textarea>
+HTML;
+}
+
+/*=============================================================================
      *
      * This function will add a merit badge to the college list of available merit
      * badges.
