@@ -13971,3 +13971,9 @@ footer {
 .form-select:not(.placeholder-shown) {
   color: #212529 !important;     /* Bootstrap default dark text */
 }
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
+}

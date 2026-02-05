@@ -246,7 +246,7 @@ if (isset($_POST['SubmitForm'])) {
               <?php for ($i = 1; $i <= 4; $i++):
                 $bgColor = $i % 2 ? 'var(--scouting-tan)' : 'var(--scouting-darktan)';
               ?>
-                <div class="merit-badge-section" style="background-color: <?= $bgColor ?>">
+                <div class="merit-badge-section mb-4" style="background-color: <?= $bgColor ?>">
                   <h5><?= ordinal($i) ?> Merit Badge</h5>
 
                   <!-- First row: short/select/number fields -->
@@ -294,6 +294,7 @@ if (isset($_POST['SubmitForm'])) {
                         <?php $Counselor->Display_ClassRoom("MB{$i}Room", $i); ?>
                       </div>
                     <?php endif; ?>
+                    <!-- At the very end of the <form>, after the loop -->
                   </div>
 
                   <!-- Second row: wider text fields (Prerequisites + Notes) -->
@@ -311,10 +312,19 @@ if (isset($_POST['SubmitForm'])) {
                     </div>
                   </div>
                 </div>
-              <?php endfor; ?> <div class="text-center mt-3">
+              <?php endfor; ?> 
+              <div class="sticky-bottom bg-light border-top py-3 shadow-sm">
+  <div class="container text-center">
+    <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">
+      Submit Counselor Information
+    </button>
+  </div>
+</div>
+
+              <!-- <div>
                 <input type="hidden" name="form_id" value="22772">
-                <button type="submit" name="SubmitForm" class="btn btn-primary">Submit</button>
-              </div>
+                <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">Submit</button>
+              </div> -->
             </form>
           </div>
         <?php endif; ?>
