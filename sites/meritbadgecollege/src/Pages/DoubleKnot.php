@@ -41,7 +41,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
     <html>
     <head>
         <meta charset="utf-8">
-        <title>Double Knot Report ' . htmlspecialchars($CollegeYear) . '</title>
+        <title>Black Pug Report ' . htmlspecialchars($CollegeYear) . '</title>
         <style>
             body { font-family: dejavusans, sans-serif; font-size: 11pt; margin: 15mm; }
             h2 { text-align: center; }
@@ -51,7 +51,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
         </style>
     </head>
     <body>
-        <h2>Centennial District Merit Badge College<br>Double Knot Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
+        <h2>Centennial District Merit Badge College<br>Black PugKnot Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
         <p style="text-align:center;"><strong>Generated:</strong> ' . date('F j, Y') . '</p>
         ' . $tableHtml . '
     </body>
@@ -86,7 +86,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Double Knot Report</title>
+  <title>Black Pug Report</title>
   <!-- Your CSS links here -->
 </head>
 

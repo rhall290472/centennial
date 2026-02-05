@@ -1187,10 +1187,18 @@ public static function ReportDoubleKnot($results)
 
         // Build header part
         $collegeInfo = "
-            <h2>Centennial District Merit Badge College</h2>
-            <h4>" . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
-            <h4>Date: " . htmlspecialchars($CollegeDate) . "</h4>
-            <h5>Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h5>
+            <h2>What: Centennial District Merit Badge College</h2>
+            <h4>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h4>
+            <h4>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
+            <h4>Cost: </h4>
+            <h4>Registration end: </h4>
+            <h4>Event details: " . htmlspecialchars($CollegeNotes) . "</h4>
+            <h4>Registration Types: youth</h4>
+            <h4>Collect from Scouts: Name(first, last), email, unit, district, Guardian contact phone number</h4>
+            <h4>Documents: med form </h4>
+            <h4>Main Contact: Richard Hall, mailto:richard.hall@centennialdistrict.co, 305.401.5943</h4>
+            <h4>Pleae send: confirmation email, cancelation policy, and reminder email</h4>
+            <h5></h5>
         ";
     }
 
