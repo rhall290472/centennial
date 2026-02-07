@@ -51,7 +51,7 @@
 			badge group instructional events that partial completions are acceptable expected results. A guide or
 			information sheet is distributed in advance of events
 			that promotes the acceptability of partials, explains how merit badges can be finished after events, lists
-			merit badge prerequisites, and provides other helpful
+			merit badge rerequisites, and provides other helpful
 			information that will establish realistic expectations for the number of merit badges that can be earned at
 			an event.
 			<br></br>
@@ -64,7 +64,7 @@
 			<br></br>
 			Counselors agree to sign off only requirements that Scouts have actually and personally completed.
 			<br></br>
-			Counselors agree not to assume that stated prerequisites for an event have been completed without some level
+			Counselors agree not to assume that stated rerequisites for an event have been completed without some level
 			of evidence that the work has been done. Pictures
 			and letters from other merit badge counselors or unit leaders are the best form of prerequisite
 			documentation when the actual work done cannot be brought to the

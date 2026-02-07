@@ -13886,7 +13886,7 @@ footer {
   margin-left: auto;
   margin-right: auto;
   padding-top: 12rem;
-  padding-left: 12 rem;
+  padding-left: 12rem;
 }
 
 /* Spinner styles */
@@ -13928,4 +13928,52 @@ footer {
   transform: translate(-50%, -50%);
   z-index: 9999;
   display: none;
+}
+
+
+/* Make placeholders clearly different: lighter color + slightly reduced opacity + optional lighter weight */
+.form-control::placeholder,
+.form-select::placeholder,
+.ts-control input::placeholder {  /* For Tom Select dropdown placeholder */
+  color: #8a8a8a !important;     /* Medium gray — darker than default faint gray but still distinct */
+  opacity: 0.8;                  /* Slight fade for "hint" feel */
+  font-weight: 300;              /* Lighter than normal text (optional — remove if too subtle) */
+  font-style: italic;            /* Extra visual cue that it's not real input (very common pattern) */
+}
+
+/* Optional: Hide placeholder completely when user starts typing/focuses */
+.form-control:focus::placeholder,
+.form-select:focus::placeholder,
+.ts-control input:focus::placeholder {
+  color: transparent;
+}
+
+/* Style the placeholder-like option in selects */
+.form-select option[disabled][hidden] {
+  color: #6c757d;          /* Bootstrap's default secondary/gray color */
+  opacity: 0.8;
+  font-style: italic;      /* Optional: extra hint it's not a real choice */
+}
+
+/* When something is actually selected, make text normal */
+.form-select:not(:placeholder-shown) {
+  color: #212529;          /* Bootstrap default text color */
+}
+
+/* Gray/faded style when placeholder is showing */
+.form-select.placeholder-shown {
+  color: #6c757d !important;     /* Bootstrap gray */
+  font-style: italic;
+  opacity: 0.9;                  /* Slight fade */
+}
+
+/* Normal color when a real badge is selected */
+.form-select:not(.placeholder-shown) {
+  color: #212529 !important;     /* Bootstrap default dark text */
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
 }

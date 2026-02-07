@@ -62,15 +62,27 @@ $page = $page ?? 'home';
           <li><a class="dropdown-item" href="?page=report-ebor">Pending EBOR</a></li>
         </ul>
       </li>
+      <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "Admin"): ?>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline">Admin</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="?page=viewuser">View Users</a></li>
+          </ul>
+        </li>
+      <?php endif ?>
+
       <li class="nav-item">
         <a class="nav-link" href="?page=policy">Policies</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="index.php?page=changepassword">Change Password</a>
-    </li>
-    <li class="nav-item">
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="index.php?page=logout">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a>
-    </li>
+      </li>
+
     <?php else: ?>
       <li class="nav-item">
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>

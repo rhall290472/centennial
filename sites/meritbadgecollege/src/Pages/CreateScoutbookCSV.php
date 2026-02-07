@@ -62,7 +62,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
           $CollegeYear = $_POST['CollegeYear'];
-          setYear($CollegeYear);
+          $CMBCollege->SetYear($CollegeYear);
         }
 
         // Display college year and allow user to select.

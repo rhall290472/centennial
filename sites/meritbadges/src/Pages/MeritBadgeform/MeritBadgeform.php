@@ -57,7 +57,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
     <div id="form_container">
       <form id="form_22772" class="appnitro" method="post" action="index.php?page=updatemeritbadge">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <input type="hidden" name="original_merit_name" value="<?php echo htmlspecialchars($row['MeritName']); ?>">
         <div class="form_description">
         </div>

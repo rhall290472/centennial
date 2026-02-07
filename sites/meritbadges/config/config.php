@@ -62,8 +62,8 @@ if (defined('ENV') && ENV === 'development') {
 // Assets URL
 define('SHARED_ASSETS_URL', SITE_URL . '/centennial/shared/assets');
 define('SHARED_CLASS_URL', SITE_URL . '/centennial/shared/src/Classes');
-define('SHARED_PATH', __DIR__ . '/../../../shared/');
 
+define('SHARED_PATH', dirname(__DIR__, 3)); // backup to the shared directory
 define('SRC_PATH', SHARED_PATH . '/shared/src');
 define('SHARED_CLASS_PATH', SRC_PATH . '/Classes');
 
@@ -127,35 +127,54 @@ ini_set('post_max_size', '4M');
 
 // Template loader function
 if (!function_exists('load_template')) {
-    function load_template($file)
+    function load_template(string $classFile): void
     {
-        $path = BASE_PATH . $file;
+        $path = BASE_PATH . $classFile;
         if (file_exists($path)) {
             require_once $path;
-        } else {
-            error_log("Template $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Template ' . $path . ' is missing.</br>';
-                die('Template $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
+            return;
         }
+
+        // Get caller information
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+        $message = "Cannot load class file: {$classFile}\n"
+                 . "Called from: {$caller['file']}:{$caller['line']}";
+
+        error_log($message);
+
+        if (defined('ENV') && ENV === 'development') {
+            header('Content-Type: text/plain; charset=utf-8');
+            die($message);
+        }
+
+        die('An internal error occurred. Please try again later.');
     }
 }
 // Class loader function
 if (!function_exists('load_class')) {
-    function load_class($file)
+    function load_class(string $classFile): void
     {
-        $path = $file;
-        if (file_exists($path)) {
-            require_once $path;
-        } else {
-            error_log("Class $file is missing.");
-            if (defined('ENV') && ENV === 'development') {
-                echo 'Class ' . $path . ' is missing.</br>';
-                die('Class $file is missing.');
-            } else
-                die('An error occurred. Please try again later.');
+        if (file_exists($classFile)) {
+            require_once $classFile;
+            return;
         }
+
+        // Get caller information
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller = $trace[0] ?? ['file' => 'unknown', 'line' => 0];
+
+        $message = "Cannot load class file: {$classFile}\n"
+                 . "Called from: {$caller['file']}:{$caller['line']}";
+
+        error_log($message);
+
+        if (defined('ENV') && ENV === 'development') {
+            header('Content-Type: text/plain; charset=utf-8');
+            die($message);
+        }
+
+        die('An internal error occurred. Please try again later.');
     }
 }

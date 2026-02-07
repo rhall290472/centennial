@@ -23,20 +23,6 @@
 !==============================================================================!
 */
 
-/******************************************************************************
- * 
- * 
- * 
- *****************************************************************************/
-function setYear($yr)
-{
-  $_SESSION['year'] = $yr;
-}
-/******************************************************************************
- * 
- * 
- * 
- *****************************************************************************/
 
 
 /******************************************************************************
@@ -107,7 +93,7 @@ class CMBCollege
   private static function initConnection()
   {
     $db = self::getInstance();
-    
+
     $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     // Check for connection errors (prevents silent failures)
@@ -133,6 +119,32 @@ class CMBCollege
       $strError = "I was unable to open a connection to the database. " . $ex->getMessage();
       error_log($strError, 0);
       return null;
+    }
+  }
+  public static function getPdoConn()
+  {
+    // Build DSN (Data Source Name) - using utf8mb4 is strongly recommended
+    $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+
+    try {
+      $pdo = new PDO(
+        $dsn,
+        DB_USER,
+        DB_PASS,
+        [
+          PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+          PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+      );
+      return $pdo;
+    } catch (PDOException $e) {
+      // In development: show error
+      die("Database connection failed: " . $e->getMessage());
+      // In production: log and show friendly message
+      // error_log($e->getMessage());
+      // http_response_code(500);
+      // echo "Service unavailable. Please try again later.";
     }
   }
 
@@ -206,12 +218,12 @@ class CMBCollege
         <?php $yr = $_SESSION['year']; ?>
         <!--  First recod is blank "all" -->
         <option value=""> </option>
-          <?php
-          if (!strcmp($yr, "2022"))
-            $Selected = "selected";
-          else
-            $Selected = "";
-          ?>
+        <?php
+        if (!strcmp($yr, "2022"))
+          $Selected = "selected";
+        else
+          $Selected = "";
+        ?>
         <option value='2022' " . $Selected . ">2022</option>
 
       <?php
@@ -261,12 +273,12 @@ class CMBCollege
     /******************************************************************************
      *
      *****************************************************************************/
-    // public static function GotoURL($url)
-    // {
-    //   echo "<script>
-    //   location.replace('$url')
-    // </script>";
-    // }
+    public static function GotoURL($url)
+    {
+      echo "<script>
+      location.replace('$url')
+    </script>";
+    }
     /**************************************************************************
      **
      **
@@ -520,8 +532,7 @@ class CMBCollege
 
             while ($rowMB = $Result_MB->fetch_assoc()) {
 
-              echo "<h3>", $rowMB['MeritName'], "</h3>", "Requirments: ", $rowMB['RequirementsRevised'],
-              "<a href='" . $rowMB['URL'] . "'>" . "<img src='" . $rowMB['Logo'] . "'" . " width='50' height='50'></a>";
+              echo "<h3>", $rowMB['MeritName'], "</h3>", "Requirments: ", $rowMB['RequirementsRevised'];
             }
             echo "<br>";
             echo "<table class='table table-light tl1 tl2 tl3 tc4 tc5' style='width:600px';>";
@@ -1142,243 +1153,247 @@ class CMBCollege
             }
           }
         }
-        /*=============================================================================
-    *
-    * This function will produce a report that maybe sent to Council for the 
-    * Double Knot signup
-    * 
-    *===========================================================================*/
-        public static function ReportDoubleKnot($results)
-        {
-          $csv_hdr = "Time^ Merit Badge^ Counselor^ Email^ Prerequisities^ Notes^ Class Size^ Fee";
-          $csv_output = null;
+/**
+ * Returns the Double Knot report as HTML string (table + header info).
+ * Does NOT echo anything — caller decides where/how to output it.
+ *
+ * @param mysqli_result $results Result set from the counselors query
+ * @return string HTML content (ready for echo or PDF)
+ */
+public static function ReportDoubleKnot($results)
+{
+    $CollegeYear = self::getYear();
 
+    // Fetch college details (safe query)
+    $queryByMBCollege = "SELECT * FROM college_details WHERE College = ? AND College > 0";
+    $stmt = self::getDbConn()->prepare($queryByMBCollege);
+    $stmt->bind_param("s", $CollegeYear);
+    $stmt->execute();
+    $report_results = $stmt->get_result();
 
-          echo "<table class='table'  style='width:1340';>";
-          echo "<td style='width:140px'>";
-          echo "<td style='width:200px'>";
-          echo "<td style='width:100px'>";
-          echo "<td style='width:10px'>";
-          echo "<td style='width:200px'>";
-          echo "<td style='width:200px'>";
-          echo "<td style='width:10px'>";
-          echo "<td style='width:60px'>";
-          echo "<tr>";
-          echo "<th>Period</th>";
-          echo "<th>Merit badge</th>";
-          echo "<th>Counselor</th>";
-          echo "<th>Email</th>";
-          echo "<th>Prerequisities</th>";
-          echo "<th>Notes</th>";
-          echo "<th>Class Size</th>";
-          echo "<th>MB Fee</th>";
+    $collegeInfo = '';
+    if ($rowCollegeDetails = $report_results->fetch_assoc()) {
+        $ContactPerson  = $rowCollegeDetails['Contact'] ?? '';
+        $CollegeName    = $rowCollegeDetails['College'] ?? '';
+        $CollegeLocation = $rowCollegeDetails['Location'] ?? '';
+        $CollegeAddress = $rowCollegeDetails['Address'] ?? '';
+        $LunchTime      = $rowCollegeDetails['Lunch'] ?? '';
+        $StartTime      = $rowCollegeDetails['StartTime'] ?? '';
+        $EndTime        = $rowCollegeDetails['EndTime'] ?? '';
+        $CollegeNotes   = $rowCollegeDetails['Notes'] ?? '';
 
-          echo "</tr>";
+        $date = strtotime($rowCollegeDetails['Date'] ?? 'now');
+        $CollegeDate = date('m/d/Y', $date);
 
-          while ($row = $results->fetch_assoc()) {
-            switch ($row['MBPeriod']) {
-              case 'A':
-                $Time = self::GetPeriodATime(self::GetYear());
-                break;
-              case 'B':
-                $Time = self::GetPeriodBTime(self::GetYear());
-                break;
-              case 'C':
-                $Time = self::GetPeriodCTime(self::GetYear());
-                break;
-              case 'D':
-                $Time = self::GetPeriodDTime(self::GetYear());
-                break;
-              case 'E':
-                $Time = self::GetPeriodETime(self::GetYear());
-                break;
-              case 'F':
-                $Time = self::GetPeriodFTime(self::GetYear());
-                break;
-              case 'AB':
-                $Time = self::GetPeriodABTime(self::GetYear());
-                break;
-              case 'CD':
-                $Time = self::GetPeriodCDTime(self::GetYear());
-                break;
-              default:
-                $Time = 'Unknow';
-                break;
-            }
+        // Build header part
+        $collegeInfo = "
+            <h2>What: Centennial District Merit Badge College</h2>
+            <h4>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h4>
+            <h4>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
+            <h4>Cost: </h4>
+            <h4>Registration end: </h4>
+            <h4>Event details: " . htmlspecialchars($CollegeNotes) . "</h4>
+            <h4>Registration Types: youth</h4>
+            <h4>Collect from Scouts: Name(first, last), email, unit, district, Guardian contact phone number</h4>
+            <h4>Documents: med form </h4>
+            <h4>Main Contact: Richard Hall, mailto:richard.hall@centennialdistrict.co, 305.401.5943</h4>
+            <h4>Pleae send: confirmation email, cancelation policy, and reminder email</h4>
+            <h5></h5>
+        ";
+    }
 
-            $Fee = sprintf("$%2.2f</td></tr>", number_format($row['MBFee'], 2, '.', ''));
+    // Start building the table
+    $html = $collegeInfo;
+    $html .= '<table class="table table-bordered table-striped" style="width:100%;">'; // removed fixed 1340px width
 
-            echo "<tr><td>" .
-              $Time . "</td><td>" .
-              $row['MBName'] . "</td><td>" .
-              $row['FirstName'] . " " . $row['LastName'] . "</td><td>" .
-              $row['Email'] . "</td><td>" .
-              $row['MBPrerequisities'] . "</td><td>" .
-              $row['MBNotes'] . "</td><td>" .
-              $row['MBCSL'] . "</td><td>" .
-              $Fee;
+    // Table header
+    $html .= '
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th>Merit Badge</th>
+                <th>Counselor</th>
+                <th>Email</th>
+                <th>Prerequisites</th>
+                <th>Notes</th>
+                <th>Class Size</th>
+                <th>MB Fee</th>
+            </tr>
+        </thead>
+        <tbody>';
 
-            //Now create for CSV file
-            $csv_output .= $Time . "^";
-            $csv_output .= $row['MBName'] . "^";
-            $csv_output .= $row['FirstName'] . " " . $row['LastName'] . "^";
-            $csv_output .= $row['Email'] . "^";
-            $csv_output .= $row['MBPrerequisities'] . "^";
-            $csv_output .= $row['MBNotes'] . "^";
-            $csv_output .= $row['MBCSL'] . "^";
-            $csv_output .= sprintf("$%2.2f\n", number_format($row['MBFee'], 2, '.', ''));
-          }
-          echo "</table>";
-          ?>
-            <center>
-              <form name="export" action="export.php" method="post">
-                <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
-                <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-                <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-              </form>
-            </center>
-            <br />
-          <?php
-
+    // Table rows
+    while ($row = $results->fetch_assoc()) {
+        // Map period to time
+        switch ($row['MBPeriod'] ?? '') {
+            case 'A':   $Time = self::GetPeriodATime(self::getYear()); break;
+            case 'B':   $Time = self::GetPeriodBTime(self::getYear()); break;
+            case 'C':   $Time = self::GetPeriodCTime(self::getYear()); break;
+            case 'D':   $Time = self::GetPeriodDTime(self::getYear()); break;
+            case 'E':   $Time = self::GetPeriodETime(self::getYear()); break;
+            case 'F':   $Time = self::GetPeriodFTime(self::getYear()); break;
+            case 'AB':  $Time = self::GetPeriodABTime(self::getYear()); break;
+            case 'CD':  $Time = self::GetPeriodCDTime(self::getYear()); break;
+            default:    $Time = 'Unknown'; break;
         }
-        /*=============================================================================
+
+        $fee = isset($row['MBFee']) ? sprintf("$%.2f", (float)$row['MBFee']) : '$0.00';
+
+        $html .= '<tr>';
+        $html .= '<td>' . htmlspecialchars($Time) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBName'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars(($row['FirstName'] ?? '') . ' ' . ($row['LastName'] ?? '')) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['Email'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBPrerequisities'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBNotes'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['MBCSL'] ?? '') . '</td>';
+        $html .= '<td>' . $fee . '</td>';
+        $html .= '</tr>';
+    }
+
+    $html .= '</tbody></table>';
+
+    return $html;
+}
+
+/*=============================================================================
     *
     * This function will produce a list of which districts have signed up  for
     * the college.
     * 
     *===========================================================================*/
-        public static function SelectCollegeYear($CollegeYear, $Title, $bPreview)
-        {
-          $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
-          $result_CollegeYear = self::doQuery($queryCollegeYear);
+            public static function SelectCollegeYear($CollegeYear, $Title, $bPreview)
+            {
+              $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
+              $result_CollegeYear = self::doQuery($queryCollegeYear);
 
-          ?>
-            <form method=post>
-              <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
-              <div class="row  d-print-none">
-                <div class="col-2">
-                  <select class='form-control' id='CollegeYear' name='CollegeYear'>
+              ?>
+                <form method=post>
+                  <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(get_csrf_token()); ?>">
+                  <div class="row  d-print-none">
+                    <div class="col-2">
+                      <select class='form-control' id='CollegeYear' name='CollegeYear'>
 
-                    <option value=""> </option>
+                        <option value=""> </option>
+                        <?php
+                        while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
+                          if (!strcmp($rowCollege['College'], $CollegeYear)) {
+                            echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                          } else
+                            echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                        }
+                        echo "<option value=-1>New</option>";
+                        ?>
+                      </select>
+                    </div>
+
                     <?php
-                    while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
-                      if (!strcmp($rowCollege['College'], $CollegeYear)) {
-                        echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-                      } else
-                        echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-                    }
-                    echo "<option value=-1>New</option>";
-                    ?>
-                  </select>
-                </div>
-
-                <?php
-                if ($bPreview) { ?>
-                  <div class="col-1">
-                    <input type='checkbox' name='Preview' id='chkPreview' value='1' />
-                    <label for='chkPreview'>Preview Email(s) </label>
+                    if ($bPreview) { ?>
+                      <div class="col-1">
+                        <input type='checkbox' name='Preview' id='chkPreview' value='1' />
+                        <label for='chkPreview'>Preview Email(s) </label>
+                      </div>
+                    <?php } ?>
+                    <div class="col-2">
+                      <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
+                    </div>
                   </div>
-                <?php } ?>
-                <div class="col-2">
-                  <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
-                </div>
-              </div>
-            </form>
-          <?php
-        }
-        /*=============================================================================
+                </form>
+              <?php
+            }
+            /*=============================================================================
     *
     * This function will have two selections one for the College year and the other
     * for ta Scout
     * 
     *===========================================================================*/
-        public static function SelectCollegeYearandScout($CollegeYear, $Title, $bPreview)
-        {
-          $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
-          $result_CollegeYear = self::doQuery($queryCollegeYear);
+            public static function SelectCollegeYearandScout($CollegeYear, $Title, $bPreview)
+            {
+              $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
+              $result_CollegeYear = self::doQuery($queryCollegeYear);
 
-          $queryScouts = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
+              $queryScouts = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
           WHERE college='$CollegeYear' ORDER BY LastNameScout, FirstNameScout";
-          ?>
-            <form method=post>
-              <div class="row  d-print-none">
-                <div class="col-2">
-                  <select class='form-control' id='CollegeYear' name='CollegeYear'>
+              ?>
+                <form method=post>
+                  <div class="row  d-print-none">
+                    <div class="col-2">
+                      <select class='form-control' id='CollegeYear' name='CollegeYear'>
 
-                    <option value=""> </option>
-                    <?php
-                    while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
-                      if (!strcmp($rowCollege['College'], $CollegeYear)) {
-                        echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-                      } else
-                        echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-                    }
-                    echo "<option value=-1>New</option>";
-                    ?>
-                  </select>
+                        <option value=""> </option>
+                        <?php
+                        while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
+                          if (!strcmp($rowCollege['College'], $CollegeYear)) {
+                            echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                          } else
+                            echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                        }
+                        echo "<option value=-1>New</option>";
+                        ?>
+                      </select>
 
-                  <?php
-                  if ($bPreview) { ?>
-                    <input type='checkbox' name='Preview' id='chkPreview' value='1' />
-                    <label for='chkPreview'>Preview Email(s) </label>
-                  <?php } ?>
-                </div>
+                      <?php
+                      if ($bPreview) { ?>
+                        <input type='checkbox' name='Preview' id='chkPreview' value='1' />
+                        <label for='chkPreview'>Preview Email(s) </label>
+                      <?php } ?>
+                    </div>
+                    <div class="col-2">
+                      <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
+                    </div>
+                    <!-- </div> -->
+                </form>
+                <?php
+                $result_ByScout = self::doQuery($queryScouts);
+                if (!$result_ByScout) {
+                  self::function_alert("ERROR: self->doQuery($queryScouts)");
+                }
+                ?>
                 <div class="col-2">
-                  <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
+                  <form id="ScoutName" method=post>
+                    <select class='form-select' id='ScoutName' name='ScoutName'>
+                      <option value=""> </option>
+                      <option value=-1>Add New</option>
+                      <?php while ($rowCollegeMBs = $result_ByScout->fetch_assoc()) {
+                        echo "<option value=" . $rowCollegeMBs['BSAIdScout'] . ">" . $rowCollegeMBs['LastNameScout'] . " " . $rowCollegeMBs['FirstNameScout'] . "</option>";
+                      } ?>
+                    </select>
                 </div>
-                <!-- </div> -->
-            </form>
-            <?php
-            $result_ByScout = self::doQuery($queryScouts);
-            if (!$result_ByScout) {
-              self::function_alert("ERROR: self->doQuery($queryScouts)");
-            }
-            ?>
-            <div class="col-2">
-              <form id="ScoutName" method=post>
-                <select class='form-select' id='ScoutName' name='ScoutName'>
-                  <option value=""> </option>
-                  <option value=-1>Add New</option>
-                  <?php while ($rowCollegeMBs = $result_ByScout->fetch_assoc()) {
-                    echo "<option value=" . $rowCollegeMBs['BSAIdScout'] . ">" . $rowCollegeMBs['LastNameScout'] . " " . $rowCollegeMBs['FirstNameScout'] . "</option>";
-                  } ?>
-                </select>
-            </div>
-            <div class="col-1">
-              <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
-            </div>
+                <div class="col-1">
+                  <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
+                </div>
     </form>
     </div>
 
   <?php
-        }
-        /*=============================================================================
+            }
+            /*=============================================================================
     *
     * This function will produce display the location of the college and the POC
     * 
     *===========================================================================*/
-        public static function DisplayCollegeDetails($CollegeYear)
-        {
-          $queryCollegeYear = "SELECT * FROM college_details WHERE College='$CollegeYear'";
-          $result_CollegeYear = self::doQuery($queryCollegeYear);
-          if ($result_CollegeYear) {
-            $rowCollege = $result_CollegeYear->fetch_assoc();
+            public static function DisplayCollegeDetails($CollegeYear)
+            {
+              $queryCollegeYear = "SELECT * FROM college_details WHERE College='$CollegeYear'";
+              $result_CollegeYear = self::doQuery($queryCollegeYear);
+              if ($result_CollegeYear) {
+                $rowCollege = $result_CollegeYear->fetch_assoc();
 
-            echo "</br>Location: " . $rowCollege['Location'];
-            echo "</br>Address : " . $rowCollege['Address'];
-            echo "</br>Contact : " . $rowCollege['Contact'];
-            echo "</br>";
-          }
-        }
-        /*=============================================================================
+                echo "</br>Location: " . $rowCollege['Location'];
+                echo "</br>Address : " . $rowCollege['Address'];
+                echo "</br>Contact : " . $rowCollege['Contact'];
+                echo "</br>";
+              }
+            }
+            /*=============================================================================
     *
     * This function will produce display the location of the college and the POC
     * 
     *===========================================================================*/
-        public static function DisplaySelectCollegeYear()
-        {
-          $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details ORDER BY College DESC";
-          $result_CollegeYear = self::doQuery($queryCollegeYear);
+            public static function DisplaySelectCollegeYear()
+            {
+              $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details ORDER BY College DESC";
+              $result_CollegeYear = self::doQuery($queryCollegeYear);
   ?>
     <form method=post>
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
@@ -1388,12 +1403,12 @@ class CMBCollege
 
             <option value=""> </option>
             <?php
-            while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
-              if (!strcmp($rowCollege['College'], self::GetYear())) {
-                echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-              } else
-                echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-            } ?>
+              while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
+                if (!strcmp($rowCollege['College'], self::GetYear())) {
+                  echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                } else
+                  echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+              } ?>
           </select>
 
         </div>
@@ -1403,21 +1418,21 @@ class CMBCollege
       </div>
     </form>
 <?php
-        }
-        /*=============================================================================
+            }
+            /*=============================================================================
     *
     * Add or update the college details 
     * 
     *===========================================================================*/
-        public static function AddUpdateCollege($CollegeDetails)
-        {
-          // Check if we are adding a new college or updated an old one.
-          $queryCollegeYear = "SELECT * FROM college_details WHERE `College`='$CollegeDetails[College]'";
-          $result_CollegeYear = self::doQuery($queryCollegeYear);
+            public static function AddUpdateCollege($CollegeDetails)
+            {
+              // Check if we are adding a new college or updated an old one.
+              $queryCollegeYear = "SELECT * FROM college_details WHERE `College`='$CollegeDetails[College]'";
+              $result_CollegeYear = self::doQuery($queryCollegeYear);
 
-          if (mysqli_num_rows($result_CollegeYear) !== 0) {
-            $sqlUpdate = sprintf(
-              "UPDATE `college_details` SET `Open`='%d' ,`College`='%s',`Location`='%s',`Address`='%s',
+              if (mysqli_num_rows($result_CollegeYear) !== 0) {
+                $sqlUpdate = sprintf(
+                  "UPDATE `college_details` SET `Open`='%d' ,`College`='%s',`Location`='%s',`Address`='%s',
             `Contact`='%s', `Phone`='%s', `Email`='%s',
             `Fee/Scout`='%.2f', `FacilityCost`='%.2f', `LunchCost`='%.2f', `%%ToCouncil`='%.2f', `Profit/Loss`='%.2f', 
             `PeriodA`='%s', `PeriodB`='%s', `PeriodC`='%s', `PeriodD`='%s',
@@ -1425,37 +1440,37 @@ class CMBCollege
             `Lunch`='%s', `Date`='%s', `StartTime`='%s', `EndTime`='%s', 
             `Notes`='%s'
             WHERE `College`='%s'",
-              $CollegeDetails['Open'],
-              $CollegeDetails['College'],
-              $CollegeDetails['Location'],
-              $CollegeDetails['Address'],
-              $CollegeDetails['Contact'],
-              $CollegeDetails['Phone'],
-              $CollegeDetails['Email'],
-              $CollegeDetails['Fee/Scout'],
-              $CollegeDetails['FacilityCost'],
-              $CollegeDetails['LunchCost'],
-              $CollegeDetails['ToCouncil'],
-              $CollegeDetails['Profit/Loss'],
-              $CollegeDetails['PeriodA'],
-              $CollegeDetails['PeriodB'],
-              $CollegeDetails['PeriodC'],
-              $CollegeDetails['PeriodD'],
-              $CollegeDetails['PeriodAB'],
-              $CollegeDetails['PeriodCD'],
-              $CollegeDetails['PeriodE'],
-              $CollegeDetails['PeriodF'],
-              $CollegeDetails['Lunch'],
-              $CollegeDetails['Date'],
-              $CollegeDetails['StartTime'],
-              $CollegeDetails['EndTime'],
-              $CollegeDetails['Notes'],
-              $CollegeDetails['College']
-            );
-          } else {
-            // Add
-            $sqlUpdate = sprintf(
-              "INSERT INTO `college_details`(`Open`, `College`, `Location`, `Address`, 
+                  $CollegeDetails['Open'],
+                  $CollegeDetails['College'],
+                  $CollegeDetails['Location'],
+                  $CollegeDetails['Address'],
+                  $CollegeDetails['Contact'],
+                  $CollegeDetails['Phone'],
+                  $CollegeDetails['Email'],
+                  $CollegeDetails['Fee/Scout'],
+                  $CollegeDetails['FacilityCost'],
+                  $CollegeDetails['LunchCost'],
+                  $CollegeDetails['ToCouncil'],
+                  $CollegeDetails['Profit/Loss'],
+                  $CollegeDetails['PeriodA'],
+                  $CollegeDetails['PeriodB'],
+                  $CollegeDetails['PeriodC'],
+                  $CollegeDetails['PeriodD'],
+                  $CollegeDetails['PeriodAB'],
+                  $CollegeDetails['PeriodCD'],
+                  $CollegeDetails['PeriodE'],
+                  $CollegeDetails['PeriodF'],
+                  $CollegeDetails['Lunch'],
+                  $CollegeDetails['Date'],
+                  $CollegeDetails['StartTime'],
+                  $CollegeDetails['EndTime'],
+                  $CollegeDetails['Notes'],
+                  $CollegeDetails['College']
+                );
+              } else {
+                // Add
+                $sqlUpdate = sprintf(
+                  "INSERT INTO `college_details`(`Open`, `College`, `Location`, `Address`, 
             `Contact`, `Phone`, `Email`, 
             `Fee/Scout`, `FacilityCost`, `LunchCost`, `%%ToCouncil`, `Profit/Loss`, 
             `PeriodA`, `PeriodB`, `PeriodC`, `PeriodD`, 
@@ -1470,48 +1485,39 @@ class CMBCollege
             '%s', '%s', '%s', '%s', 
             '%s') 
             ",
-              $CollegeDetails['Open'],
-              $CollegeDetails['College'],
-              $CollegeDetails['Location'],
-              $CollegeDetails['Address'],
-              $CollegeDetails['Contact'],
-              $CollegeDetails['Phone'],
-              $CollegeDetails['Email'],
-              $CollegeDetails['Fee/Scout'],
-              $CollegeDetails['FacilityCost'],
-              $CollegeDetails['LunchCost'],
-              $CollegeDetails['ToCouncil'],
-              $CollegeDetails['Profit/Loss'],
-              $CollegeDetails['PeriodA'],
-              $CollegeDetails['PeriodB'],
-              $CollegeDetails['PeriodC'],
-              $CollegeDetails['PeriodD'],
-              $CollegeDetails['PeriodAB'],
-              $CollegeDetails['PeriodCD'],
-              $CollegeDetails['PeriodE'],
-              $CollegeDetails['PeriodF'],
-              $CollegeDetails['Lunch'],
-              $CollegeDetails['Date'],
-              $CollegeDetails['StartTime'],
-              $CollegeDetails['EndTime'],
-              $CollegeDetails['Notes']
+                  $CollegeDetails['Open'],
+                  $CollegeDetails['College'],
+                  $CollegeDetails['Location'],
+                  $CollegeDetails['Address'],
+                  $CollegeDetails['Contact'],
+                  $CollegeDetails['Phone'],
+                  $CollegeDetails['Email'],
+                  $CollegeDetails['Fee/Scout'],
+                  $CollegeDetails['FacilityCost'],
+                  $CollegeDetails['LunchCost'],
+                  $CollegeDetails['ToCouncil'],
+                  $CollegeDetails['Profit/Loss'],
+                  $CollegeDetails['PeriodA'],
+                  $CollegeDetails['PeriodB'],
+                  $CollegeDetails['PeriodC'],
+                  $CollegeDetails['PeriodD'],
+                  $CollegeDetails['PeriodAB'],
+                  $CollegeDetails['PeriodCD'],
+                  $CollegeDetails['PeriodE'],
+                  $CollegeDetails['PeriodF'],
+                  $CollegeDetails['Lunch'],
+                  $CollegeDetails['Date'],
+                  $CollegeDetails['StartTime'],
+                  $CollegeDetails['EndTime'],
+                  $CollegeDetails['Notes']
 
-            );
+                );
+              }
+
+              if (!self::doQuery($sqlUpdate)) {
+                $strError = "I was unable to execute query. " . $sqlUpdate;
+                error_log($strError, 0);
+                self::function_alert("Query failed see error for details");
+              }
+            }
           }
-
-          if (!self::doQuery($sqlUpdate)) {
-            $strError = "I was unable to execute query. " . $sqlUpdate;
-            error_log($strError, 0);
-            self::function_alert("Query failed see error for details");
-          }
-        }
-      }
-
-
-// Helper function (put somewhere in utils or CMBCollege class)
-function get_csrf_token(): string {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}      

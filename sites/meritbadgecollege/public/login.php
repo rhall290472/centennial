@@ -17,10 +17,6 @@
 !/                                                                            \!
 !==============================================================================!
 */
-
-load_template('/src/Classes/CMBCollege.php');
-$CMBCollege = CMBCollege::getInstance();
-
 // Check if the user is already logged in, redirect to home page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
   header("Location: index.php?page=home");
@@ -31,17 +27,14 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
 $username = "";
 $username_err = $password_err = $login_err = "";
 ?>
-
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <h2 class="text-center">Login</h2>
       <p class="text-center">Please fill in your credentials to login.</p>
-
       <?php if (!empty($login_err)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($login_err); ?></div>
       <?php endif; ?>
-
       <form action="index.php?page=login" method="post">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="mb-3">
@@ -58,7 +51,6 @@ $username_err = $password_err = $login_err = "";
             <div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
           <?php endif; ?>
         </div>
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
         <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>

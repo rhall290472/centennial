@@ -6,61 +6,56 @@ $Counselor = CCounselor::getInstance();  // Fixed class name case (was cCounselo
 $CMBCollege = CMBCollege::getInstance();
 
 
-  // Form submission handling
-  if (isset($_POST['SubmitForm'])) {
-    $ErrorFlag = false;
+// Form submission handling
+if (isset($_POST['SubmitForm'])) {
+  $ErrorFlag = false;
+  for ($i = 1; $i <= 4; $i++) {
+    if (!empty($_POST["MB{$i}Name"]) && empty($Counselor->GetFormData("MB{$i}Period"))) {
+      $Counselor->function_alert("ERROR: A period must be selected for Merit Badge $i");
+      $ErrorFlag = true;
+    }
+  }
+
+  if (!$ErrorFlag) {
+    $FirstName = $Counselor->GetFormData('element_1_1');
+    $LastName  = $Counselor->GetFormData('element_1_2');
+    $Email     = $Counselor->GetFormData('element_1_3');
+    $Phone     = $Counselor->GetFormData('element_1_4');
+    $BSAId     = $Counselor->GetFormData('element_1_5');
+    $MBCollegeName = $Counselor->getYear();
+
+    if ($Counselor->IsSignedUp($MBCollegeName, $LastName, $FirstName)) {
+      $Counselor->Delete($MBCollegeName);
+    }
+
+    $Counselor->AddInfo($FirstName, $LastName, $Email, $Phone, $BSAId, $MBCollegeName);
+
     for ($i = 1; $i <= 4; $i++) {
-      if (!empty($_POST["MB{$i}Name"]) && empty($Counselor->GetFormData("MB{$i}Period"))) {
-        $Counselor->function_alert("ERROR: A period must be selected for Merit Badge $i");
-        $ErrorFlag = true;
+      if (!empty($_POST["MB{$i}Name"])) {
+        $MBName        = $Counselor->GetFormData("MB{$i}Name");
+        $MBPeriod      = $Counselor->GetFormData("MB{$i}Period");
+        $MBClassSize   = $Counselor->GetFormData("MB{$i}CSL");
+        $MBFee         = $Counselor->GetFormData("MB{$i}Fee");
+        $MBRoom        = $Counselor->GetFormData("MB{$i}Room");
+        $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
+        $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
+
+        $Counselor->AddMBClass($MBName, $MBPeriod, $MBClassSize, $MBFee, $MBRoom, $MBPrerequisities, $MBNotes);
       }
     }
 
     if (!$ErrorFlag) {
-      $FirstName = $Counselor->GetFormData('element_1_1');
-      $LastName  = $Counselor->GetFormData('element_1_2');
-      $Email     = $Counselor->GetFormData('element_1_3');
-      $Phone     = $Counselor->GetFormData('element_1_4');
-      $BSAId     = $Counselor->GetFormData('element_1_5');
-      $MBCollegeName = $Counselor->getYear();
-
-      if ($Counselor->IsSignedUp($MBCollegeName, $LastName, $FirstName)) {
-        $Counselor->Delete($MBCollegeName);
-      }
-
-      $Counselor->AddInfo($FirstName, $LastName, $Email, $Phone, $BSAId, $MBCollegeName);
-
-      for ($i = 1; $i <= 4; $i++) {
-        if (!empty($_POST["MB{$i}Name"])) {
-          $MBName        = $Counselor->GetFormData("MB{$i}Name");
-          $MBPeriod      = $Counselor->GetFormData("MB{$i}Period");
-          $MBClassSize   = $Counselor->GetFormData("MB{$i}CSL");
-          $MBFee         = $Counselor->GetFormData("MB{$i}Fee");
-          $MBRoom        = $Counselor->GetFormData("MB{$i}Room");
-          $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
-          $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
-
-          $Counselor->AddMBClass($MBName, $MBPeriod, $MBClassSize, $MBFee, $MBRoom, $MBPrerequisities, $MBNotes);
-        }
-      }
-
-      if (!$ErrorFlag) {
-      //   $Counselor->SendConfirmationEmail($Email, $FirstName, $LastName, $MBCollegeName);
-      //$Counselor->function_alert("$FirstName $LastName Thank you for supporting the Merit Badge College");
-      $_SESSION['feedback'] = ['type' => 'success', 'message' => htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College'];
-       } else{
-        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to save your reponses. Please try again.'];
-       }
-      header("Location: index.php?page=home");
-      //$Counselor->GotoURL('index.php?page=home');
-      exit;
+      redirectWithMessage("index.php?page=view-schedule", "success", htmlspecialchars($FirstName . ' ' . $LastName) . ' - Thank you for supporting the Merit Badge College');
+    } else {
+      redirectWithMessage("index.php?page=home", "danger", 'Failed to save your reponses. Please try again.');
     }
+    exit;
   }
-
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,13 +65,23 @@ $CMBCollege = CMBCollege::getInstance();
   <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 
   <!-- Tom Select -->
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 
   <style>
-    .form-section { margin-bottom: 2rem; }
-    .merit-badge-section { padding: 1rem; border-radius: 5px; }
-    .error-message { color: red; font-size: 0.9em; }
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .merit-badge-section {
+      padding: 1rem;
+      border-radius: 5px;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 
@@ -91,7 +96,6 @@ $CMBCollege = CMBCollege::getInstance();
           </div>
           <?php exit(); ?>
         <?php endif; ?>
-
         <!-- Periods table section -->
         <div class="form-section">
           <h4>Merit Badge College Signup</h4>
@@ -136,7 +140,7 @@ $CMBCollege = CMBCollege::getInstance();
         <!-- Counselor selection form -->
         <div class="form-section">
           <p>To limit the number of scouts in your class, enter a value (default is 15 scouts).</p>
-          <p>Specify any prerequisites in the Prerequisites field.</p>
+          <p>Specify any rerequisites in the rerequisites field.</p>
           <p>Include any material charges in the class fee.</p>
           <p>If your name is not in the Counselor list, missing a Merit Badge, want to offer a NOVA class, or need to edit your merit badges, please <a href="mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College">contact us</a>.</p>
 
@@ -212,12 +216,10 @@ $CMBCollege = CMBCollege::getInstance();
             echo '<div class="alert alert-info mt-3">This counselor has no merit badges assigned yet. You can still sign up below.</div>';
           }
           ?>
-
           <div class="form-section">
             <h5>Counselor Signup Information</h5>
             <form action="index.php?page=signup" method="post" id="add_nomination">
               <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-
               <div class="row g-3 mb-3">
                 <div class="col-md-2">
                   <label for="element_1_1" class="form-label">First Name</label>
@@ -244,21 +246,23 @@ $CMBCollege = CMBCollege::getInstance();
               <?php for ($i = 1; $i <= 4; $i++):
                 $bgColor = $i % 2 ? 'var(--scouting-tan)' : 'var(--scouting-darktan)';
               ?>
-                <div class="merit-badge-section" style="background-color: <?= $bgColor ?>">
-                  <h6><?= ordinal($i) ?> Merit Badge</h6>
+                <div class="merit-badge-section mb-4" style="background-color: <?= $bgColor ?>">
+                  <h5><?= ordinal($i) ?> Merit Badge</h5>
+
+                  <!-- First row: short/select/number fields -->
                   <div class="row g-3">
                     <div class="col-md-3">
                       <label for="MB<?= $i ?>Name" class="form-label">Merit Badge Name</label>
                       <select class="form-select" id="MB<?= $i ?>Name" name="MB<?= $i ?>Name">
-                        <option value="">Select Badge</option>
+                        <option value="" selected disabled hidden>Select Merit Badge</option>
                         <?php
                         mysqli_data_seek($ResultsMB, 0);
                         $firstBadgeFound = false;
                         while ($rowCerts = $ResultsMB->fetch_assoc()):
                           $selected = $Counselor->MB_Match($rowCerts['MeritName'], $i) && !$firstBadgeFound ? 'selected' : '';
                           if ($selected) $firstBadgeFound = true;
-                          echo "<option $selected value='" . htmlspecialchars($rowCerts['MeritName']) . "'>" . 
-                               htmlspecialchars($rowCerts['MeritName']) . "</option>";
+                          echo "<option $selected value='" . htmlspecialchars($rowCerts['MeritName']) . "'>" .
+                            htmlspecialchars($rowCerts['MeritName']) . "</option>";
                         endwhile;
                         ?>
                       </select>
@@ -267,45 +271,60 @@ $CMBCollege = CMBCollege::getInstance();
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>Period" class="form-label">Period</label>
                       <select class="form-select" id="MB<?= $i ?>Period" name="MB<?= $i ?>Period">
-                        <option value="">Select Period</option>
+                        <option value="" selected disabled hidden>Select Period</option>
                         <?= $Counselor->DisplayPeriods($i) ?>
                       </select>
                     </div>
 
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>CSL" class="form-label">Class Size</label>
-                      <?php $Counselor->Display_ClassSize("MB{$i}CSL", $i); ?>
+                      <?php echo $Counselor->Display_ClassSize("MB{$i}CSL", $i); ?>
+                      <small class="form-text text-muted">Maximum number of Scouts for Badge</small>
                     </div>
 
                     <div class="col-md-2">
                       <label for="MB<?= $i ?>Fee" class="form-label">Class Fee</label>
-                      <?php $Counselor->Display_ClassFee("MB{$i}Fee", $i); ?>
+                      <?php echo $Counselor->Display_ClassFee("MB{$i}Fee", $i); ?>
+                      <small class="form-text text-muted">Include any material charges (e.g. $5.00)</small>
                     </div>
 
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["Role"] === "Admin"): ?>
-                      <div class="col-md-2">
+                      <div class="col-md-3"> <!-- Slightly wider when Room is present -->
                         <label for="MB<?= $i ?>Room" class="form-label">Room</label>
                         <?php $Counselor->Display_ClassRoom("MB{$i}Room", $i); ?>
                       </div>
                     <?php endif; ?>
+                    <!-- At the very end of the <form>, after the loop -->
+                  </div>
 
-                    <div class="col-md-3">
+                  <!-- Second row: wider text fields (Prerequisites + Notes) -->
+                  <div class="row g-3 mt-3"> <!-- mt-3 adds nice spacing between rows -->
+                    <div class="col-md-6"> <!-- Wider column so textareas have more room -->
                       <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
-                      <?php $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
+                      <?php echo $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>  
+                      <small class="form-text text-muted">List any requirements scouts should complete before attending.</small>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                       <label for="MB<?= $i ?>Notes" class="form-label">Notes</label>
-                      <?php $Counselor->Display_Notes("MB{$i}Notes", $i); ?>
+                      <?php echo $Counselor->Display_Notes("MB{$i}Notes", $i); ?>
+                      <small class="form-text text-muted">Any notes for the college staff.</small>
                     </div>
                   </div>
                 </div>
-              <?php endfor; ?>
+              <?php endfor; ?> 
+              <div class="sticky-bottom bg-light border-top py-3 shadow-sm">
+  <div class="container text-center">
+    <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">
+      Submit Counselor Information
+    </button>
+  </div>
+</div>
 
-              <div class="text-center mt-3">
+              <!-- <div>
                 <input type="hidden" name="form_id" value="22772">
-                <button type="submit" name="SubmitForm" class="btn btn-primary">Submit</button>
-              </div>
+                <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">Submit</button>
+              </div> -->
             </form>
           </div>
         <?php endif; ?>
@@ -315,32 +334,64 @@ $CMBCollege = CMBCollege::getInstance();
 
   <?php
 
-  function ordinal($number) {
+  function ordinal($number)
+  {
     $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
     if ((($number % 100) >= 11) && (($number % 100) <= 13)) return $number . 'th';
     return $number . $ends[$number % 10];
+  }
+
+  function redirectWithMessage($url, $type, $message)
+  {
+    $_SESSION['feedback'] = compact('type', 'message');
+    header("Location: $url");
+    exit;
   }
   ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    new TomSelect('#CounselorName', {
-      create: true,
-      createOnBlur: true,
-      persist: false,
-      maxItems: 1,
-      placeholder: "Type name or select existing...",
-      searchField: ['text'],
-      sortField: 'text',
-      render: {
-        option_create: function(data, escape) {
-          return '<div class="create">Add new counselor: <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+    document.addEventListener('DOMContentLoaded', function() {
+      new TomSelect('#CounselorName', {
+        create: true,
+        createOnBlur: true,
+        persist: false,
+        maxItems: 1,
+        placeholder: "Type name or select existing...",
+        searchField: ['text'],
+        sortField: 'text',
+        render: {
+          option_create: function(data, escape) {
+            return '<div class="create">Add new counselor: <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+          }
         }
-      }
+      });
     });
-  });
   </script>
 </body>
+
 </html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Target ALL relevant selects: Merit Badge Name and Period
+    const selects = document.querySelectorAll('select[name^="MB"][name$="Name"], select[name^="MB"][name$="Period"]');
+
+    selects.forEach(select => {
+      function updatePlaceholder() {
+        if (select.value === '') {
+          select.classList.add('placeholder-shown');
+        } else {
+          select.classList.remove('placeholder-shown');
+        }
+      }
+
+      // Run immediately (handles pre-selected values from PHP)
+      updatePlaceholder();
+
+      // Run every time selection changes
+      select.addEventListener('change', updatePlaceholder);
+    });
+  });
+</script>

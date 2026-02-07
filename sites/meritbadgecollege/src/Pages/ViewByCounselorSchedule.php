@@ -32,7 +32,7 @@ $CollegeYear = $Counselor->getYear();
 
                 <!-- Counselor Selector Form -->
                 <form method="post" class="mb-5">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
 
                     <div class="row g-3 align-items-end">
                         <div class="col-md-8">

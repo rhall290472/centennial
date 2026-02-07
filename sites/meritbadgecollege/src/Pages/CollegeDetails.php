@@ -40,7 +40,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         <?php
         if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
           $CollegeYear = $_POST['CollegeYear'];
-          setYear($CollegeYear);
+          $CMBCollege->SetYear($CollegeYear);
         }
 
         // Display college year and allow user to select.
@@ -79,7 +79,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
               $CollegeNotes = $rowCollegeDetails['Notes'];
             ?>
               <form action="index.php?page=rpt-details" id="College_Details" method="post">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
                 <label class="form col-form-label" for="element_1_1">Open for Registration </label>
                 <input class="form form-check" id="element_1_1" name="element_1_1" type="hidden" value='0' />
                 <input class="form form-check" id="element_1_1" name="element_1_1" type="checkbox" value='1'
@@ -285,7 +285,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       $CollegeDetails['Notes']        = $CMBCollege->GetFormData('element_7_1');
 
       $CMBCollege->AddUpdateCollege($CollegeDetails);
-      header("Location: index.php?page=rpt-details");
+      $CMBCollege->GotoURL("index.php?page=rpt-details");
+      //header("Location: index.php?page=rpt-details");
       exit;
     }
 

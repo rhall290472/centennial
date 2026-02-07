@@ -22,7 +22,7 @@ if (file_exists(BASE_PATH . '/config/config.php')) {
  * @author Richard Hall
  * @license Proprietary
  */
-load_class(SHARED_CLASS_PATH . '/cAdultLeaders.php');
+load_class(SHARED_CLASS_PATH . '/cAdultLeaders.php', __FILE__, __LINE__);
 $cAdultLeaders = AdultLeaders::getInstance();
 
 /**

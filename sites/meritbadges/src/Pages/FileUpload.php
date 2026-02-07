@@ -19,7 +19,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 }
 
 load_class(BASE_PATH . '/src/Classes/CReports.php');
-load_class(SHARED_PATH . '/src/Classes/CMeritBadges.php');
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
 // Load dependencies (use Composer autoloader if possible)
 //require_once __DIR__ . '/sqlStatements.php';
 //require_once __DIR__ . '/CMeritBadges.php';
@@ -154,7 +154,7 @@ function isValidFileName(string $fileName): bool
                 <input class="form-control" type="file" name="the_file" id="fileToUpload" accept=".csv" required>
                 <div id="form-instructions" class="form-text">Upload a valid CSV file (max 4MB).</div>
               </div>
-              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
               <button class="btn btn-primary" type="submit" name="submit" value="Counselors">Upload File</button>
             </form>
           </div>

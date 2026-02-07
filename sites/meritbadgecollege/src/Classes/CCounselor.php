@@ -218,69 +218,82 @@ class CCounselor extends CMBCollege
     }
   }
 
-  /******************************************************************************
-   * 
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_ClassSize($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
-    $required = $nPeriod == 0 ? "required" : "";
-    $DefaultSize = 15;
+  /**
+ * Renders the class size input field for a given merit badge period.
+ *
+ * @param string $element   The HTML name/id of the input (e.g. "MB1CSL")
+ * @param int    $period    1-based period number (1–4)
+ * @return string           The HTML input string
+ */
+public function Display_ClassSize(string $element, int $period): string
+{
+    $zeroBasedIndex = $period - 1;
+    //$defaultSize    = 15;
 
-    // If we have class size limit, show it..
-    if ($nPeriod < count($this->MBCSL)) {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' value='%s' %s />",
-        $Element,
-        $Element,
-        $this->MBCSL[$nPeriod],
-        $required
-      );
-    } else {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' %s value='%s'/>",
-        $Element,
-        $Element,
-        $required,
-        $DefaultSize
-      );
-    }
-    echo $str;
-  }
-  /******************************************************************************
-   * 
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_ClassFee($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
-    //$required = $nPeriod == 0 ? "required" : "";
-    $required = "";
+    // Get stored value if available, otherwise use default
+    $value     = $zeroBasedIndex < count($this->MBCSL) ? (int) $this->MBCSL[$index] : null;
 
-    // If we have class fee, show it..
-    if ($nPeriod < count($this->MBFee)) {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' value='%s' %s />",
-        $Element,
-        $Element,
-        $this->MBFee[$nPeriod],
-        $required
-      );
-    } else {
-      $str = sprintf(
-        "<input class='form-control' id='%s' name='%s' size='5' %s />",
-        $Element,
-        $Element,
-        $required
-      );
+    // Build attributes safely
+    $attributes = [
+        'type'        => 'number',
+        'class'       => 'form-control',
+        'id'          => $element,
+        'name'        => $element,
+        'value'       => $value,
+        'min'         => '1',
+        'maxlength'   => '3',
+        'size'        => '5',         // visual width (optional – can remove if using CSS)
+        'placeholder' => '15',        // ← this is what you asked for
+    ];
+
+    // Filter out empty attributes
+    $attrString = '';
+    foreach ($attributes as $key => $val) {
+        if ($val !== '' && $val !== false) {
+            $attrString .= sprintf(' %s="%s"', $key, htmlspecialchars((string)$val));
+        }
     }
-    echo $str;
-  }
+
+    return '<input' . $attrString . ' />';
+}
+
+/**
+ * Renders the class fee input field for a given merit badge period.
+ *
+ * @param string $element   The HTML name/id of the input (e.g. "MB1Fee")
+ * @param int    $period    1-based period number (1–4)
+ * @return string           The HTML input string
+ */
+public function Display_ClassFee(string $element, int $period): string
+{
+    $index     = $period - 1;
+    $isFirst   = $index === 0;
+
+    // Use stored value if available, otherwise leave empty (no default)
+    $value     = $index < count($this->MBFee ?? []) 
+        ? (float) $this->MBFee[$index] 
+        : null;
+
+    $attributes = array_filter([
+        'type'        => 'number',
+        'class'       => 'form-control',
+        'id'          => $element,
+        'name'        => $element,
+        'value'       => $value !== null ? number_format($value, 2, '.', '') : null,
+        'step'        => '0.01',
+        'min'         => '0',
+        'placeholder' => '$0.00',           // ← Added as requested
+    ], fn($v) => $v !== null && $v !== '');
+
+    $attrParts = [];
+    foreach ($attributes as $key => $val) {
+        $attrParts[] = sprintf('%s="%s"', $key, htmlspecialchars((string)$val));
+    }
+
+    return '<input ' . implode(' ', $attrParts) . ' />';
+}
+
+
   /******************************************************************************
    * 
    *
@@ -308,55 +321,55 @@ class CCounselor extends CMBCollege
     }
     echo $str;
   }
-  /******************************************************************************
-   *
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_Prerequisities($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
+public function Display_Prerequisities(string $element, int $period): string
+{
+    $index = $period - 1;
+    $value = ($index < count($this->MBPrerequisities ?? []))
+        ? htmlspecialchars($this->MBPrerequisities[$index] ?? '', ENT_QUOTES)
+        : '';
 
-    if ($nPeriod < count($this->MBPrerequisities)) {
-      $str = sprintf('<textarea rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s">%s</textarea>', $Element, $Element, $this->MBPrerequisities[$nPeriod]);
-    } else {
-      $str = sprintf(
-        '<textarea  rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s"></textarea>',
-        $Element,
-        $Element
-      );
-    }
-    echo $str;
-  }
+    return <<<HTML
+<textarea 
+    class="form-control w-100" 
+    id="{$element}" 
+    name="{$element}" 
+    rows="5" 
+    placeholder="Enter prerequisites (e.g., complete requirements 1-3 before class, bring notebook, etc.)"
+    style="min-height: 120px; resize: vertical;">
+{$value}
+</textarea>
+HTML;
+}
 
-  /******************************************************************************
-   *
-   *
-   * MB_Match MUST be called before this function !!!!!
-   *
-   *****************************************************************************/
-  function Display_Notes($Element, $nPeriod)
-  {
-    $nPeriod = $nPeriod - 1; // Indexs are zero based
+/**
+ * Renders the Notes textarea for a given merit badge period.
+ *
+ * @param string $element The HTML name/id attribute (e.g. "MB1Notes")
+ * @param int    $period  1-based period number (1–4)
+ * @return string         The <textarea> HTML
+ */
+public function Display_Notes(string $element, int $period): string
+{
+    $index = $period - 1;
+    
+    $value = ($index < count($this->MBNotes ?? []))
+        ? htmlspecialchars($this->MBNotes[$index] ?? '', ENT_QUOTES)
+        : '';
 
-    if ($nPeriod < count($this->MBNotes)) {
-      $str = sprintf(
-        '<textarea rows="10"  cols="30" class="textarea form-control-sm" id="%s" name="%s">%s</textarea>',
-        $Element,
-        $Element,
-        $this->MBNotes[$this->nIndex]
-      );
-    } else {
-      $str = sprintf(
-        '<textarea rows="10" cols="30" class="textarea form-control-sm" id="%s" name="%s"></textarea>',
-        $Element,
-        $Element
-      );
-    }
-    echo $str;
-  }
-  /*=============================================================================
+    return <<<HTML
+<textarea 
+    class="form-control w-100" 
+    id="{$element}" 
+    name="{$element}" 
+    rows="5" 
+    placeholder="Enter any additional notes (special instructions, equipment needed, etc.)"
+    style="min-height: 120px; resize: vertical;">
+{$value}
+</textarea>
+HTML;
+}
+
+/*=============================================================================
      *
      * This function will add a merit badge to the college list of available merit
      * badges.
@@ -430,7 +443,7 @@ class CCounselor extends CMBCollege
         $resultYPT = self::doQuery($sqlYPT);
         if ($resultYPT) {
           $rowYPT = $resultYPT->fetch_assoc();
-          $Counselorsypt = strtotime($rowYPT['YPT']);
+          $Counselorsypt = strtotime($rowYPT['YPT'] ?? '');
           if ($TodaysDate > $Counselorsypt) {
             $Expired = true;
           }
@@ -796,10 +809,10 @@ class CCounselor extends CMBCollege
               <label for='CounselorName'></label>
               <select class='form-control' id='CounselorName' name='CounselorName'>
                 <option value=""> </option>
-                  <?php
-                  while ($rowCerts = $result_ByCounselor->fetch_assoc()) {
-                    echo "<option value=" . $rowCerts['BSAId'] . ">" . $rowCerts['LastName'] . " " . $rowCerts['FirstName'] . "</option>";
-                  } ?>
+                <?php
+                while ($rowCerts = $result_ByCounselor->fetch_assoc()) {
+                  echo "<option value=" . $rowCerts['BSAId'] . ">" . $rowCerts['LastName'] . " " . $rowCerts['FirstName'] . "</option>";
+                } ?>
               </select>
             </div>
             <?php
@@ -860,17 +873,17 @@ class CCounselor extends CMBCollege
         $colOrganizations = 0;
         $colFirst_Name = 1;
         $colLast_Name = 2;
-        $colmemberid = 3;
-        $colStrexpirydt = 4;
-        $colYPT_Status = 5;
-        $colStryptexpirydt = 6;
-        $colTroopnos = 7;
-        $colPhone = 8;
-        $colEmail = 9;
-        $colCity = 11;
-        $colZip = 12;
-        $colNumber_Badges_Counsel = 13;
-        $colAwards = 14;
+        // $colmemberid = 3;
+        // $colStrexpirydt = 4;
+        // $colYPT_Status = 5;
+        // $colStryptexpirydt = 6;
+        // $colTroopnos = 7;
+        // $colPhone = 8;
+        $colEmail = 3;
+        // $colCity = 11;
+        // $colZip = 12;
+        // $colNumber_Badges_Counsel = 13;
+        $colAwards = 4;
 
         // File does not contain BSA Member ID so we create fake one
         //$BSAMemberID = -100;
@@ -914,7 +927,7 @@ class CCounselor extends CMBCollege
         $Row = 1;
         if (($handle = fopen($FileToOpen, "r")) !== FALSE) {
           while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
-            if ($Row++ <= 9) {
+            if ($Row++ <= 2) {
               continue;
             } //Skip past the header stuff, first line of data is row 11
             // First need to check if this will be an UPDATE or INSERT
@@ -926,17 +939,18 @@ class CCounselor extends CMBCollege
             $District = filter_var($data[$colOrganizations]);
             $FirstName = filter_var($data[$colFirst_Name]);
             $LastName = filter_var($data[$colLast_Name]);
-            $MemberID = filter_var($data[$colmemberid]);
-            $YPT = filter_var($data[$colStrexpirydt]);
+            // $MemberID = filter_var($data[$colmemberid]);
+            // $YPT = filter_var($data[$colStrexpirydt]);
             //$StrYPTExp = $data[$colStrYPTExp];
             //$MemberID = $data[$colMember_ID];
             //$Troop_s = $data[$colTroopnos];
             //$Phone = $data[$colPhone];
             //$Phone = self::right($Phone, 10);
             $Email = filter_var($data[$colEmail], FILTER_SANITIZE_EMAIL);
-            $City = filter_var($colCity);
-            $NumOfBadges = filter_var($data[$colNumber_Badges_Counsel], FILTER_SANITIZE_NUMBER_INT);
+            // $City = filter_var($colCity);
+            //$NumOfBadges = filter_var($data[$colNumber_Badges_Counsel], FILTER_SANITIZE_NUMBER_INT);
 
+            $NumOfBadges = 1;
             if ($NumOfBadges == 0) {
               // TODO: Mark the counselors as Not Active.
               //if (!self::MarkCounselorNotActive($MemberID)) {
@@ -944,6 +958,7 @@ class CCounselor extends CMBCollege
               //    self::function_alert($msg);
               //}
             }
+
 
             $awardsString = trim($data[$colAwards]);
             $badges = [];
@@ -988,30 +1003,31 @@ class CCounselor extends CMBCollege
                 // Now update Counselor information
                 if ($i == 0) {
                   $sqlCounselorInsert = sprintf(
-                    "INSERT INTO `mbccounselors`(`LastName`, `HomeDistrict`, `FirstName`, `HomePhone`, `MemberID`,  
-                             `Active`, `YPT`, `Email`,`City`, `ValidationDate`,  `NumOfBadges`) 
-                            VALUES ('%s', '%s', '%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                    "INSERT INTO `mbccounselors`(`LastName`, `HomeDistrict`, `FirstName`,   
+                             `Active`, `Email`, `ValidationDate`) 
+                            VALUES ('%s', '%s', '%s', '%s','%s', '%s' )",
                     addslashes($LastName),
                     $District,
                     $FirstName,
-                    "",
-                    $MemberID,
+                    // "",
+                    // $MemberID,
                     "Yes",
-                    $YPT,
+                    // $YPT,
                     //$StrYPTExp = $data[$colStrYPTExp];
                     //$MemberID = $data[$colMember_ID];
                     //$Troop_s = $data[$colTroopnos];
                     //$Phone = $data[$colPhone];
                     //$Phone = self::right($Phone, 10);
                     $Email = $data[$colEmail],
-                    $City,
+                    //$City,
                     date("d/M/Y"),
-                    $NumOfBadges = $data[$colNumber_Badges_Counsel]
+                    //$NumOfBadges = $data[$colNumber_Badges_Counsel]
                   );
                   $AddCounselor++;
                   if (!self::doQuery($sqlCounselorInsert)) {
-                    $msg = sprintf("Error: %s ", $sqlCounselorInsert);
-                    echo "Error: " . $sqlCounselorInsert . $MeritBadge . "<br/>";
+                    $msg = "Error: " . $sqlCounselorInsert . $MeritBadge . __FILE__ . " " . __LINE__ . "<br/>";
+                    echo $msg;
+                    error_log($msg);
                     self::function_alert($msg);
                   }
                 }
@@ -1021,7 +1037,9 @@ class CCounselor extends CMBCollege
                         VALUES ('%s', '%s', '%s', 'ADD', '%s')", addslashes($LastName), $FirstName, $MeritBadge, date("d/M/Y"));
                 if (!self::doQuery($sqlInsert)) {
                   $RecordsInError++;
-                  echo "Error: " . $sqlInsert . "<br/>";
+                  $msg =  "Error: " . $sqlInsert . __FILE__ . " " . __LINE__ . "<br/>";
+                  echo $msg;
+                  error_log($msg);
                 } else {
                   $RecordsInsert++;
                   $Inserted++;
@@ -1030,8 +1048,8 @@ class CCounselor extends CMBCollege
                 // COunselor has been found in the database, update the records.
                 //Update Old Data
                 $sqlUpdate = sprintf(
-                  "UPDATE `mbccounselormerit` SET `LastName`='%s',`FirstName`='%s',`MeritName`='%s',`Status`='UPDATED',`StatusDate`='%s'
-                            WHERE `LastName`='%s' AND `FirstName`='%s' AND `MeritName`='%s'",
+                  "UPDATE `mbccounselormerit` SET `LastName`='%s',`FirstName`='%s',`MeritName`='%s',`Status`='UPDATED',`StatusDate`='%s',
+                            `Active`='Yes' WHERE `LastName`='%s' AND `FirstName`='%s' AND `MeritName`='%s'",
                   addslashes($LastName),
                   $FirstName,
                   $MeritBadge,
@@ -1042,7 +1060,9 @@ class CCounselor extends CMBCollege
                 );
                 if (!self::doQuery($sqlUpdate)) {
                   $msg = sprintf("Error: %s ", $sqlUpdate);
-                  echo "Error: " . $sqlUpdate . "<br/>";
+                  $msg = "Error: " . $sqlUpdate . __FILE__ . " " . __LINE__ . "<br/>";
+                  echo $msg;
+                  error_log($msg);
                   self::function_alert($msg);
                   $RecordsInError++;
                 } else
@@ -1051,21 +1071,25 @@ class CCounselor extends CMBCollege
                 if ($i == 0) {
                   // Now update Counselor information
                   $sqlUpdate = sprintf(
-                    "UPDATE `mbccounselors` SET `ValidationDate`='%s', `MemberID`='%s', 
-                                    `HomePhone`='%s', `Email`='%s', `Active`='%s', `YPT`='%s', `NumOfBadges`='%s'
+                    "UPDATE `mbccounselors` SET `ValidationDate`='%s',  
+                                    `Email`='%s', `Active`='%s',  `NumOfBadges`='%s'
                                      WHERE `LastName`='%s' AND `FirstName`='%s'",
                     date("d/M/Y"),
-                    $MemberID,
+                    // $MemberID,
                     "",
                     $Email,
                     "Yes",
-                    $data[$colYPT_Status],
-                    $NumOfBadges,
+                    //$data[$colYPT_Status],
+                    count($badges),
                     addslashes($LastName),
                     $FirstName
                   );
                   if (!self::doQuery($sqlUpdate)) {
                     $msg = sprintf("Error: %s ", $sqlUpdate);
+                    $msg = "Error: " . $sqlUpdate . __FILE__ . " " . __LINE__ . "<br/>";
+                    echo $msg;
+                    error_log($msg);
+                    $RecordsInError++;
                     $RecordsInErrorDebug++;
                     self::function_alert($msg);
                   }
@@ -1077,7 +1101,7 @@ class CCounselor extends CMBCollege
             }
           }
           fclose($handle);
-          $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Records Updated Inserted: ' . $Inserted . ' Updated: ' . $Updated . ' Errors: ' . $RecordsInErrorDebug];
+          $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Records Updated Inserted: ' . $Inserted . ' Updated: ' . $Updated . ' Errors: ' . $RecordsInError];
           // $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInErrorDebug;
           // self::function_alert($Usermsg);
           if ($RecordsInError == 0 && $RecordsInsert != 0 && $AddCounselor == 0) echo "<script>window.location.href = 'index.php';</script>";
@@ -1134,7 +1158,8 @@ class CCounselor extends CMBCollege
           "Truck Trans." => "Truck Transportation",
           "Amer. Labor" => "American Labor",
           "Motorboating" => "Motorboating",
-          "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine"
+          "Medicine (2018 - Discontinued 12/31/2021)" => "Medicine",
+          "Computers  Discontinued 12/31/14" => "Digital Technology",
         ];
         return $map[$badge] ?? $badge;
       }
@@ -1270,6 +1295,259 @@ class CCounselor extends CMBCollege
             } catch (Exception $e) {
               error_log($e->getMessage());
               return 0;
+            }
+          }
+        }
+
+
+
+
+        class MeritBadgeCouncilImporter
+        {
+          private PDO $pdo;
+          private string $uploadDirectory;
+
+          public function __construct(PDO $pdo, string $uploadDirectory)
+          {
+            $this->pdo = $pdo;
+            $this->uploadDirectory = rtrim($uploadDirectory, '/');
+          }
+
+          /**
+           * @throws Exception on critical failure
+           */
+          public function updateCouncilList(string $uploadPath): array
+          {
+            $fullPath = $this->uploadDirectory . '/' . ltrim($uploadPath, '/');
+
+            if (!file_exists($fullPath) || !is_readable($fullPath)) {
+              throw new Exception("Cannot read uploaded file: $fullPath");
+            }
+
+            $this->markAllForDropAndInactive();
+
+            $stats = [
+              'inserted'      => 0,
+              'updated'       => 0,
+              'errors'        => 0,
+              'counselors_added' => 0,
+            ];
+
+            $this->pdo->beginTransaction();
+
+            try {
+              $handle = fopen($fullPath, 'r');
+              if ($handle === false) {
+                throw new Exception("Failed to open CSV file");
+              }
+
+              // Read header
+              $header = fgetcsv($handle, 0, ',', '"', '');
+              if ($header === false) {
+                throw new Exception("CSV file is empty or invalid");
+              }
+
+              $columnMap = $this->buildColumnMap($header);
+
+              $rowNumber = 1;
+
+              while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+                $rowNumber++;
+
+                // Skip empty rows or header-like rows
+                if (count($row) < 5 || empty(trim(implode('', $row)))) {
+                  continue;
+                }
+
+                try {
+                  $counselor = $this->parseCounselorRow($row, $columnMap);
+
+                  if (!$counselor['first_name'] || !$counselor['last_name']) {
+                    throw new Exception("Missing name");
+                  }
+
+                  $this->processCounselor($counselor);
+                  $stats['updated']++; // rough count — refined inside processCounselor
+
+                } catch (Exception $e) {
+                  $stats['errors']++;
+                  error_log(sprintf(
+                    "Row %d failed: %s | Data: %s",
+                    $rowNumber,
+                    $e->getMessage(),
+                    json_encode($row, JSON_UNESCAPED_SLASHES)
+                  ));
+                }
+              }
+
+              fclose($handle);
+              $this->pdo->commit();
+
+              return $stats;
+            } catch (Exception $e) {
+              $this->pdo->rollBack();
+              error_log("Import transaction failed: " . $e->getMessage());
+              throw $e;
+            }
+          }
+
+          private function markAllForDropAndInactive(): void
+          {
+            $date = date('Y-m-d');
+
+            $this->pdo->exec("
+            UPDATE mbccounselormerit 
+            SET Status = 'DROP', StatusDate = '$date' 
+            WHERE Status != 'DROP'
+        ");
+
+            $this->pdo->exec("
+            UPDATE mbccounselors 
+            SET Active = 'No', ValidationDate = '$date' 
+            WHERE Active != 'No'
+        ");
+
+            $this->pdo->exec("
+            UPDATE mbccounselors 
+            SET Is_a_no = '0' 
+            WHERE Is_a_no != '0'
+        ");
+          }
+
+          private function buildColumnMap(array $header): array
+          {
+            $map = [];
+            foreach ($header as $i => $col) {
+              $col = trim(strtolower($col));
+              if (str_contains($col, 'organization') || str_contains($col, 'district')) {
+                $map['district'] = $i;
+              }
+              if (str_contains($col, 'first')) {
+                $map['first_name'] = $i;
+              }
+              if (str_contains($col, 'last')) {
+                $map['last_name'] = $i;
+              }
+              if (str_contains($col, 'email')) {
+                $map['email'] = $i;
+              }
+              if (str_contains($col, 'award') || str_contains($col, 'badge') || str_contains($col, 'merit')) {
+                $map['awards'] = $i;
+              }
+            }
+
+            $required = ['first_name', 'last_name', 'awards'];
+            foreach ($required as $key) {
+              if (!isset($map[$key])) {
+                throw new Exception("Required column not found: $key");
+              }
+            }
+
+            return $map;
+          }
+
+          private function parseCounselorRow(array $row, array $map): array
+          {
+            $data = [
+              'district'   => isset($map['district']) ? trim($row[$map['district']] ?? '') : '',
+              'first_name' => trim($row[$map['first_name']] ?? ''),
+              'last_name'  => trim($row[$map['last_name']] ?? ''),
+              'email'      => isset($map['email']) ? filter_var($row[$map['email']] ?? '', FILTER_VALIDATE_EMAIL) : null,
+              'badges'     => [],
+            ];
+
+            if (isset($map['awards'])) {
+              $awardsStr = trim($row[$map['awards']] ?? '');
+              $badges = $this->normalizeBadgeList($awardsStr);
+              $data['badges'] = array_filter(array_map('trim', $badges));
+            }
+
+            return $data;
+          }
+
+          private function normalizeBadgeList(string $awardsStr): array
+          {
+            $parts = array_map('trim', explode(',', $awardsStr));
+
+            // Fix known split badge
+            $signsIndex = array_search('Signs', $parts, true);
+            if (
+              $signsIndex !== false &&
+              isset($parts[$signsIndex + 1]) && $parts[$signsIndex + 1] === 'Signals' &&
+              isset($parts[$signsIndex + 2]) && $parts[$signsIndex + 2] === 'and Codes'
+            ) {
+              $parts[$signsIndex] = 'Signs, Signals, and Codes';
+              unset($parts[$signsIndex + 1], $parts[$signsIndex + 2]);
+              $parts = array_values($parts);
+            }
+
+            return array_filter($parts, fn($s) => $s !== '');
+          }
+
+          private function processCounselor(array $counselor): void
+          {
+            $first  = $counselor['first_name'];
+            $last   = $counselor['last_name'];
+            $email  = $counselor['email'] ?? '';
+            $district = $counselor['district'];
+            $badges = $counselor['badges'];
+
+            if (empty($badges)) {
+              return; // no badges → skip or mark inactive (your choice)
+            }
+
+            $date = date('Y-m-d');
+
+            // Upsert counselor
+            $stmt = $this->pdo->prepare("
+    INSERT INTO mbccounselors 
+        (LastName, FirstName, HomeDistrict, Active, Email, ValidationDate, NumOfBadges)
+    VALUES 
+        (:last, :first, :district, 'Yes', :email, :date, :badgeCount)
+    ON DUPLICATE KEY UPDATE
+        HomeDistrict   = :district_upd,
+        Email          = :email_upd,
+        Active         = 'Yes',
+        ValidationDate = :date_upd,
+        NumOfBadges    = :badgeCount_upd
+");
+
+            $stmt->execute([
+              'last'           => $last,
+              'first'          => $first,
+              'district'       => $district,
+              'email'          => $email,
+              'date'           => $date,
+              'badgeCount'     => count($badges),
+              'district_upd'   => $district,       // repeat the value
+              'email_upd'      => $email,
+              'date_upd'       => $date,
+              'badgeCount_upd' => count($badges),
+            ]);
+
+            $isNew = $this->pdo->lastInsertId() !== '0';
+
+            // Handle merit badges
+            foreach ($badges as $badgeName) {
+              $cleanBadge = CCounselor::FixMeritBadgeName($badgeName);
+
+              $stmt = $this->pdo->prepare("
+                  INSERT INTO mbccounselormerit 
+                      (LastName, FirstName, MeritName, Status, StatusDate)
+                  VALUES 
+                      (:last, :first, :merit, 'ADD', :date)
+                  ON DUPLICATE KEY UPDATE
+                      Status     = 'UPDATED',
+                      StatusDate = :date_upd 
+              ");
+
+              $stmt->execute([
+                'last'     => $last,
+                'first'    => $first,
+                'merit'    => $cleanBadge,
+                'date'     => $date,
+                'date_upd' => $date,               // ← bind it again with the new name
+              ]);
             }
           }
         }

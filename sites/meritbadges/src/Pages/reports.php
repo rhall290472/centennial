@@ -76,7 +76,7 @@ if (empty($report)) {
         $meritBadges = $reports->doQuery("SELECT * FROM meritbadges WHERE Current = '1'");
   ?>
         <form method="post" class="mb-4">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
           <div class="form-group">
             <label for="MeritName">Choose a Merit Badge:</label>
             <select class="form-control" id="MeritName" name="MeritName">
@@ -119,7 +119,7 @@ if (empty($report)) {
         $results = $reports->doQuery($query);
         ?>
         <form method="post" class="mb-4">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
           <div class="form-group">
             <label for="UnitName">Choose a Unit:</label>
             <select class="form-control" id="UnitName" name="UnitName">
@@ -138,7 +138,7 @@ if (empty($report)) {
         $results->free_result();
 
         if (isset($_POST['Submit']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-          $selectedTroop = filter_input(INPUT_POST, 'UnitName', FILTER_SANITIZE_STRING);
+          $selectedTroop = htmlspecialchars($_POST['UnitName'] ?? '', ENT_QUOTES,'UTF-8');
           if ($selectedTroop) {
             $method = $report === 'ForSelectedTroop' ? 'reportofSelectedTroop' : 'reportFullSelectedTroop';
             $reports->$method($selectedTroop);
@@ -158,7 +158,7 @@ if (empty($report)) {
         $results = $reports->doQuery($querySelectedCounselor1);
         ?>
         <form method="post" class="mb-4">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
           <div class="form-group">
             <label for="CounselorName">Choose a Counselor:</label>
             <select class="form-control" id="CounselorName" name="CounselorName">
@@ -178,7 +178,8 @@ if (empty($report)) {
         $results->free_result();
 
         if (isset($_POST['SubmitCounselor']) && $_POST['csrf_token'] === $_SESSION['csrf_token']) {
-          $selectedCounselor = filter_input(INPUT_POST, 'CounselorName', FILTER_SANITIZE_STRING);
+          // Safe for direct HTML output (recommended for most cases like reports)
+          $selectedCounselor = htmlspecialchars($_POST['CounselorName'] ?? '', ENT_QUOTES, 'UTF-8');
           if ($selectedCounselor) {
             $reports->reportofSelectedCounselor($selectedCounselor);
           } else {

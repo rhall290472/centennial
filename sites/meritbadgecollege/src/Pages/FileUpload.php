@@ -1,8 +1,8 @@
 <?php
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
-    header('Location: index.php?page=login');
-    exit;
+  $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'You must be logged in to change your password.'];
+  header('Location: index.php?page=login');
+  exit;
 }
 
 /*
@@ -38,70 +38,81 @@ $CCounselor = CCounselor::getInstance();
 
 
 <?php
-    $uploadDirectory = $uploadDir;
+$uploadDirectory = $uploadDir;
 
-    $errors = []; // Store errors here
+$errors = []; // Store errors here
 
-    $fileExtensionsAllowed = ['csv']; // These will be the only file extensions allowed 
+$fileExtensionsAllowed = ['csv']; // These will be the only file extensions allowed 
 
-    $fileName = $_FILES['the_file']['name'];
-    $fileSize = $_FILES['the_file']['size'];
-    $fileTmpName  = $_FILES['the_file']['tmp_name'];
-    $fileType = $_FILES['the_file']['type'];
-   	$filedot = '.';
-    $Explode = explode($filedot,$fileName);
-    $End = end($Explode);
-    $fileExtension = strtolower($End);
+$fileName = $_FILES['the_file']['name'];
+$fileSize = $_FILES['the_file']['size'];
+$fileTmpName  = $_FILES['the_file']['tmp_name'];
+$fileType = $_FILES['the_file']['type'];
+$filedot = '.';
+$Explode = explode($filedot, $fileName);
+$End = end($Explode);
+$fileExtension = strtolower($End);
 
-    $uploadPath = $uploadDirectory . basename($fileName); 
+$uploadPath = $uploadDirectory . basename($fileName);
 
-    if (isset($_POST['submit'])) {
+if (isset($_POST['submit'])) {
 
-      if (! in_array($fileExtension,$fileExtensionsAllowed)) {
-        $errors[] = "This file extension is not allowed. Please upload a CSV file";
-        exit();
-      }
+  if (! in_array($fileExtension, $fileExtensionsAllowed)) {
+    $errors[] = "This file extension is not allowed. Please upload a CSV file";
+    exit();
+  }
 
-      if ($fileSize > 4000000) {
-        $errors[] = "File exceeds maximum size (4MB)";
-        exit();
-      }
+  if ($fileSize > 4000000) {
+    $errors[] = "File exceeds maximum size (4MB)";
+    exit();
+  }
 
-      if (empty($errors)) {
-        $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+  if (empty($errors)) {
+    $didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
-        if ($didUpload) {
-          /* echo "The file " . basename($fileName) . " has been uploaded<br/>"; */
-          $Update = $_POST['submit'];
-          switch ($Update){
-            case "ImportScouts":
-				      $RecordsInError = $CScout->ImportScouts($fileName);
-              break;
-            case "ImportCounselor":
-              $RecordsInError = $CCounselor->UpdateCouncilListShort($fileName);
-              break;
-			default:
-              echo "Default case reached";
-            break;
+    if ($didUpload) {
+      /* echo "The file " . basename($fileName) . " has been uploaded<br/>"; */
+      $Update = $_POST['submit'];
+      switch ($Update) {
+        case "ImportScouts":
+          $RecordsInError = $CScout->ImportScouts($fileName);
+          break;
+        case "ImportCounselor":
+          try {
+            $importer = new MeritBadgeCouncilImporter($CCounselor->getPdoConn(), UPLOAD_DIRECTORY);
+            $stats = $importer->updateCouncilList(basename($fileName));
+
+            $_SESSION['feedback'] = [
+              'type'    => 'success',
+              'message' => "Import complete. Inserted/updated counselors: {$stats['updated']}, Errors: {$stats['errors']}"
+            ];
+          } catch (Exception $e) {
+            $_SESSION['feedback'] = [
+              'type'    => 'error',
+              'message' => "Import failed: " . htmlspecialchars($e->getMessage())
+            ];
+            error_log($e);
           }
-        } else {
-          echo "An error occurred. Please contact the administrator.";
-        }
-      } else {
-        foreach ($errors as $error) {
-          echo $error . "These are the errors" . "\n";
-        }
+          //$RecordsInError = $CCounselor->UpdateCouncilListShort($fileName);
+          break;
+        default:
+          echo "Default case reached";
+          break;
       }
-
-	    if($RecordsInError == 0){
-		    echo "<script>window.location.href = 'index.php';</script>";
-	    }
-      else{
-        ?>
-        <a class="active" href="index.php">Home</a>
-        <?php
-      }
-	  
+    } else {
+      echo "An error occurred. Please contact the administrator.";
     }
+  } else {
+    foreach ($errors as $error) {
+      echo $error . "These are the errors" . "\n";
+    }
+  }
 
-
+  if ($RecordsInError == 0) {
+    echo "<script>window.location.href = 'index.php';</script>";
+  } else {
+?>
+    <a class="active" href="index.php">Home</a>
+<?php
+  }
+}

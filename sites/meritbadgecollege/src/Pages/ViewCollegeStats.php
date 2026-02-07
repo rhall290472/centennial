@@ -44,7 +44,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         $result_CollegeYear = $CMBCollege->doQuery($queryCollegeYear);
         ?>
         <form method=post>
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="row  d-print-none">
           <div class="col-2">
             <label for='UnitName'>&nbsp;</label>
@@ -52,11 +52,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
               <?php
               if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
                 $CollegeYear = $_POST['CollegeYear'];
-                setYear($CollegeYear);
+                $CMBCollege->setYear($CollegeYear);
               }
               ?>
 
-              <option value=\"\" </option>
+              <option value=""></option>
                 <?php
                 while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
                   if (!strcmp($rowCollege['College'], $CollegeYear)) {

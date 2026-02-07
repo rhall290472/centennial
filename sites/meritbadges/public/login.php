@@ -18,7 +18,7 @@
 !==============================================================================!
 */
 
-load_class(SHARED_PATH . '/src/Classes/CMeritBadges.php');
+load_class(SHARED_CLASS_PATH . '/CMeritBadges.php');
 $CMeritBadges = CMeritBadges::getInstance();
 
 // Check if the user is already logged in, redirect to home page
@@ -57,7 +57,7 @@ $username_err = $password_err = $login_err = "";
             <div class="invalid-feedback"><?php echo htmlspecialchars($password_err); ?></div>
           <?php endif; ?>
         </div>
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
         <div class="mb-3 text-center">
           <input type="submit" class="btn btn-primary" value="Login">
         </div>

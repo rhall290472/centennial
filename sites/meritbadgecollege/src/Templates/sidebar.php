@@ -19,10 +19,10 @@
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item">
         <a class="nav-link" href="index.php?page=changepassword">Change Password</a>
-    </li>
-    <li class="nav-item">
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="index.php?page=logout">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a>
-    </li>
+      </li>
     <?php else: ?>
       <li class="nav-item">
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
@@ -79,8 +79,6 @@
   <button class="btn btn-outline-secondary mt-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
     Close Sidebar
   </button>
-</div>
-
   <!-- Footer with GitHub repository commit date -->
   <div class="mt-auto text-muted small">
     <?php
@@ -110,7 +108,6 @@
 
       $feed = curl_exec($ch);
       $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      curl_close($ch);
 
 
       if ($feed === false) {
@@ -153,12 +150,10 @@
       } else {
         echo "Last updated: Unknown (API error)";
       }
-    }
-    ?>
-
+    } ?>
     <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
-
-    
+  </div>
+</div>
 <!-- Additional CSS for nested dropdowns -->
 <style>
   /* Base positioning for submenus (opens to the right) */
@@ -166,39 +161,45 @@
     position: relative;
   }
 
+  /*  */
   .dropdown-submenu .dropdown-menu {
     top: 0;
     left: 100%;
     margin-top: -1px;
-    min-width: 220px; /* Wider to fully show longer menu items */
-    z-index: 1050;    /* Higher than typical Bootstrap elements */
+    min-width: 220px;
+    /* Wider to fully show longer menu items */
+    z-index: 1050;
+    /* Higher than typical Bootstrap elements */
   }
 
   /* Show submenu on hover (desktop) */
-  .dropdown-submenu:hover > .dropdown-menu {
+  .dropdown-submenu:hover>.dropdown-menu {
     display: block;
   }
 
+  /*  */
   /* Optional: Slight shadow and border for visual separation */
   .dropdown-menu {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
+  /*  */
   /* Ensure sidebar doesn't clip children */
   #sidebar {
     overflow: visible !important;
   }
 
+  /*  */
   /* Ensure main content doesn't overlap */
   .main-content {
     overflow: visible !important;
   }
 </style>
-
+<!--  -->
 <!-- JavaScript to handle nested dropdowns -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function() {
     // Show main Admin dropdown on hover (optional – improves UX)
     const adminDropdown = document.querySelector('.nav-item.dropdown > .dropdown-toggle');
     const adminMenu = adminDropdown?.nextElementSibling;
@@ -215,8 +216,8 @@
     }
 
     // Handle nested submenus (click to toggle, prevent parent close)
-    document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function (element) {
-      element.addEventListener('click', function (e) {
+    document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function(element) {
+      element.addEventListener('click', function(e) {
         e.stopPropagation(); // Prevent closing parent dropdown
         e.preventDefault();
 
@@ -228,8 +229,8 @@
     });
 
     // Optional: Close submenus when clicking elsewhere
-    document.addEventListener('click', function () {
-      document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function (openSubmenu) {
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function(openSubmenu) {
         openSubmenu.classList.remove('show');
       });
     });

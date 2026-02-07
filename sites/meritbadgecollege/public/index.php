@@ -1,19 +1,41 @@
 <?php
 ob_start();
-/*
- * Main entry point for the Centennial District Advancement website.
- * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
- */
-// Secure session start
+// Custom session path – must be inside your home dir, writable by PHP
+$sessionDir = __DIR__ . '/../sessions';  // creates sessions/ sibling to public/ or wherever index.php lives
+
+if (!is_dir($sessionDir)) {
+  if (!mkdir($sessionDir, 0700, true)) {
+    error_log("Failed to create session dir: $sessionDir");
+  }
+}
+
+if (is_writable($sessionDir)) {
+  ini_set('session.save_path', $sessionDir);
+  // Optional: make sessions private
+  ini_set('session.cookie_httponly', '1');
+  ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? '1' : '0');
+  ini_set('session.use_strict_mode', '1');  // Helps prevent fixation
+} else {
+  error_log("Custom session path NOT writable: $sessionDir");
+}
+
+// Then your existing session_start()
 if (session_status() === PHP_SESSION_NONE) {
   session_start([
     'cookie_httponly' => true,
     'use_strict_mode' => true,
-    'cookie_secure' => isset($_SERVER['HTTPS'])
+    'cookie_secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
   ]);
 }
 
-// Load configuration
+
+/*
+ * Main entry point for the Centennial District Advancement website.
+ * Handles routing, form submissions, file uploads, and includes views based on the 'page' GET parameter.
+ */
+
+//ob_start();
+
 if (file_exists(__DIR__ . '/../config/config.php')) {
   require_once __DIR__ . '/../config/config.php';
 } else {
@@ -22,7 +44,7 @@ if (file_exists(__DIR__ . '/../config/config.php')) {
 }
 
 // Load required classes for file uploads
-load_class(BASE_PATH.'/src/Classes/CMBCollege.php');
+load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
 $CMBCollege = CMBCollege::getInstance();
 
 
@@ -54,6 +76,7 @@ $valid_pages = [
   'rpt-details',
 
   'fileupload',
+  'doubleknot-pdf',
 
   'logout',
   'login'
@@ -72,22 +95,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "SESSION length: " . strlen($session_token) . "\n\n";
     echo "POST hex:   " . bin2hex($post_token)   . "\n";
     echo "SESSION hex: " . bin2hex($session_token) . "\n\n";
-    echo "POST raw:   "; var_dump($post_token);
-    echo "SESSION raw: "; var_dump($session_token);
+    echo "POST raw:   ";
+    var_dump($post_token);
+    echo "SESSION raw: ";
+    var_dump($session_token);
     echo "\nStrict comparison result: ";
     var_dump($post_token !== $session_token);
     echo "\nAfter trim(): ";
     var_dump(trim($post_token) !== trim($session_token));
 
-    //$_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
-    //header("Location: index.php?page=$page");
-    //exit;
+    $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid CSRF token.'];
+    header("Location: index.php?page=$page");
+    exit;
   }
 
   // Login
   if ($page === 'login' && isset($_POST['username']) && isset($_POST['password'])) {
-    load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
-    $CMBCollege = CMBCollege::getInstance();
+    // load_class(BASE_PATH . '/src/Classes/CMBCollege.php');
+    // $CMBCollege = CMBCollege::getInstance();
 
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -111,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled, $role);
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
+                error_log("LOGIN SUCCESS - id=$id  username=$username");
                 // Very important security improvements:
                 //$_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // rotate token
                 //session_regenerate_id(true);
@@ -127,6 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               }
             }
           } else {
+            error_log("LOGIN FAIL - verify=" . (password_verify($password, $hashed_password) ? 'true' : 'false') .
+              "  enabled=" . ($enabled ? 'true' : 'false'));
             $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Invalid username or password.'];
             header("Location: index.php?page=login");
           }
@@ -138,9 +166,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         throw new Exception("Failed to prepare statement: " . mysqli_error($CMBCollege->getDbConn()));
       }
     } catch (Exception $e) {
-      error_log("index.php - Login error: " . $e->getMessage(), 0);
+      error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'An error occurred during login. Please try again later.'];
       header("Location: index.php?page=login");
+      exit;
     }
     exit;
   }
@@ -148,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Handle logout
 if ($page === 'logout') {
-  echo "page = ". $page;
+  echo "page = " . $page;
   $_SESSION = [];
   session_destroy();
   $_SESSION['feedback'] = ['type' => 'success', 'message' => 'You have been logged out.'];
@@ -161,9 +190,7 @@ $feedback = isset($_SESSION['feedback']) ? $_SESSION['feedback'] : [];
 unset($_SESSION['feedback']);
 
 // Set CSRF token if not set
-if (!isset($_SESSION['csrf_token'])) {
-  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+get_csrf_token();
 
 
 ?>
@@ -290,7 +317,9 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'fileupload':
           include('../src/Pages/FileUpload.php');
           break;
-
+case 'doubleknot-pdf':
+    include('../src/Pages/doubleknot-pdf.php');
+    break;
         case 'login':
           include('login.php');
           break;
