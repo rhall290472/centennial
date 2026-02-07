@@ -6,10 +6,22 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
   error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
   die('An error occurred. Please try again later.');
 }
-require_once BASE_PATH . '/src/Classes/CMBCollege.php';
-$CMBCollege = CMBCollege::getInstance();
 
-require_once BASE_PATH . '/vendor/autoload.php';
+if (file_exists(BASE_PATH . '/src/Classes/CMBCollege.php')) {
+  require_once BASE_PATH . '/src/Classes/CMBCollege.php';
+  $CMBCollege = CMBCollege::getInstance();
+} else {
+  error_log("Unable to find file cCMBCollege.php @ " . __FILE__ . ' ' . __LINE__);
+  die('An error occurred. Please try again later.');
+}
+
+if (file_exists(BASE_PATH . '/vendor/autoload.php')) {
+  require_once BASE_PATH . '/vendor/autoload.php';
+}else {
+  error_log("Unable to find file autoload.php @ " . __FILE__ . ' ' . __LINE__);
+  die('An error occurred. Please try again later.');
+}
+
 use Mpdf\Mpdf;
 
 // Require CollegeYear (from POST or GET — use POST for consistency)
