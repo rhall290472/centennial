@@ -1,7 +1,7 @@
 <?php
 // doubleknot-pdf.php — NO LAYOUT, NO HTML BEFORE PDF
-if (file_exists(__DIR__ . '/../../config/config.php')) {
-  require_once __DIR__ . '/../../config/config.php';
+if (file_exists(__DIR__ . '/../config/config.php')) {
+  require_once __DIR__ . '/../config/config.php';
 } else {
   error_log("Unable to find file config.php @ " . __FILE__ . ' ' . __LINE__);
   die('An error occurred. Please try again later.');

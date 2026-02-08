@@ -120,7 +120,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
 
           <?php if (!empty($_POST['CollegeYear'])): ?>
             <!-- Inside your form -->
-            <button type="submit" name="DownloadPDF" formaction="../src/Pages/Doubleknot-pdf.php" class="btn btn-success ml-2">
+            <button type="submit" name="DownloadPDF" formaction="Doubleknot-pdf.php" class="btn btn-success ml-2">
               Download as PDF
             </button>
           <?php endif; ?>
