@@ -46,7 +46,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 <html lang="en">
 
 <head>
-  <?php //include('./head.php'); ?>
+  <?php //include('./head.php'); 
+  ?>
 </head>
 
 <body class="body">
@@ -74,7 +75,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
   // CHeck is user submitted form
   if (isset($_POST['SubmitForm'])) {
     if ($_POST['SubmitForm'] == "Cancel") {
-      $classESC->GotoURL('./index.php');
+      $cEagle->GotoURL('./index.php');
       exit;
     }
 
@@ -110,7 +111,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
   ?>
   <div style="padding:20px">
     <form action="index.php?page=edituser" id="form-user" method="post">
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? bin2hex(random_bytes(32))); ?>">
       <div class="form-row">
         <div class="col-2">
           <label>Username</label>
@@ -138,15 +139,15 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
           <label>Type</label>
           <select class='form-control' name='element_2_2'>
             <option value=""> </option>
-              <?php
-              $Role = $user['Role'];
-              $selected = !strcmp($Role, "Admin") ? $Selected = "selected" : $Selected = "";
-              echo "<option value=Admin " . $Selected . ">Admin</option>";
-              $selected = !strcmp($Role, "User") ? $Selected = "selected" : $Selected = "";
-              echo "<option value=User " . $Selected . ">User</option>";
-              $selected = !strcmp($Role, "Spammer") ? $Selected = "selected" : $Selected = "";
-              echo "<option value=Spammer " . $Selected . ">Spammer</option>";
-              ?>
+            <?php
+            $Role = $user['Role'];
+            $selected = !strcmp($Role, "Admin") ? $Selected = "selected" : $Selected = "";
+            echo "<option value=Admin " . $Selected . ">Admin</option>";
+            $selected = !strcmp($Role, "User") ? $Selected = "selected" : $Selected = "";
+            echo "<option value=User " . $Selected . ">User</option>";
+            $selected = !strcmp($Role, "Spammer") ? $Selected = "selected" : $Selected = "";
+            echo "<option value=Spammer " . $Selected . ">Spammer</option>";
+            ?>
           </select>
         </div>
         <div class="col-1 py-4">
@@ -161,14 +162,21 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       <div class="form-row">
         <div class="col-3">
           <label>Created</label>
-          <input type="text" name="element_3_1" class="form-control" <?php if (strlen($user['created_by']) > 0) echo "value=" . $user['created_by']; ?> readonly />
+          <?php
+          $createdBy = $user['created_by'] ?? '';
+          ?>
+          <input type="text" name="element_3_1" class="form-control"
+            value="<?= htmlspecialchars($createdBy) ?>" readonly />
         </div>
         <div class="col-2">
           <label>Last Login</label>
-          <input type="text" name="element_3_2" class="form-control" <?php if (strlen($user['LastLogin']) > 0) echo "value=" . $user['LastLogin']; ?> readonly />
+          <?php
+          $lastLogin = $user['LastLogin'] ?? '';
+          ?>
+          <input type="text" name="element_3_2" class="form-control"
+            value="<?= htmlspecialchars($lastLogin) ?>" readonly />
         </div>
       </div>
-
       <!-- <div class="form-row">
         <div class="col-5">
           <label>Notes</label>
@@ -189,7 +197,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
   </div>
 
 
-  <?php //include "./Footer.php"; ?>
+  <?php //include "./Footer.php"; 
+  ?>
 </body>
 
 </html>
