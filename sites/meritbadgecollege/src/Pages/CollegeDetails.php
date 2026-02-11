@@ -77,6 +77,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
               $date = strtotime($rowCollegeDetails['Date']);
               $CollegeDate = date('m/d/Y', $date);
               $CollegeNotes = $rowCollegeDetails['Notes'];
+              $CollegePromo = $rowCollegeDetails['promo'];
             ?>
               <form action="index.php?page=rpt-details" id="College_Details" method="post">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
@@ -228,6 +229,18 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
               cols="100"><?php echo htmlspecialchars($CollegeNotes ?? '', ENT_QUOTES); ?></textarea>
           </div>
         </div>
+                <div class="row">
+          <div class="col-12 py-3">
+            <label class="form-label" for="element_7_1">Promo</label>
+            <textarea
+              class="form-control"
+              id="element_8_1"
+              name="element_8_1"
+              rows="10"
+              cols="100"><?php echo htmlspecialchars($CollegePromo ?? '', ENT_QUOTES); ?></textarea>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col" style="text-align: center;">
             <input type="hidden" name="form_id" value="22772" />
@@ -283,6 +296,8 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
       $CollegeDetails['EndTime']      = $CMBCollege->GetFormData('element_6_4');
       // Seventh row
       $CollegeDetails['Notes']        = $CMBCollege->GetFormData('element_7_1');
+      // Eight Row
+      $CollegeDetails['promo']        = $CMBCollege->GetFormData('element_8_1');
 
       $CMBCollege->AddUpdateCollege($CollegeDetails);
       $CMBCollege->GotoURL("index.php?page=rpt-details");
