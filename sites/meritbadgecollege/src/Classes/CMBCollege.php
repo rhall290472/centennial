@@ -1173,10 +1173,13 @@ public static function ReportDoubleKnot($results)
 
     $collegeInfo = '';
     if ($rowCollegeDetails = $report_results->fetch_assoc()) {
+        $CollegePromo = $rowCollegeDetails['promo'] ?? '';
         $ContactPerson  = $rowCollegeDetails['Contact'] ?? '';
         $CollegeName    = $rowCollegeDetails['College'] ?? '';
         $CollegeLocation = $rowCollegeDetails['Location'] ?? '';
         $CollegeAddress = $rowCollegeDetails['Address'] ?? '';
+        $CollegeFee = $rowCollegeDetails['Fee/Scout'] ?? '';
+        $CollegeRegEnds = $rowCollegeDetails['registration_end'] ?? '';
         $LunchTime      = $rowCollegeDetails['Lunch'] ?? '';
         $StartTime      = $rowCollegeDetails['StartTime'] ?? '';
         $EndTime        = $rowCollegeDetails['EndTime'] ?? '';
@@ -1188,16 +1191,16 @@ public static function ReportDoubleKnot($results)
         // Build header part
         $collegeInfo = "
             <h2>What: Centennial District Merit Badge College</h2>
-            <h4>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h4>
-            <h4>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
-            <h4>Cost: </h4>
-            <h4>Registration end: </h4>
-            <h4>Event details: " . htmlspecialchars($CollegeNotes) . "</h4>
-            <h4>Registration Types: youth</h4>
-            <h4>Collect from Scouts: Name(first, last), email, unit, district, Guardian contact phone number</h4>
-            <h4>Documents: med form </h4>
-            <h4>Main Contact: Richard Hall, mailto:richard.hall@centennialdistrict.co, 305.401.5943</h4>
-            <h4>Pleae send: confirmation email, cancelation policy, and reminder email</h4>
+            <p>" . htmlspecialchars($CollegePromo) . "</p>
+            <h6>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h6>
+            <h6>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h6>
+            <h6>Cost: $" . htmlspecialchars("$CollegeFee") . "/Scout for thr entire day</h6>
+            <h6>Registration ends: ".htmlspecialchars($CollegeRegEnds)."</h6>
+            <h6>Registration Types: Youth</h6>
+            <h6>Collect from Scouts: Name(first, last), email, unit, district, Guardian contact phone number</h6>
+            <h6>Documents: Med form </h6>
+            <h6>Main Contact: Richard Hall, richard.hall@centennialdistrict.co, 305.401.5943</h6>
+            <h6>Please send: confirmation email, cancelation policy, and reminder email</h6>
             <h5></h5>
         ";
     }

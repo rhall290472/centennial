@@ -98,7 +98,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
     <div class="row flex-nowrap">
       <div class="col py-3">
 
-        <h3>Double Knot Signup Report</h3>
+        <h3>DBlack Pug Signup Report</h3>
 
         <form method="post" class="mb-4">
           <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
