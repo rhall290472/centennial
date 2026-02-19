@@ -51,7 +51,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
         </style>
     </head>
     <body>
-        <h2>Centennial District Merit Badge College<br>Black PugKnot Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
+        <h2>Centennial District Merit Badge College<br>Black Pug Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
         <p style="text-align:center;"><strong>Generated:</strong> ' . date('F j, Y') . '</p>
         ' . $tableHtml . '
     </body>
@@ -98,7 +98,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
     <div class="row flex-nowrap">
       <div class="col py-3">
 
-        <h3>DBlack Pug Signup Report</h3>
+        <h3>Black Pug Signup Report</h3>
 
         <form method="post" class="mb-4">
           <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
