@@ -231,7 +231,7 @@ public function Display_ClassSize(string $element, int $period): string
     //$defaultSize    = 15;
 
     // Get stored value if available, otherwise use default
-    $value     = $zeroBasedIndex < count($this->MBCSL) ? (int) $this->MBCSL[$index] : null;
+    $value     = $zeroBasedIndex < count($this->MBCSL) ? (int) $this->MBCSL[$zeroBasedIndex] : null;
 
     // Build attributes safely
     $attributes = [
