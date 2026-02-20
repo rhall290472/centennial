@@ -41,7 +41,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
     <html>
     <head>
         <meta charset="utf-8">
-        <title>Double Knot Report ' . htmlspecialchars($CollegeYear) . '</title>
+        <title>Black Pug Report ' . htmlspecialchars($CollegeYear) . '</title>
         <style>
             body { font-family: dejavusans, sans-serif; font-size: 11pt; margin: 15mm; }
             h2 { text-align: center; }
@@ -51,7 +51,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
         </style>
     </head>
     <body>
-        <h2>Centennial District Merit Badge College<br>Double Knot Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
+        <h2>Centennial District Merit Badge College<br>Black Pug Signup Report – ' . htmlspecialchars($CollegeYear) . '</h2>
         <p style="text-align:center;"><strong>Generated:</strong> ' . date('F j, Y') . '</p>
         ' . $tableHtml . '
     </body>
@@ -86,7 +86,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Double Knot Report</title>
+  <title>Black Pug Report</title>
   <!-- Your CSS links here -->
 </head>
 
@@ -98,7 +98,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
     <div class="row flex-nowrap">
       <div class="col py-3">
 
-        <h3>Double Knot Signup Report</h3>
+        <h3>Black Pug Signup Report</h3>
 
         <form method="post" class="mb-4">
           <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
@@ -120,7 +120,7 @@ if (isset($_POST['DownloadPDF']) && !empty($_POST['CollegeYear'])) {
 
           <?php if (!empty($_POST['CollegeYear'])): ?>
             <!-- Inside your form -->
-            <button type="submit" name="DownloadPDF" formaction="../src/Pages/doubleknot-pdf.php" class="btn btn-success ml-2">
+            <button type="submit" name="DownloadPDF" formaction="Doubleknot-pdf.php" class="btn btn-success ml-2">
               Download as PDF
             </button>
           <?php endif; ?>

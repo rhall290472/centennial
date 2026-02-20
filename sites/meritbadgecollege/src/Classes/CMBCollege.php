@@ -1173,10 +1173,13 @@ public static function ReportDoubleKnot($results)
 
     $collegeInfo = '';
     if ($rowCollegeDetails = $report_results->fetch_assoc()) {
+        $CollegePromo = $rowCollegeDetails['promo'] ?? '';
         $ContactPerson  = $rowCollegeDetails['Contact'] ?? '';
         $CollegeName    = $rowCollegeDetails['College'] ?? '';
         $CollegeLocation = $rowCollegeDetails['Location'] ?? '';
         $CollegeAddress = $rowCollegeDetails['Address'] ?? '';
+        $CollegeFee = $rowCollegeDetails['Fee/Scout'] ?? '';
+        $CollegeRegEnds = $rowCollegeDetails['registration_end'] ?? '';
         $LunchTime      = $rowCollegeDetails['Lunch'] ?? '';
         $StartTime      = $rowCollegeDetails['StartTime'] ?? '';
         $EndTime        = $rowCollegeDetails['EndTime'] ?? '';
@@ -1187,10 +1190,18 @@ public static function ReportDoubleKnot($results)
 
         // Build header part
         $collegeInfo = "
-            <h2>Centennial District Merit Badge College</h2>
-            <h4>" . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h4>
-            <h4>Date: " . htmlspecialchars($CollegeDate) . "</h4>
-            <h5>Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h5>
+            <h2>What: Centennial District Merit Badge College</h2>
+            <p>" . htmlspecialchars($CollegePromo) . "</p>
+            <h6>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h6>
+            <h6>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h6>
+            <h6>Cost: $" . htmlspecialchars("$CollegeFee") . "/Scout for thr entire day</h6>
+            <h6>Registration ends: ".htmlspecialchars($CollegeRegEnds)."</h6>
+            <h6>Registration Types: Youth</h6>
+            <h6>Collect from Scouts: Name(first, last), email, unit, district, Guardian contact phone number</h6>
+            <h6>Documents: Med form </h6>
+            <h6>Main Contact: Richard Hall, richard.hall@centennialdistrict.co, 305.401.5943</h6>
+            <h6>Please send: confirmation email, cancelation policy, and reminder email</h6>
+            <h5></h5>
         ";
     }
 

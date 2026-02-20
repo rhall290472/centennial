@@ -68,7 +68,7 @@
               <li><a class="dropdown-item" href="index.php?page=rpt-roomschedule">Room Schedule</a></li>
               <li><a class="dropdown-item" href="index.php?page=rpt-csvfile">Create CSV File</a></li>
               <li><a class="dropdown-item" href="index.php?page=rpt-stats">College Stats</a></li>
-              <li><a class="dropdown-item" href="index.php?page=rpt-doubleknot">Double Knot Signup</a></li>
+              <li><a class="dropdown-item" href="index.php?page=rpt-doubleknot">Black Pug Signup</a></li>
               <li><a class="dropdown-item" href="index.php?page=rpt-details">College Details</a></li>
             </ul>
           </li>

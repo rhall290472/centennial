@@ -317,9 +317,9 @@ get_csrf_token();
         case 'fileupload':
           include('../src/Pages/FileUpload.php');
           break;
-case 'doubleknot-pdf':
-    include('../src/Pages/doubleknot-pdf.php');
-    break;
+        case 'doubleknot-pdf':
+          include('../src/Pages/Doubleknot-pdf.php');
+          break;
         case 'login':
           include('login.php');
           break;
