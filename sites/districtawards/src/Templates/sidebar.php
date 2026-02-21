@@ -129,81 +129,72 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
 
 
   <!-- Footer with GitHub repository commit date -->
-  <div class="mt-auto text-muted small">
-    <?php
-    $cache_file = 'last_updated.txt';
-    $cache_duration = 24 * 60 * 60; // 24 hours in seconds
-    $commit_date = null;
-    $http_code = 0; // Initialize to track HTTP status
+  <p class="text-muted small" id="versionInfo">
+    <em>Loading version...</em>
+  </p>
 
-    // Check if cache exists and is recent
-    $owner = "rhall290472";
-    $repo  = "centennial";
-    //$cache_file = __DIR__ . "/cache/last_commit_cache.txt";
-    $cache_duration = 3600; // 1 hour
+  <div class="text-muted small">
+  <script>
+    // Customize these:
+    const repo = 'rhall290472/centennial';
+    const ref = 'main'; // ← your GitHub Pages branch (usually 'main' or 'gh-pages')
 
-    if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_duration) {
-      $commit_date = file_get_contents($cache_file);
-    } else {
-      // This endpoint is public, no auth needed, and rarely rate-limited
-      $feed_url = "https://github.com/{$owner}/{$repo}/commits/main.atom";
+    const versionInfo = document.getElementById('versionInfo');
 
-      $ch = curl_init($feed_url);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_USERAGENT, "PHP-Commit-Date/1.0 (rhall290472@gmail.com)"); // Required by GitHub
-      curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    fetch(`https://api.github.com/repos/${repo}/git/ref/heads/${ref}`)
+      .then(r => {
+        if (!r.ok) throw new Error('Failed to fetch branch ref');
+        return r.json();
+      })
+      .then(data => {
+        const sha = data.object.sha;
+        const shortSha = sha.slice(0, 7);
 
-      $feed = curl_exec($ch);
-      $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      curl_close($ch);
+        // Now check for tags that point exactly to this commit SHA
+        return fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`)
+          .then(r => {
+            if (!r.ok) return []; // fallback if tags fetch fails
+            return r.json();
+          })
+          .then(tags => {
+            // Find the first tag (GitHub returns tags in reverse-chronological order ≈ most recent first)
+            const matchingTag = tags.find(tag => tag.commit.sha === sha);
+            return {
+              sha,
+              shortSha,
+              tag: matchingTag ? matchingTag.name : null
+            };
+          });
+      })
+      .then(({
+        sha,
+        shortSha,
+        tag
+      }) => {
+        const version = tag || shortSha;
+        const link = `https://github.com/${repo}/commit/${sha}`;
+        const date = new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
 
-
-      if ($feed === false) {
-        // Hard cURL error (network, timeout, etc.)
-        error_log("cURL error: " . curl_error($ch));
-        // fall back to cache
-      } elseif ($http_code !== 200) {
-        // GitHub returned an error page (403, 404, 429, etc.)
-        error_log("GitHub returned HTTP $http_code for $feed_url");
-        // fall back to cache
-      } elseif (empty(trim($feed))) {
-        // Empty response (shouldn't happen, but safety)
-        error_log("Empty response from GitHub");
-        // fall back to cache
-      } else {
-        // Success! Parse the Atom feed
-        if (preg_match('/<entry[^>]*>.*?<updated>(.*?)<\/updated>/is', $feed, $matches)) {
-          $commit_date = $matches[1];
-          file_put_contents($cache_file, $commit_date);
-        }
-      }
-
-      // Fallback: if not found yet, try to load from cache anyway
-      if (!$commit_date && file_exists($cache_file)) {
-        $commit_date = file_get_contents($cache_file);
-      }
-    }
-
-    // Display the date
-    if ($commit_date) {
-      $formatted_date = date("F j, Y", strtotime($commit_date));
-      echo "Last updated: " . htmlspecialchars($formatted_date);
-    } else {
-      if ($http_code == 403) {
-        echo "Last updated: Unknown (token lacks permissions or organization restrictions)";
-      } elseif ($http_code == 401) {
-        echo "Last updated: Unknown (invalid or missing token)";
-      } elseif ($http_code == 404) {
-        echo "Last updated: Unknown (repository not found)";
-      } else {
-        echo "Last updated: Unknown (API error)";
-      }
-    }
-    ?>
-
-    <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
+        versionInfo.innerHTML = `
+                      <strong>Version:</strong> 
+                      <a href="${link}" target="_blank" class="text-decoration-none">
+                        ${version}
+                      </a>
+                      <code class="text-muted">(${shortSha})</code>
+                      | <strong>Last Updated:</strong> ${date}
+                    `;
+      })
+      .catch(err => {
+        console.error(err);
+        versionInfo.innerHTML = '<em>Version info unavailable</em>';
+      });
+  </script>
+  <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
+  </div>
 
   </div>
 </div>
