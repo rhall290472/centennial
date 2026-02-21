@@ -1240,17 +1240,19 @@ public static function ReportDoubleKnot($results)
             default:    $Time = 'Unknown'; break;
         }
 
-        $fee = isset($row['MBFee']) ? sprintf("$%.2f", (float)$row['MBFee']) : '$0.00';
+        $feeValue = isset($row['MBFee']) ? (float)$row['MBFee'] : 0.0;
+        $fee      = sprintf("$%.2f", $feeValue);
+        $feeStyle = ($feeValue > 0) ? ' style="color: red; font-weight: bold;"' : '';
 
         $html .= '<tr>';
         $html .= '<td>' . htmlspecialchars($Time) . '</td>';
         $html .= '<td>' . htmlspecialchars($row['MBName'] ?? '') . '</td>';
         $html .= '<td>' . htmlspecialchars(($row['FirstName'] ?? '') . ' ' . ($row['LastName'] ?? '')) . '</td>';
         $html .= '<td>' . htmlspecialchars($row['Email'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($row['MBPrerequisities'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($row['MBNotes'] ?? '') . '</td>';
+        $html .= '<td>' . $row['MBPrerequisities'] ?? '' . '</td>';
+        $html .= '<td>' . $row['MBNotes'] ?? '' . '</td>';
         $html .= '<td>' . htmlspecialchars($row['MBCSL'] ?? '') . '</td>';
-        $html .= '<td>' . $fee . '</td>';
+        $html .= '<td' . $feeStyle . '>' . $fee . '</td>';
         $html .= '</tr>';
     }
 

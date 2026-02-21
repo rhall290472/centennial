@@ -2,6 +2,7 @@
 require_once BASE_PATH . '/src/Classes/CCounselor.php';
 require_once BASE_PATH . '/src/Classes/CMBCollege.php';
 
+
 $Counselor = CCounselor::getInstance();  // Fixed class name case (was cCounselor)
 $CMBCollege = CMBCollege::getInstance();
 
@@ -37,8 +38,10 @@ if (isset($_POST['SubmitForm'])) {
         $MBClassSize   = $Counselor->GetFormData("MB{$i}CSL");
         $MBFee         = $Counselor->GetFormData("MB{$i}Fee");
         $MBRoom        = $Counselor->GetFormData("MB{$i}Room");
-        $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
-        $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
+        // $MBPrerequisities = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Prerequisities")));
+        // $MBNotes       = $Counselor->RemoveNewLine(addslashes($Counselor->GetFormData("MB{$i}Notes")));
+        $MBPrerequisities = addslashes($Counselor->GetFormData("MB{$i}Prerequisities"));
+        $MBNotes       = addslashes($Counselor->GetFormData("MB{$i}Notes"));
 
         $Counselor->AddMBClass($MBName, $MBPeriod, $MBClassSize, $MBFee, $MBRoom, $MBPrerequisities, $MBNotes);
       }
@@ -301,7 +304,7 @@ if (isset($_POST['SubmitForm'])) {
                   <div class="row g-3 mt-3"> <!-- mt-3 adds nice spacing between rows -->
                     <div class="col-md-6"> <!-- Wider column so textareas have more room -->
                       <label for="MB<?= $i ?>Prerequisities" class="form-label">Prerequisites</label>
-                      <?php echo $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>  
+                      <?php echo $Counselor->Display_Prerequisities("MB{$i}Prerequisities", $i); ?>
                       <small class="form-text text-muted">List any requirements scouts should complete before attending.</small>
                     </div>
 
@@ -312,14 +315,14 @@ if (isset($_POST['SubmitForm'])) {
                     </div>
                   </div>
                 </div>
-              <?php endfor; ?> 
+              <?php endfor; ?>
               <div class="sticky-bottom bg-light border-top py-3 shadow-sm">
-  <div class="container text-center">
-    <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">
-      Submit Counselor Information
-    </button>
-  </div>
-</div>
+                <div class="container text-center">
+                  <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5">
+                    Submit Counselor Information
+                  </button>
+                </div>
+              </div>
 
               <!-- <div>
                 <input type="hidden" name="form_id" value="22772">
@@ -369,6 +372,38 @@ if (isset($_POST['SubmitForm'])) {
       });
     });
   </script>
+
+  <script src="https://cdn.tiny.cloud/1/go7c0mdpiffej81ji1n8edfu4mubr4v4fnrz6dc5qzjhian8/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+  <script>
+    // Force default icons (important for some setups)
+    tinymce.IconManager.require('default');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      tinymce.init({
+        selector: 'textarea.tinymce-editor', // ← targets all your textareas with this class
+
+        // Reasonable configuration for prerequisites/notes (keep it simple)
+        menubar: false,
+        plugins: 'lists link charmap paste code help wordcount',
+        toolbar: 'undo redo | bold italic underline | bullist numlist | link | removeformat | code',
+        height: 220, // adjust as needed
+        min_height: 140,
+        branding: false,
+        paste_as_text: true, // cleaner copy-paste
+        entity_encoding: 'raw',
+        convert_urls: false,
+
+        // Optional: better Bootstrap integration
+        content_style: 'body { font-family: inherit; font-size: 1rem; }',
+
+        // If you want bullet/number lists to look nice
+        lists_indent_on_tab: true
+      });
+    });
+  </script>
+
 </body>
 
 </html>
