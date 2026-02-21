@@ -182,12 +182,35 @@ if (isset($_POST['SubmitForm'])) {
           <?php
           $SelectedCounselor = trim($_POST['CounselorName']);
 
-          $query = "SELECT m.*, c.FirstName, c.LastName, c.Email, c.HomePhone, c.MemberID 
-                    FROM mbccounselors c 
-                    INNER JOIN mbccounselormerit cm ON c.FirstName = cm.FirstName AND c.LastName = cm.LastName 
-                    INNER JOIN meritbadges m ON cm.MeritName = m.MeritName 
-                    WHERE c.MemberID = ? 
-                    ORDER BY m.MeritName";
+          // $query = "SELECT m.*, c.FirstName, c.LastName, c.Email, c.HomePhone, c.MemberID 
+          //           FROM mbccounselors c 
+          //           INNER JOIN mbccounselormerit cm ON c.FirstName = cm.FirstName AND c.LastName = cm.LastName 
+          //           INNER JOIN meritbadges m ON cm.MeritName = m.MeritName 
+          //           WHERE c.MemberID = ? 
+          //           ORDER BY m.MeritName";
+          $query = "
+    SELECT 
+        m.*,
+        c.FirstName, 
+        c.LastName, 
+        c.Email, 
+        c.HomePhone, 
+        c.MemberID,
+        CASE WHEN cm.MeritName IS NOT NULL THEN 1 ELSE 0 END AS CounselorIsAssigned
+    FROM meritbadges m
+    CROSS JOIN mbccounselors c
+    LEFT JOIN mbccounselormerit cm 
+        ON cm.MeritName = m.MeritName
+       AND TRIM(LOWER(c.FirstName)) = TRIM(LOWER(cm.FirstName))
+       AND TRIM(LOWER(c.LastName))  = TRIM(LOWER(cm.LastName))
+    WHERE c.MemberID = ?
+      AND (
+          cm.MeritName IS NOT NULL
+          OR m.MB_ID >= 900
+      )
+    ORDER BY m.MeritName
+";
+
 
           $mysqli = $Counselor->getDbConn();  // Fixed method name (was dbConn directly)
 
@@ -352,7 +375,7 @@ if (isset($_POST['SubmitForm'])) {
   }
   ?>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -403,6 +426,7 @@ if (isset($_POST['SubmitForm'])) {
       });
     });
   </script>
+
 
 </body>
 

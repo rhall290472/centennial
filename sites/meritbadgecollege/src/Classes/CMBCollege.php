@@ -1191,7 +1191,7 @@ public static function ReportDoubleKnot($results)
         // Build header part
         $collegeInfo = "
             <h2>What: Centennial District Merit Badge College</h2>
-            <p>" . htmlspecialchars($CollegePromo) . "</p>
+            <p>" . $CollegePromo . "</p>
             <h6>When: Date: " . htmlspecialchars($CollegeDate) . "   Start Time: " . htmlspecialchars($StartTime) . "   End Time: " . htmlspecialchars($EndTime) . "</h6>
             <h6>Where: " . htmlspecialchars("$CollegeLocation - $CollegeAddress") . "</h6>
             <h6>Cost: $" . htmlspecialchars("$CollegeFee") . "/Scout for thr entire day</h6>
@@ -1443,7 +1443,7 @@ public static function ReportDoubleKnot($results)
             `PeriodA`='%s', `PeriodB`='%s', `PeriodC`='%s', `PeriodD`='%s',
             `PeriodAB`='%s', `PeriodCD`='%s', `PeriodE`='%s', `PeriodF`='%s',
             `Lunch`='%s', `Date`='%s', `StartTime`='%s', `EndTime`='%s', 
-            `Notes`='%s'
+            `Notes`='%s', `promo`='%s'
             WHERE `College`='%s'",
                   $CollegeDetails['Open'],
                   $CollegeDetails['College'],
@@ -1470,6 +1470,7 @@ public static function ReportDoubleKnot($results)
                   $CollegeDetails['StartTime'],
                   $CollegeDetails['EndTime'],
                   $CollegeDetails['Notes'],
+                  $CollegeDetails['promo'],
                   $CollegeDetails['College']
                 );
               } else {

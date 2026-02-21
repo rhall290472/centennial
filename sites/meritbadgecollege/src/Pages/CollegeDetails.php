@@ -307,6 +307,29 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
 
     ?>
+<script src="https://cdn.tiny.cloud/1/go7c0mdpiffej81ji1n8edfu4mubr4v4fnrz6dc5qzjhian8/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    	    <script>
+	      tinymce.init({
+	        selector: 'textarea#element_8_1', // targets only your Promo field
+	        height: 400, // adjust to your preference
+	        menubar: false, // usually cleaner for this kind of form
+	        plugins: 'lists link image charmap preview anchor searchreplace visualblocks code fullscreen table paste emoticons',
+	        toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image | removeformat | code',
+	        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+
+	        // Optional but very useful
+	        paste_as_text: true,
+	        browser_spellcheck: true,
+	        contextmenu: false,
+
+	        // Helps with Bootstrap layout
+	        setup: function(editor) {
+	          editor.on('change', function() {
+	            editor.save(); // sync back to <textarea>
+	          });
+	        }
+	      });
+	    </script>
 </body>
 
 </html>
