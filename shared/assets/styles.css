@@ -13977,3 +13977,20 @@ footer {
   bottom: 0;
   z-index: 1000;
 }
+
+/* Your small / muted variant – now truly small */
+    .text-muted,
+    .small,
+    small {
+      font-size: 0.82em;         /* ≈11–11.5px when base is 14px */
+      color: #6c757d;
+    }
+
+    .text-muted em,
+    .text-muted strong {
+      font-size: inherit;        /* prevent em/strong from becoming huge */
+    }
+
+    code {
+      font-size: 0.9em;          /* slightly larger than .small so it's readable */
+    }

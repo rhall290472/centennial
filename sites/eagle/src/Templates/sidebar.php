@@ -94,41 +94,34 @@ $page = $page ?? 'home';
     Close Sidebar
   </button>
 
-  <!-- Footer with GitHub repository commit date -->
+  <!-- Your version footer – cleaned up & using relative units -->
   <p class="text-muted small" id="versionInfo">
     <em>Loading version...</em>
   </p>
 
-  <div class="text-muted small">
+  <!-- Your script (with fixes – see notes below) -->
   <script>
-    // Customize these:
     const repo = 'rhall290472/centennial';
-    const ref = 'main'; // ← your GitHub Pages branch (usually 'main' or 'gh-pages')
-
+    const ref = 'main';
     const versionInfo = document.getElementById('versionInfo');
 
     fetch(`https://api.github.com/repos/${repo}/git/ref/heads/${ref}`)
       .then(r => {
-        if (!r.ok) throw new Error('Failed to fetch branch ref');
+        if (!r.ok) throw new Error('Failed to fetch ref');
         return r.json();
       })
       .then(data => {
         const sha = data.object.sha;
         const shortSha = sha.slice(0, 7);
 
-        // Now check for tags that point exactly to this commit SHA
         return fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`)
-          .then(r => {
-            if (!r.ok) return []; // fallback if tags fetch fails
-            return r.json();
-          })
+          .then(r => r.ok ? r.json() : [])
           .then(tags => {
-            // Find the first tag (GitHub returns tags in reverse-chronological order ≈ most recent first)
-            const matchingTag = tags.find(tag => tag.commit.sha === sha);
+            const matchingTag = tags.find(t => t.commit.sha === sha);
             return {
               sha,
               shortSha,
-              tag: matchingTag ? matchingTag.name : null
+              tag: matchingTag?.name ?? null
             };
           });
       })
@@ -146,21 +139,22 @@ $page = $page ?? 'home';
         });
 
         versionInfo.innerHTML = `
-                      <strong>Version:</strong> 
-                      <a href="${link}" target="_blank" class="text-decoration-none">
-                        ${version}
-                      </a>
-                      <code class="text-muted">(${shortSha})</code>
-                      | <strong>Last Updated:</strong> ${date}
-                    `;
+        <em>
+          <strong>Version:</strong>
+          <a href="${link}" target="_blank" class="text-decoration-none">${version}</a>
+          <code class="text-muted">(${shortSha})</code>
+          | <strong>Last Updated:</strong> ${date}
+        </em>`;
       })
       .catch(err => {
         console.error(err);
         versionInfo.innerHTML = '<em>Version info unavailable</em>';
       });
   </script>
-  <?php echo "Copyright &copy; " . date('Y') . " " . $_SERVER['HTTP_HOST']; ?>
-  </div>
+
+  <?php
+  echo '<em class="text-muted">Copyright &copy; ' . date('Y') . ' ' . htmlspecialchars($_SERVER['HTTP_HOST']) . '</em>';
+  ?>
 
   </div>
 </div>
