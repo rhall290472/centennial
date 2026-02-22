@@ -96,7 +96,7 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
 
     $sql = "UPDATE `users` SET `username`='$FormData[username]',
     `password`='$FormData[password]',`is_deleted`='$FormData[is_deleted]',
-    `enabled`='$FormData[enabled]'
+    `enabled`='$FormData[enabled]', `Role`='$FormData[Role]'
     WHERE `Userid`='$_POST[ID]'";
 
     $cEagle->doQuery($sql);
@@ -137,16 +137,16 @@ if (!(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)) {
         </div> -->
         <div class="col-2">
           <label>Type</label>
-          <select class='form-control' name='element_2_2'>
-            <option value=""> </option>
+          <select class="form-control" name="element_2_2" required>
+            <option value="">— Select role —</option>
             <?php
-            $Role = $user['Role'];
-            $selected = !strcmp($Role, "Admin") ? $Selected = "selected" : $Selected = "";
-            echo "<option value=Admin " . $Selected . ">Admin</option>";
-            $selected = !strcmp($Role, "User") ? $Selected = "selected" : $Selected = "";
-            echo "<option value=User " . $Selected . ">User</option>";
-            $selected = !strcmp($Role, "Spammer") ? $Selected = "selected" : $Selected = "";
-            echo "<option value=Spammer " . $Selected . ">Spammer</option>";
+            $allowedRoles = ['Admin', 'Mentor', 'Coach', 'Approver'];
+            $currentRole  = $user['Role'] ?? '';
+
+            foreach ($allowedRoles as $role) {
+              $selected = ($currentRole === $role) ? 'selected' : '';
+              echo "<option value=\"$role\" $selected>$role</option>";
+            }
             ?>
           </select>
         </div>

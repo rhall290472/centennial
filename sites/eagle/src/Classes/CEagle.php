@@ -182,7 +182,6 @@ class CEagle
 ?>
     <form method=post>
       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-      <label for='Year'>&nbsp;</label>
       <div class="form-row px-5">
         <div class="col-2">
           <select class='form-control' id='Year' name='Year'>
@@ -205,7 +204,6 @@ class CEagle
         <div class="col-2">
           <input class='btn btn-primary btn-sm' type='submit' name='SubmitYear' placeholder='Year' value='SubmitYear' />
         </div>
-      </div>
       </div>
     </form>
   <?php
@@ -1536,7 +1534,7 @@ class CEagle
    *****************************************************************************/
   public static function SelectScout()
   {
-    // Scout selection query
+    // Scout selection query (unchanged)
     $queryScouts = "SELECT DISTINCT LastName, MiddleName, FirstName, Scoutid FROM scouts 
                 WHERE (`Scoutid` IS NOT NULL)
                 AND (`Eagled` IS NULL OR `Eagled` = 0) 
@@ -1548,31 +1546,86 @@ class CEagle
       self::function_alert("ERROR: Query failed: " . mysqli_error(self::getDbConn()));
     }
 
+    // We'll collect the display names and IDs for datalist
+    $scouts = [];
+    while ($row = $result->fetch_assoc()) {
+      if ($row['Scoutid'] != -1) {
+        $name = trim($row['LastName'] . ', ' . $row['FirstName']);
+        $scouts[] = [
+          'id'   => $row['Scoutid'],
+          'name' => $name
+        ];
+      }
+    }
+    // Sort again just in case (optional)
+    usort($scouts, function ($a, $b) {
+      return strcasecmp($a['name'], $b['name']);
+    });
+
   ?>
-    <h4>Select Scout</h4>
+    <h4>Select or Type Scout</h4>
     <form method="post">
       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
       <div class="form-row px-5 d-print-none">
-        <div class="col-3">
-          <label for="ScoutID">Choose a Scout: </label>
-          <select class="form-control" id="ScoutID" name="ScoutID">
-            <option value="">-- Select Scout --</option>
-            <?php while ($row = $result->fetch_assoc()): ?>
-              <?php if ($row['Scoutid'] != -1) { ?>
-                <option value="<?php echo htmlspecialchars($row['Scoutid']); ?>">
-                  <?php echo htmlspecialchars(trim($row['LastName'] . ', ' . $row['FirstName'])); ?>
-                </option>
-              <?php } ?>
-            <?php endwhile; ?>
-            <option value="-1">Add New Scout</option>
-          </select>
+        <div class="col-auto">
+          <label for="ScoutInput">Choose or type a Scout: </label>
+
+          <!-- The visible input field where user types/selects -->
+          <input type="text"
+            class="form-control"
+            id="ScoutInput"
+            name="ScoutDisplay"
+            list="scout-list"
+            placeholder="Start typing last name..."
+            autocomplete="off"
+            required>
+
+          <!-- Hidden field that will carry the actual ScoutID (or -1 for new) -->
+          <input type="hidden" name="ScoutID" id="ScoutID" value="">
+
+          <!-- Datalist provides the suggestions -->
+          <datalist id="scout-list">
+            <?php foreach ($scouts as $scout): ?>
+              <option value="<?php echo htmlspecialchars($scout['name']); ?>"
+                data-id="<?php echo htmlspecialchars($scout['id']); ?>">
+              </option>
+            <?php endforeach; ?>
+            <!-- Optional: explicit "Add New Scout" entry -->
+            <option value="Add New Scout" data-id="-1"></option>
+          </datalist>
         </div>
-        <div class="col-1 py-4">
-          <input class="btn btn-primary btn-sm" type="submit" name="SubmitScout" value="Select Scout" />
+
+        <div class="col-auto py-45">
+          <input class="btn btn-primary btn-matching-form" type="submit" name="SubmitScout" value="Select Scout" />
         </div>
       </div>
     </form>
-<?php
 
+    <!-- Little JavaScript to copy the selected item's data-id into the hidden field -->
+    <script>
+      document.getElementById('ScoutInput').addEventListener('input', function() {
+        const input = this.value.trim();
+        const hidden = document.getElementById('ScoutID');
+        const datalist = document.getElementById('scout-list');
+
+        hidden.value = ''; // reset
+
+        // Check if the typed value matches one of the datalist options
+        for (const option of datalist.options) {
+          if (option.value === input) {
+            hidden.value = option.getAttribute('data-id') || '';
+            break;
+          }
+        }
+
+        // If no match → treat as new scout (you can also force -1 or leave blank)
+        if (!hidden.value && input !== '') {
+          hidden.value = '-1'; // or leave empty if you prefer to validate later
+        }
+      });
+    </script>
+
+<?php
   }
 }

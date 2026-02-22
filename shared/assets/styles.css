@@ -3568,6 +3568,11 @@ textarea.form-control-lg {
   --bs-btn-font-size: 0.875rem;
   --bs-btn-border-radius: 0.25rem;
 }
+.btn-matching-form {
+  padding-top: 0.375rem !important;    /* ≈6px */
+  padding-bottom: 0.375rem !important;
+  line-height: 1.5;                    /* helps center text vertically */
+}
 
 .fade {
   transition: opacity 0.15s linear;
@@ -14070,3 +14075,5 @@ code {
 .tox-editor-header {
   flex-shrink: 0 !important;
 }
+
+

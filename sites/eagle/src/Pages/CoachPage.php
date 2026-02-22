@@ -159,28 +159,78 @@ if ($SelectedCoach) {
     <?php unset($_SESSION['feedback']); ?>
   <?php endif; ?>
 
-  <h4>Select Coach</h4>
+  <h4>Select or Type Coach</h4>
   <form action="index.php?page=coach-edit" method="post">
-    <div class="form-row  px-5 d-print-none">
-      <div class="col-3">
-        <label for="CoachName">Choose a Coach:</label>
-        <select class="form-control" id="Coachesid" name="Coachesid">
-          <option value="">-- Select a Coach --</option>
-          <option value="-1">Add New</option>
-          <?php while ($row = $result_ByCoaches->fetch_assoc()): ?>
-            <option value="<?php echo $row['Coachesid']; ?>" <?php echo ($row['Coachesid'] == $SelectedCoach) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($row['Last_Name'] . " " . $row['First_Name']); ?>
+    <div class="form-row px-5 d-print-none">
+      <div class="col-auto"> <!-- slightly wider for typing comfort -->
+        <label for="CoachInput">Choose or type a Coach:</label>
+
+        <!-- Visible typing field with suggestions -->
+        <input type="text"
+          class="form-control"
+          id="CoachInput"
+          name="CoachDisplay"
+          list="coaches-list"
+          placeholder="Type last name or select..."
+          autocomplete="off"
+          value="<?php echo htmlspecialchars($SelectedCoachName ?? ''); ?>" 
+        required>
+
+        <!-- Hidden field that carries the actual Coachesid (-1 = new / custom) -->
+        <input type="hidden" name="Coachesid" id="Coachesid" value="<?php echo htmlspecialchars($SelectedCoach ?? ''); ?>">
+
+        <!-- Datalist with suggestions -->
+        <datalist id="coaches-list">
+          <?php
+          // Reset pointer in case result was already iterated
+          $result_ByCoaches->data_seek(0);
+          while ($row = $result_ByCoaches->fetch_assoc()): ?>
+            <option value="<?php echo htmlspecialchars(trim($row['Last_Name'] . ' ' . $row['First_Name'])); ?>"
+              data-id="<?php echo htmlspecialchars($row['Coachesid']); ?>">
             </option>
           <?php endwhile;
           $result_ByCoaches->free(); ?>
-        </select>
+
+          <!-- Explicit "Add New" option (optional but helpful) -->
+          <option value="Add New Coach" data-id="-1"></option>
+        </datalist>
       </div>
-      <div class="col-3 py-45">
+
+      <div class="col-3 py-45"> <!-- adjusted py-4 for better alignment -->
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <input class="btn btn-primary btn-sm" type="submit" name="SubmitCoach" value="Select Coach">
       </div>
     </div>
   </form>
+
+  <!-- JavaScript to sync visible name → hidden ID -->
+  <script>
+    document.getElementById('CoachInput').addEventListener('input', function() {
+      const inputValue = this.value.trim();
+      const hiddenInput = document.getElementById('Coachesid');
+      const datalist = document.getElementById('coaches-list');
+
+      hiddenInput.value = ''; // reset first
+
+      // Look for exact match in datalist options
+      let found = false;
+      for (const option of datalist.options) {
+        if (option.value === inputValue) {
+          const id = option.getAttribute('data-id');
+          if (id) {
+            hiddenInput.value = id;
+            found = true;
+            break;
+          }
+        }
+      }
+
+      // If no exact match and user typed something → treat as new/custom
+      if (!found && inputValue !== '') {
+        hiddenInput.value = '-1';
+      }
+    });
+  </script>
 
   <?php if (isset($rowCoach)): ?>
     <div class="form-coach px-5" style="background-color: var(--scouting-lighttan);">
