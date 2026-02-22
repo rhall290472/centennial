@@ -281,6 +281,7 @@ if (isset($_POST['SubmitForm'])) {
                       <label for="MB<?= $i ?>Name" class="form-label">Merit Badge Name</label>
                       <select class="form-select" id="MB<?= $i ?>Name" name="MB<?= $i ?>Name">
                         <option value="" selected disabled hidden>Select Merit Badge</option>
+                        <option value=""></option>
                         <?php
                         mysqli_data_seek($ResultsMB, 0);
                         $firstBadgeFound = false;
