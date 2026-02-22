@@ -143,12 +143,12 @@ if (!isset($_SESSION['csrf_token'])) {
 
           while ($rowScout = $Scout->fetch_assoc()) {
             $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-            echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
-              htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
-              htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
-              "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . "'>" .
-              htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
-              htmlspecialchars($rowScout["AgeOutDate"]) . "</td></tr>";
+            echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"] ?? '') . "</td><td>" .
+              htmlspecialchars($rowScout["UnitNumber"] ?? '') . "</td><td>" .
+              htmlspecialchars($rowScout["Gender"] ?? '') . "</td><td>" .
+              "<a href='index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid'] ?? '') . "'>" .
+              htmlspecialchars($FirstName . " " . $rowScout["LastName"] ?? '') . "</a></td><td>" .
+              htmlspecialchars($rowScout["AgeOutDate"] ?? '') . "</td></tr>";
           }
 
           if ($SelectedUnit && $SelectedNum) {
