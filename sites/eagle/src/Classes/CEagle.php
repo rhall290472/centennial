@@ -1366,7 +1366,8 @@ class CEagle
     }
 
     echo "<select class='form-control' name='$element_name' >";
-    echo "<option value=\"\" </option>";
+    echo "<option value='' disabled selected hidden> Choose an Coach/Mentor...</option>";
+    // echo "<option value=''> </option>";
     while ($rowCoach = $result_ByCoaches->fetch_assoc()) {
       $strSelected = ($rowCoach['Coachesid'] == $Coach) ? "selected" : "";
 
