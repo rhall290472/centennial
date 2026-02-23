@@ -125,10 +125,10 @@ $csv_output = "";
             htmlspecialchars($rowScout["AgeOutDate"]  ?? '') . "</td><td>" .
             htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
 
-          $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
-            htmlspecialchars($rowScout["Gender"]) . "," .
+          $csv_output .= htmlspecialchars($rowScout["UnitType"] ?? '') . " " . htmlspecialchars($rowScout["UnitNumber"] ?? '') . "," .
+            htmlspecialchars($rowScout["Gender"] ?? '') . "," .
             htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "," .
-            htmlspecialchars($rowScout["AgeOutDate"]) . "," .
+            htmlspecialchars($rowScout["AgeOutDate"] ?? '') . "," .
             htmlspecialchars($rowScout["Email"] ?? '') . "," .
             htmlspecialchars($rowScout["ULFirst"] . " " . $rowScout["ULLast"] ?? '') . "," .
             htmlspecialchars($rowScout["ULEmail"] ?? '') . "," .
