@@ -60,3 +60,20 @@
 	    <!-- Moment.js and DataTables DateTime Sorting Plugin -->
 	    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 	    <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+
+      <!-- TinyMCE Cloud CDN - replace 'no-api-key' with your free API key from https://www.tiny.cloud/auth/signup/ for production -->
+<script src="https://cdn.tiny.cloud/1/go7c0mdpiffej81ji1n8edfu4mubr4v4fnrz6dc5qzjhian8/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
+
+<!-- Optional: Add this right after for initialization -->
+<script>
+  tinymce.init({
+    selector: '#Notes',               // Targets your specific textarea by ID
+    height: 400,                      // Adjust height as needed
+    menubar: false,                   // Hide top menu for simpler UI (common choice)
+    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | link image',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',  // Match your site's look
+    // Optional: placeholder-like behavior (shows until user focuses)
+    placeholder: 'Enter notes here... (supports bold, lists, links, etc.)'
+  });
+</script>

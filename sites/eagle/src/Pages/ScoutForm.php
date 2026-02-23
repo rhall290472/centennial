@@ -22,19 +22,19 @@ $ProjectName = $ProjectName ?? '';
         <div class="form-row">
           <div class="col-3">
             <label>First</label>
-            <input type="text" name="element_1_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['FirstName'] ?? ''); ?>" />
+            <input type="text" name="element_1_1" class="form-control" placeholder="First Name" value="<?php echo htmlspecialchars($rowScout['FirstName'] ?? ''); ?>" />
           </div>
           <div class="col-2">
             <label>Preferred Name</label>
-            <input type="text" name="element_1_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['PreferredName'] ?? ''); ?>" />
+            <input type="text" name="element_1_2" class="form-control" placeholder="Preferred Name" value="<?php echo htmlspecialchars($rowScout['PreferredName'] ?? ''); ?>" />
           </div>
           <div class="col-2">
             <label>Middle</label>
-            <input type="text" name="element_1_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['MiddleName'] ?? ''); ?>" />
+            <input type="text" name="element_1_3" class="form-control" placeholder="Middle Name" value="<?php echo htmlspecialchars($rowScout['MiddleName'] ?? ''); ?>" />
           </div>
           <div class="col-3">
             <label>Last</label>
-            <input type="text" name="element_1_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['LastName'] ?? ''); ?>" />
+            <input type="text" name="element_1_4" class="form-control" placeholder="Last Name" value="<?php echo htmlspecialchars($rowScout['LastName'] ?? ''); ?>" />
           </div>
           <div class="col-1 py-4">
             <div class="form-check">
@@ -48,34 +48,34 @@ $ProjectName = $ProjectName ?? '';
         <div class="form-row">
           <div class="col-4">
             <label>Email</label>
-            <input type="email" name="element_2_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['Email'] ?? ''); ?>" />
+            <input type="email" name="element_2_1" class="form-control" placeholder="Email Address" value="<?php echo htmlspecialchars($rowScout['Email'] ?? ''); ?>" />
           </div>
           <div class="col-3">
             <label>Home Phone Number</label>
-            <input type="tel" name="element_2_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['Phone_Home'] ?? ''); ?>" />
+            <input type="tel" name="element_2_2" class="form-control" placeholder="Home Phone Number" value="<?php echo htmlspecialchars($rowScout['Phone_Home'] ?? ''); ?>" />
           </div>
           <div class="col-3">
             <label>Mobile Phone Number</label>
-            <input type="tel" name="element_2_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['Phone_Mobile'] ?? ''); ?>" />
+            <input type="tel" name="element_2_3" class="form-control" placeholder="Mobile Phone Number" value="<?php echo htmlspecialchars($rowScout['Phone_Mobile'] ?? ''); ?>" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="col-3">
             <label>Street Address</label>
-            <input type="text" name="element_3_1" class="form-control" value="<?php echo htmlspecialchars($Street); ?>" />
+            <input type="text" name="element_3_1" class="form-control" placeholder="Street Address" value="<?php echo htmlspecialchars($Street); ?>" />
           </div>
           <div class="col-3">
             <label>City</label>
-            <input type="text" name="element_3_2" class="form-control" value="<?php echo htmlspecialchars($rowScout['City'] ?? ''); ?>" />
+            <input type="text" name="element_3_2" class="form-control" placeholder="City" value="<?php echo htmlspecialchars($rowScout['City'] ?? ''); ?>" />
           </div>
           <div class="col-2">
             <label>State</label>
-            <input type="text" name="element_3_3" class="form-control" value="<?php echo htmlspecialchars($rowScout['State'] ?? 'CO'); ?>" />
+            <input type="text" name="element_3_3" class="form-control" placeholder="State" value="<?php echo htmlspecialchars($rowScout['State'] ?? 'CO'); ?>" />
           </div>
           <div class="col-2">
             <label>Zip</label>
-            <input type="text" name="element_3_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['Zip'] ?? ''); ?>" />
+            <input type="text" name="element_3_4" class="form-control" placeholder="Zip Code" value="<?php echo htmlspecialchars($rowScout['Zip'] ?? ''); ?>" />
           </div>
         </div>
 
@@ -190,7 +190,7 @@ $ProjectName = $ProjectName ?? '';
           </div>
           <div class="col-3">
             <label>Proposal Approved Date</label>
-            <input type="text" name="element_7_4" class="form-control" value="<?php echo htmlspecialchars($rowScout['ProjectDate'] ?? ''); ?>" />
+            <input type="text" name="element_7_4" class="form-control" placeholder="Proposal Approved Date" value="<?php echo htmlspecialchars($rowScout['ProjectDate'] ?? ''); ?>" />
           </div>
           <div class="col-3">
             <label>Project Coach/Mentor</label>
@@ -198,25 +198,25 @@ $ProjectName = $ProjectName ?? '';
           </div>
           <div class="col-2">
             <label>Project Hours</label>
-            <input type="text" name="element_7_6" class="form-control" value="<?php echo htmlspecialchars($rowScout['ProjectHours'] ?? ''); ?>" />
+            <input type="text" name="element_7_6" class="form-control" placeholder="Project Hours" value="<?php echo htmlspecialchars($rowScout['ProjectHours'] ?? ''); ?>" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="col-4">
             <label>Beneficiary</label>
-            <input type="text" name="element_8_1" class="form-control" value="<?php echo htmlspecialchars($Beneficiary); ?>" />
+            <input type="text" name="element_8_1" class="form-control" placeholder="Beneficiary" value="<?php echo htmlspecialchars($Beneficiary); ?>" />
           </div>
           <div class="col-8">
             <label>Project Name</label>
-            <input type="text" name="element_8_2" class="form-control" value="<?php echo htmlspecialchars($ProjectName); ?>" />
+            <input type="text" name="element_8_2" class="form-control" placeholder="Project Name" value="<?php echo htmlspecialchars($ProjectName); ?>" />
           </div>
         </div>
 
         <div class="form-row">
           <div class="col-2">
             <label>BOR</label>
-            <input type="text" name="element_9_1" class="form-control" value="<?php echo htmlspecialchars($rowScout['BOR'] ?? ''); ?>" />
+            <input type="text" name="element_9_1" class="form-control" placeholder="BOR" value="<?php echo htmlspecialchars($rowScout['BOR'] ?? ''); ?>" />
           </div>
           <div class="col-3">
             <label>District BOR Member</label>
@@ -241,7 +241,9 @@ $ProjectName = $ProjectName ?? '';
         <div class="form-row">
           <div class="col-12">
             <label>Notes</label>
-            <textarea name="element_10_1" class="form-control" id="Notes" rows="10"><?php echo htmlspecialchars($rowScout['Notes'] ?? ''); ?></textarea>
+            <textarea name="element_10_1" class="form-control" id="Notes" placeholder="Notes" rows="10">
+              <?php echo $rowScout['Notes'] ?? ''; ?>
+            </textarea>
           </div>
         </div>
 
