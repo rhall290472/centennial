@@ -115,12 +115,14 @@ $csv_output = "";
 
         while ($rowScout = $Scout->fetch_assoc()) {
           $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-          echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]) . "</td><td>" .
-            htmlspecialchars($rowScout["UnitNumber"]) . "</td><td>" .
-            htmlspecialchars($rowScout["Gender"]) . "</td><td>" .
-            "<a href=index.php?page=edit-select-scout&Scoutid=" . htmlspecialchars($rowScout['Scoutid']) . ">" .
-            htmlspecialchars($FirstName . " " . $rowScout["LastName"]) . "</a></td><td>" .
-            htmlspecialchars($rowScout["AgeOutDate"]) . "</td><td>" .
+          echo "<tr><td>" . htmlspecialchars($rowScout["UnitType"]    ?? '') . "</td><td>" .
+            htmlspecialchars($rowScout["UnitNumber"]  ?? '') . "</td><td>" .
+            htmlspecialchars($rowScout["Gender"]      ?? '') . "</td><td>" .
+            "<a href=\"index.php?page=edit-select-scout&Scoutid=" . 
+            htmlspecialchars($rowScout['Scoutid']     ?? '') . "\">" .
+            htmlspecialchars(($FirstName ?? '') . " " . ($rowScout["LastName"] ?? '')) . 
+            "</a></td><td>" .
+            htmlspecialchars($rowScout["AgeOutDate"]  ?? '') . "</td><td>" .
             htmlspecialchars($rowScout["ProjectDate"] ?? '') . "</td></tr>";
 
           $csv_output .= htmlspecialchars($rowScout["UnitType"]) . " " . htmlspecialchars($rowScout["UnitNumber"]) . "," .
