@@ -88,14 +88,22 @@ if (!isset($_SESSION['csrf_token'])) {
           }
 
           $FirstName = $cEagle->GetScoutPreferredName($rowScout);
-          echo "<tr><td>" .
-            $rowScout["UnitType"] . "</td><td>" .
-            $rowScout["UnitNumber"] . "</td><td>" .
-            $rowScout["Gender"] . "</td><td>" .
-            "<a href=index.php?page=edit-select-scout&Scoutid=" . $rowScout['Scoutid'] . ">" . $FirstName . " " . $rowScout["LastName"] . "</a> </td><td>" .
-            $rowCoach['Last_Name'] . " " . $rowCoach['First_Name']  . "</td><td>" .
-            $rowScout["BOR"] . "</td><td>" .
-            "<a href=./CoachPage.php?Coachesid=" . $Coachid . ">" . $CoachFirst . " " . $CoachLast . "</td></tr>";
+          $coachName = $rowCoach ? trim($rowCoach['Last_Name'] . " " . $rowCoach['First_Name']) : "—";
+          $linkedCoach = $CoachFirst ? htmlspecialchars($CoachFirst . " " . $CoachLast) : "—";
+
+          echo "<tr>
+              <td>{$rowScout['UnitType']}</td>
+              <td>{$rowScout['UnitNumber']}</td>
+              <td>{$rowScout['Gender']}</td>
+              <td><a href='index.php?page=edit-select-scout&Scoutid={$rowScout['Scoutid']}'>" .
+                  htmlspecialchars("$FirstName {$rowScout['LastName']}") .
+              "</a></td>
+              <td>" . htmlspecialchars($coachName) . "</td>
+              <td>{$rowScout['BOR']}</td>
+              <td><a href='./CoachPage.php?Coachesid=$Coachid'>" .
+                  htmlspecialchars($linkedCoach) .
+              "</a></td>
+          </tr>";
         } ?>
 
       </tbody>
