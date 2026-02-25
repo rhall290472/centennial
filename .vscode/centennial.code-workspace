@@ -4,5 +4,14 @@
 			"path": ".."
 		}
 	],
-	"settings": {}
+	"settings": {
+    "search.exclude": {
+      "**/advancement": true,
+      "**/districtawards": true,
+      "**/eagle": true,
+      "**/meritbadgecollege": true,
+      "**/meritbadges": true,
+      "**/shared/src/tinymce": true
+    }
+  }
 }

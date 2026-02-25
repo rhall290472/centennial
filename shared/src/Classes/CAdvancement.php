@@ -433,6 +433,8 @@ class CAdvancement
           $UnitGender = $UnitNumber[12];
         if (!strcmp($Gender, "(G)") || !strcmp($UnitGender, "G"))
           $NewNumber = $Unit . " " . $Number . "-GT";
+        else if (!strcmp($Gender, "(F)") || !strcmp($UnitGender, "F"))
+          $NewNumber = $Unit . " " . $Number . "-FT";
         else
           $NewNumber = $Unit . " " . $Number . "-BT";
         break;
