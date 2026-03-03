@@ -179,7 +179,8 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
 
 
           <hr class=" d-print-none" />
-          <form id=" add_scout" class="appnitro" method="post">
+          <form action="index.php?page=scout-data" id=" add_scout" class="appnitro" method="post">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
           <div class="row">
             <div class="col-1">
               <label class="description" for="element_1_1">Scout </label>
@@ -282,19 +283,19 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             <div class="col-1">
               <label class="description" for="element_2_3">Counselor</label>
               <input id="element_2_3" name="element_2_3" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB1FirstName) > 0) echo "value=" . $MB1FirstName; ?> />
+                <?php if (strlen($MB1FirstName ?? '') > 0) echo "value=" . $MB1FirstName; ?> />
               <label>First</label>
             </div>
             <div class="col-1">
               <label class="description" for="element_2_2"> Name</label>
               <input id="element_2_3" name="element_2_3" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB1LastName) > 0) echo "value=" . $MB1LastName; ?> />
+                <?php if (strlen($MB1LastName ?? '') > 0) echo "value=" . $MB1LastName; ?> />
               <label>Last</label>
             </div>
             <div class="col-2">
               <label class="description" for="element_2_3">Counselor Email </label>
               <input id="element_2_3" name="element_2_3" class="form-control large" type="email" maxlength="255" size="50"
-                <?php if (strlen($MB1Email) > 0) echo "value=" . $MB1Email; ?> />
+                <?php if (strlen($MB1Email ?? '') > 0) echo "value=" . $MB1Email; ?> />
               <label>Email</label>
             </div>
             <div class="col-1">
@@ -341,24 +342,20 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             <div class=col-1>
               <label class="description" for="element_3_3">Counselor</label>
               <input id="element_3_3" name="element_3_3" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB2FirstName) > 0) echo "value=" . $MB2FirstName; ?> />
+                <?php if (strlen($MB2FirstName ?? '') > 0) echo "value=" . $MB2FirstName; ?> />
               <label>First</label>
             </div>
             <div class=col-1>
               <label class="description" for="element_3_4"> Name</label>
               <input id="element_3_4" name="element_3_4" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB2LastName) > 0) echo "value=" . $MB2LastName; ?> />
+                <?php if (strlen($MB2LastName ?? '') > 0) echo "value=" . $MB2LastName; ?> />
               <label>Last</label>
             </div>
             <div class=col-2>
               <label class="description" for="element_3_5">Counselor Email </label>
               <input id="element_3_5" name="element_3_5" class="form-control" type="email" maxlength="255" size="50"
-                <?php if (strlen($MB2Email) > 0) echo "value=" . $MB2Email; ?> />
-              <label>Email</label>
-            </div>
-            <div class=col-1>
-              <label class="description" for="MB2Attend">Did Not Attend</label>
-              <input class="form-check" type="checkbox" id="MB2Attend" name="MB2Attend" <?php echo $Scout->GetAttend(2); ?> />
+                <?php if (strlen($MB2Email ?? '') > 0) echo "value=" . $MB2Email; ?> />
+              <label>Email</label> 
             </div>
           </div>
           <!--
@@ -400,19 +397,19 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             <div class=col-1>
               <label class="description" for="element_4_3">Counselor</label>
               <input id="element_4_3" name="element_4_3" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB3FirstName) > 0) echo "value=" . $MB3FirstName; ?> />
+                <?php if (strlen($MB3FirstName ?? '') > 0) echo "value=" . $MB3FirstName; ?> />
               <label>First</label>
             </div>
             <div class=col-1>
               <label class="description" for="element_4_4"> Name</label>
               <input id="element_4_4" name="element_4_4" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB3LastName) > 0) echo "value=" . $MB3LastName; ?> />
+                <?php if (strlen($MB3LastName ?? '') > 0) echo "value=" . $MB3LastName; ?> />
               <label>Last</label>
             </div>
             <div class=col-2>
               <label class="description" for="element_4_5">Counselor Email </label>
               <input id="element_4_5" name="element_4_5" class="form-control large" type="email" maxlength="255" size="50"
-                <?php if (strlen($MB3Email) > 0) echo "value=" . $MB3Email; ?> />
+                <?php if (strlen($MB3Email ?? '') > 0) echo "value=" . $MB3Email; ?> />
               <label>Email</label>
             </div>
             <div class=col-1>
@@ -459,19 +456,19 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             <div class="col-1">
               <label class="description" for="element_5_3">Counselor</label>
               <input id="element_5_3" name="element_5_3" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB4FirstName) > 0) echo "value=" . $MB4FirstName; ?> />
+                <?php if (strlen($MB4FirstName ?? '') > 0) echo "value=" . $MB4FirstName; ?> />
               <label>First</label>
             </div>
             <div class="col-1">
               <label class="description" for="element_5_4"> Name</label>
               <input id="element_5_4" name="element_5_4" class="form-control" maxlength="255" size="8"
-                <?php if (strlen($MB4LastName) > 0) echo "value=" . $MB4LastName; ?> />
+                <?php if (strlen($MB4LastName ?? '') > 0) echo "value=" . $MB4LastName; ?> />
               <label>Last</label>
             </div>
             <div class="col-2">
               <label class="description" for="element_5_5">Counselor Email </label>
               <input id="element_5_5" name="element_5_5" class="form-control large" type="email" maxlength="255" size="50"
-                <?php if (strlen($MB4Email) > 0) echo "value=" . $MB4Email; ?> />
+                <?php if (strlen($MB4Email ?? '') > 0) echo "value=" . $MB4Email; ?> />
               <label>Email</label>
             </div>
             <div class="col-1">
@@ -587,7 +584,7 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             $Scout->AddMBClass($MBName, $MBPeriod, $MBAttended === "on" ? 1 : 0);
           }
 
-          $Scout->GotoURL('EnterScout.php');
+          $Scout->GotoURL('index.php?page=scout-data');
           exit;
         }
 
