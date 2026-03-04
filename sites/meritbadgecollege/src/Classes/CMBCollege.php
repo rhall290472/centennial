@@ -147,7 +147,23 @@ class CMBCollege
       // echo "Service unavailable. Please try again later.";
     }
   }
+  /**
+   * Execute a prepared SELECT query and return the result set (PDOStatement)
+   */
+  public function query(string $sql, array $params = []): PDOStatement
+  {
+    $stmt = self::getPdoConn()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt;
+  }
 
+  /**
+   * Optional: fetch all rows at once (convenience)
+   */
+  public function fetchAll(string $sql, array $params = []): array
+  {
+    return $this->query($sql, $params)->fetchAll();
+  }
   /**************************************************************************
    **
    ** doQuery()
@@ -1324,71 +1340,71 @@ class CMBCollege
             </form>
           <?php
         }
-/*=============================================================================
+        /*=============================================================================
 *
 * This function will have two selections one for the College year and the other
 * for ta Scout
 * 
 *===========================================================================*/
-public static function SelectCollegeYearandScout($CollegeYear, $Title, $bPreview)
-{
-  $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
-  $result_CollegeYear = self::doQuery($queryCollegeYear);
-  $queryScouts = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
+        public static function SelectCollegeYearandScout($CollegeYear, $Title, $bPreview)
+        {
+          $queryCollegeYear = "SELECT DISTINCTROW College FROM college_details WHERE College > 0 ORDER BY College DESC";
+          $result_CollegeYear = self::doQuery($queryCollegeYear);
+          $queryScouts = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
   WHERE college='$CollegeYear' ORDER BY LastNameScout, FirstNameScout";
-  ?>
-    <form method=post>
-      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-      <div class="row  d-print-none">
-        <div class="col-2">
-          <select class='form-control' id='CollegeYear' name='CollegeYear'>
-            <option value=""> </option>
+          ?>
+            <form method=post>
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+              <div class="row  d-print-none">
+                <div class="col-2">
+                  <select class='form-control' id='CollegeYear' name='CollegeYear'>
+                    <option value=""> </option>
+                    <?php
+                    while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
+                      if (!strcmp($rowCollege['College'], $CollegeYear)) {
+                        echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                      } else
+                        echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+                    }
+                    echo "<option value=-1>New</option>";
+                    ?>
+                  </select>
+                  <?php
+                  if ($bPreview) { ?>
+                    <input type='checkbox' name='Preview' id='chkPreview' value='1' />
+                    <label for='chkPreview'>Preview Email(s) </label>
+                  <?php } ?>
+                </div>
+                <div class="col-2">
+                  <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
+                </div>
+                <!-- </div> -->
+            </form>
             <?php
-            while ($rowCollege = $result_CollegeYear->fetch_assoc()) {
-              if (!strcmp($rowCollege['College'], $CollegeYear)) {
-                echo "<option selected value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
-              } else
-                echo "<option value=" . $rowCollege['College'] . ">" . $rowCollege['College'] . "</option>";
+            $result_ByScout = self::doQuery($queryScouts);
+            if (!$result_ByScout) {
+              self::function_alert("ERROR: self->doQuery($queryScouts)");
             }
-            echo "<option value=-1>New</option>";
             ?>
-          </select>
-          <?php
-          if ($bPreview) { ?>
-            <input type='checkbox' name='Preview' id='chkPreview' value='1' />
-            <label for='chkPreview'>Preview Email(s) </label>
-          <?php } ?>
-        </div>
-        <div class="col-2">
-          <input class='btn btn-primary btn-sm' type='submit' name='SubmitCollege' value='Select College' />
-        </div>
-        <!-- </div> -->
+            <div class="col-2">
+              <form id="ScoutName" method=post>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
+                <select class='form-select' id='ScoutName' name='ScoutName'>
+                  <option value=""> </option>
+                  <option value=-1>Add New</option>
+                  <?php while ($rowCollegeMBs = $result_ByScout->fetch_assoc()) {
+                    echo "<option value=" . $rowCollegeMBs['BSAIdScout'] . ">" . $rowCollegeMBs['LastNameScout'] . " " . $rowCollegeMBs['FirstNameScout'] . "</option>";
+                  } ?>
+                </select>
+            </div>
+            <div class="col-1">
+              <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
+            </div>
     </form>
-    <?php
-    $result_ByScout = self::doQuery($queryScouts);
-    if (!$result_ByScout) {
-      self::function_alert("ERROR: self->doQuery($queryScouts)");
-    }
-    ?>
-    <div class="col-2">
-      <form id="ScoutName" method=post>
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
-        <select class='form-select' id='ScoutName' name='ScoutName'>
-          <option value=""> </option>
-          <option value=-1>Add New</option>
-          <?php while ($rowCollegeMBs = $result_ByScout->fetch_assoc()) {
-            echo "<option value=" . $rowCollegeMBs['BSAIdScout'] . ">" . $rowCollegeMBs['LastNameScout'] . " " . $rowCollegeMBs['FirstNameScout'] . "</option>";
-          } ?>
-        </select>
     </div>
-    <div class="col-1">
-      <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' value='Select Scout' />
-    </div>
-</form>
-</div>
-<?php
-      }
-      /*=============================================================================
+  <?php
+        }
+        /*=============================================================================
     *
     * This function will produce display the location of the college and the POC
     * 
