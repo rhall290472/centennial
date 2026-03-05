@@ -655,18 +655,20 @@ private function getCollegeTimesRow($collegeYear)
         }
 
         if ($row['Registration'] <= 0)
-          $Formatter = "<b style='color:green;'>";
+          $FormatterOpen = "<b style='color:green;'>";
         else
-          $Formatter = "<b style='color:black;'>";
+          $FormatterOpen = "<b style='color:black;'>";
+
+        $FormatterClose = "</b>";
         echo "<br>";
-        echo "<h2>" . $Formatter . $row['FirstNameScout'] . " " . $Formatter . $row['LastNameScout'] . "</h2>";
+        echo "<h2>" . $row['FirstNameScout'] . " " .  $row['LastNameScout'] . "</h2>";
 
         $District = $row['District'];
         $UnitType = $row['UnitType'];
         $UnitNumber = $row['UnitNumber'];
         $BSAIdScout = $row['BSAIdScout'];
         
-        echo "<b> District: " . $District . " Unit: " . $UnitType . " " . $UnitNumber . " BSA Id#: " . $BSAIdScout . "</b>";
+        echo "District: " . $District . " Unit: " . $UnitType . " " . $UnitNumber . " BSA Id#: " . $BSAIdScout;
         ?>
         <table class='table'  style='width:1024';>
         <td style='width:150px'>
@@ -691,13 +693,13 @@ private function getCollegeTimesRow($collegeYear)
 
       if (mysqli_num_rows($resultByPeriod) == 0) {
         // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
-        $Formatter = "<b style='color:red;'>";
+        $FormatterOpen = "<b style='color:red;'>";
         $FirstName = "";
         $LastName = "";
         $Email = "";
         $Room = "";
       } else {
-        $Formatter = "";
+        $FormatterOpen = "";
         $FirstName = $rowPeriod['FirstName'];
         $LastName = $rowPeriod['LastName'];
         $Email = $rowPeriod['Email'];
@@ -707,11 +709,11 @@ private function getCollegeTimesRow($collegeYear)
       $PeriodTime = $Scout->PeriodTime($row['Period']);
 
       echo "<tr><td>" .
-        $Formatter . $PeriodTime . "</td><td>" .
-        $Formatter . $row['MeritBadge'] . "</td><td>" .
-        $Formatter . $FirstName . " " . $LastName . "</td><td>" .
-        $Formatter . $Email . "</td><td>" .
-        $Formatter . $Room . "</td></tr>";
+        $FormatterOpen . $PeriodTime . $FormatterClose . "</td><td>" .
+        $FormatterOpen . $row['MeritBadge'] . $FormatterClose . "</td><td>" .
+        $FormatterOpen . $FirstName . " " . $LastName . $FormatterClose . "</td><td>" .
+        $FormatterOpen . $Email . $FormatterClose . "</td><td>" .
+        $FormatterOpen . $Room . $FormatterClose . "</td></tr>";
     }
     echo "</table>";
   }
