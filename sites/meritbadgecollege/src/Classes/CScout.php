@@ -368,59 +368,63 @@ class CScout extends CMBCollege
    * MB_Match MUST be called before this function !!!!!
    *
    *****************************************************************************/
-  public function Period_Match($Period, $nPeriod)
-  {
-    $bReturn = false;
+  // public function Period_Match($Period, $nPeriod)
+  // {
+  //   $bReturn = false;
 
-    if (($nPeriod <= $this->nIndex) && !strcmp($this->MBPeriod[$nPeriod], $Period))
-      if (!strcmp($this->MBPeriod[$nPeriod], $Period))
-        $bReturn = true;
+  //   if (($nPeriod <= $this->nIndex) && !strcmp($this->MBPeriod[$nPeriod], $Period))
+  //     if (!strcmp($this->MBPeriod[$nPeriod], $Period))
+  //       $bReturn = true;
 
-    return $bReturn;
-  }
-  public function DisplayPeriods($nPeriod, $CollegeYear)
-  {
-    $nPeriod = $nPeriod - 1;  // nIndex is zero based
+  //   return $bReturn;
+  // }
+/**
+ * Displays period dropdown options, with optional pre-selected value
+ * 
+ * @param int    $slot       Merit badge slot (1-4)
+ * @param string $collegeYear
+ * @param string $selectedPeriod  The period to pre-select (e.g. 'A', 'E', 'CD' or null)
+ */
+public function DisplayPeriods($slot, $collegeYear, $selectedPeriod = null)
+{
+    $slot = (int)$slot - 1;  // just for clarity, not really used anymore
 
-    //        $CollegeYear = parent::getYear();
-    $Times = '';
-    $qryTimes = "SELECT * FROM `college_details` WHERE `College`='$CollegeYear'";
-    $resultTimes = self::doQuery($qryTimes, $CollegeYear);
-    $rowTime = $resultTimes->fetch_assoc();
+    $rowTime = $this->getCollegeTimesRow($collegeYear);  // helper - see below
 
-    if (self::GetPeriodATime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('A', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='A'>Period A - %s</option>", $strSelected, $rowTime['PeriodA']);
+    if (!$rowTime) {
+        echo '<option value="">No schedule available</option>';
+        return;
     }
-    if (self::GetPeriodBTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('B', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='B'>Period B - %s</option>", $strSelected, $rowTime['PeriodB']);
+
+    $periods = [
+        'A'  => ['label' => 'Period A',      'time' => $rowTime['PeriodA']],
+        'B'  => ['label' => 'Period B',      'time' => $rowTime['PeriodB']],
+        'C'  => ['label' => 'Period C',      'time' => $rowTime['PeriodC']],
+        'D'  => ['label' => 'Period D',      'time' => $rowTime['PeriodD']],
+        'AB' => ['label' => 'Period A-B',    'time' => $rowTime['PeriodAB']],
+        'CD' => ['label' => 'Period C-D',    'time' => $rowTime['PeriodCD']],
+        'E'  => ['label' => 'Period E',      'time' => $rowTime['PeriodE']],
+        'F'  => ['label' => 'Period F',      'time' => $rowTime['PeriodF']],
+    ];
+
+    foreach ($periods as $value => $info) {
+        if ($info['time'] === null || $info['time'] === '') {
+            continue;
+        }
+
+        $sel = ($selectedPeriod === $value) ? ' selected' : '';
+        $display = htmlspecialchars("{$info['label']} - {$info['time']}");
+        echo "<option value='$value'$sel>$display</option>\n";
     }
-    if (self::GetPeriodCTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('C', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='C'>Period C - %s</option>", $strSelected, $rowTime['PeriodC']);
-    }
-    if (self::GetPeriodDTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('D', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='D'>Period D - %s</option>", $strSelected, $rowTime['PeriodD']);
-    }
-    if (self::GetPeriodABTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('AB', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='AB'>Period A-B - %s</option>", $strSelected, $rowTime['PeriodAB']);
-    }
-    if (self::GetPeriodCDTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('CD', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='CD'>Period C-D - %s</option>", $strSelected, $rowTime['PeriodCD']);
-    }
-    if (self::GetPeriodETime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('E', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='E'>Period E - %s</option>", $strSelected, $rowTime['PeriodE']);
-    }
-    if (self::GetPeriodFTime($CollegeYear) != null) {
-      $strSelected = $this->Period_Match('F', $nPeriod) ? "selected" : "";
-      echo sprintf("<option %s value='F'>Period F - %s</option>", $strSelected, $rowTime['PeriodF']);
-    }
-  }
+}
+private function getCollegeTimesRow($collegeYear)
+{
+    $qry = "SELECT * FROM `college_details` WHERE `College` = ?";
+    $result = $this->query($qry, [$collegeYear]);  
+    return $result ? $result->fetch() : null;
+}
+
+
 
   public static function PeriodTime($nPeriod)
   {
@@ -500,6 +504,8 @@ class CScout extends CMBCollege
     $strSelected = !strcmp("Troop-G", $UnitType) ? "selected" : "";
     echo sprintf("<option %s value='Troop-G'>Troop-G</option>", $strSelected);
     $strSelected = !strcmp("LoneScout", $UnitType) ? "selected" : "";
+    $strSelected = !strcmp("Troop-FT", $UnitType) ? "selected" : "";
+    echo sprintf("<option %s value='Troop-FT'>Troop-FT</option>", $strSelected);
     echo sprintf("<option %s value='LoneScout'>LoneScout</option>", $strSelected);
   }
   /******************************************************************************

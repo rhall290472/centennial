@@ -86,40 +86,98 @@ if (!empty($_POST['SubmitScout']) && !empty($_POST['ScoutName']) && $_POST['Scou
         ORDER BY cr.Period ASC
     ";
 
-  $result = $Scout->query($sql, [$CollegeYear, $selectedBsaId]);
+  try {
+    $result = $Scout->query($sql, [$CollegeYear, $selectedBsaId]);
 
-  if ($result && $row = $result->fetch()) {
-    $scout = [
-      'FirstName'    => $row['FirstNameScout'] ?? '',
-      'LastName'     => $row['LastNameScout'] ?? '',
-      'Email'        => $row['email']          ?? '',
-      'Phone'        => $row['Telephone']      ?? '',
-      'BSAId'        => $row['BSAIdScout']     ?? '',
-      'Registration' => $row['Registration']   ?? '',
-      'District'     => $row['District']       ?? '',
-      'UnitType'     => $row['UnitType']       ?? '',
-      'UnitNumber'   => $row['UnitNumber']     ?? '',
-      'Gender'       => $row['Gender']         ?? '',
-    ];
-
-    $i = 1;
-    do {
-      if ($i > 4) break;
-      $meritBadges[$i] = [
-        'Name'           => $row['MeritBadge']     ?? '',
-        'Period'         => $row['Period']         ?? '',
-        'CounselorFirst' => $row['FirstName']      ?? '',
-        'CounselorLast'  => $row['LastName']       ?? '',
-        'CounselorEmail' => $row['Email']          ?? '',
-        'DidNotAttend'   => false, // load real value if stored
+    if (!$result) {
+      // Query failed (prepare/execute error)
+      error_log("Failed to execute scout load query for BSA ID $selectedBsaId in year $CollegeYear");
+      $_SESSION['feedback'] = [
+        'type'    => 'danger',
+        'message' => 'Database error while loading scout data. Please try again or contact support.'
       ];
-      $i++;
-    } while ($row = $result->fetch());
+      // Optionally redirect or continue with empty form
+      // header('Location: index.php?page=scout-data'); exit;
+    } elseif ($result->rowCount() === 0) {
+      // No records found — not necessarily an error, but worth informing
+      $_SESSION['feedback'] = [
+        'type'    => 'warning',
+        'message' => 'No registration found for this scout in ' . $CollegeYear . '. You can create a new one below.'
+      ];
+      // Proceed with empty/default $scout and $meritBadges
+    } else {
+      // ── At least one row exists ───────────────────────────────
+      $firstRow = $result->fetch(PDO::FETCH_ASSOC);
 
-    $Scout->IsSignedUp($CollegeYear, $scout['LastName'], $scout['FirstName'], $selectedBsaId);
+      if (!$firstRow) {
+        error_log("rowCount() > 0 but fetch() returned false – possible cursor issue");
+        $_SESSION['feedback'] = [
+          'type'    => 'danger',
+          'message' => 'Error reading scout registration data.'
+        ];
+      } else {
+        // Populate scout info from first row
+        $scout = [
+          'FirstName'    => $firstRow['FirstNameScout'] ?? '',
+          'LastName'     => $firstRow['LastNameScout'] ?? '',
+          'Email'        => $firstRow['email']          ?? '',
+          'Phone'        => $firstRow['Telephone']      ?? '',
+          'BSAId'        => $firstRow['BSAIdScout']     ?? '',
+          'Registration' => $firstRow['Registration']   ?? '',
+          'District'     => $firstRow['District']       ?? '',
+          'UnitType'     => $firstRow['UnitType']       ?? '',
+          'UnitNumber'   => $firstRow['UnitNumber']     ?? '',
+          'Gender'       => $firstRow['Gender']         ?? '',
+        ];
+
+        // Reset merit badges
+        $meritBadges = array_fill(1, 4, [
+          'Name'           => '',
+          'Period'         => '',
+          'CounselorFirst' => '',
+          'CounselorLast'  => '',
+          'CounselorEmail' => '',
+          'DidNotAttend'   => false,
+        ]);
+
+        $i = 1;
+
+        // Use first row + continue fetching remaining ones
+        do {
+          if ($i > 4) {
+            error_log("Scout $selectedBsaId has more than 4 merit badges in $CollegeYear – only first 4 loaded");
+            break;
+          }
+
+          $meritBadges[$i] = [
+            'Name'           => $firstRow['MeritBadge']  ?? '',
+            'Period'         => $firstRow['Period']      ?? '',
+            'CounselorFirst' => $firstRow['FirstName']   ?? '',
+            'CounselorLast'  => $firstRow['LastName']    ?? '',
+            'CounselorEmail' => $firstRow['Email']       ?? '',
+            'DidNotAttend'   => false, // ← replace with real column when available
+          ];
+
+          $i++;
+        } while ($firstRow = $result->fetch(PDO::FETCH_ASSOC));
+
+        // Optional: check if we actually loaded any merit badges
+        if ($i === 1) {
+          $_SESSION['feedback'] ??= ['type' => 'info', 'message' => 'Scout found, but no merit badge registrations loaded.'];
+        }
+
+        // You might want to verify consistency here
+        $Scout->IsSignedUp($CollegeYear, $scout['LastName'], $scout['FirstName'], $selectedBsaId);
+      }
+    }
+  } catch (Exception $e) {
+    error_log("Exception while loading scout data (BSA ID: $selectedBsaId, Year: $CollegeYear): " . $e->getMessage());
+    $_SESSION['feedback'] = [
+      'type'    => 'danger',
+      'message' => 'An unexpected error occurred while loading scout data. Please try again.'
+    ];
   }
 }
-
 // ────────────────────────────────────────────────
 // FORM SUBMIT ─ Save / Update
 // ────────────────────────────────────────────────
@@ -235,7 +293,35 @@ if (!empty($_POST['SubmitForm'])) {
               <label for="bsa_id" class="form-label">BSA ID</label>
               <input type="text" class="form-control" id="bsa_id" name="bsa_id" value="<?= htmlspecialchars($scout['BSAId']) ?>">
             </div>
-            <!-- Add District, Unit Type, Unit #, Gender, Registration fields similarly -->
+            <div class="col-md-3">
+              <label for="registration" class="form-label">Registration #</label>
+              <input type="text" class="form-control" id="registration" name="registration" value="<?= htmlspecialchars($scout['Registration']) ?>">
+            </div>
+            <div class="col-md-3">
+              <label class="description" for="district">District </label>
+              <select class='form-select' id='district' name='district'>
+                <option value=""> </option>
+                <?php $Scout->DisplayDistrict($scout['District']); ?>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="description" for="unit_type">Unit Type </label>
+              <select class='form-select' id='unit_type' name='unit_type'>
+                <option value=""> </option>
+                <?php $Scout->DisplayUnitType($scout['UnitType']); ?>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="unit_number" class="form-label">Unit Number</label>
+              <input type="text" class="form-control" id="unit_number" name="unit_number" value="<?= htmlspecialchars($scout['UnitNumber']) ?>">
+            </div>
+            <div class="col-1">
+              <label class="description" for="gender">Gender</label>
+              <select class='form-select' id='gender' name='gender'>
+                <option value=""> </option>
+                <?php $Scout->DisplayGender($scout['Gender']); ?>
+              </select>
+            </div>
           </div>
 
           <hr class="my-5">
@@ -265,9 +351,12 @@ if (!empty($_POST['SubmitForm'])) {
                   </div>
                   <div class="col-md-3">
                     <label for="<?= $prefix ?>period" class="form-label">Period</label>
-                    <select class="form-select" id="<?= $prefix ?>period" name="<?= $prefix ?>period">
-                      <option value="">—</option>
-                      <?= $Scout->DisplayPeriods($i, $CollegeYear) ?>
+                    <select class="form-select" id="mb<?= $i ?>_period" name="mb<?= $i ?>_period">
+                      <option value="">— Select —</option>
+                      <?php
+                      $savedPeriod = $meritBadges[$i]['Period'] ?? '';
+                      $Scout->DisplayPeriods($i, $CollegeYear, $savedPeriod);
+                      ?>
                     </select>
                   </div>
                   <div class="col-md-4">
@@ -296,7 +385,7 @@ if (!empty($_POST['SubmitForm'])) {
           <?php endfor; ?>
 
           <div class="text-center mt-5">
-            <button type="submit" name="SubmitForm" class="btn btn-primary btn-lg px-5 py-3">
+            <button type="submit" name="SubmitForm" value="SaveScout" class="btn btn-primary btn-lg px-5 py-3">
               Save Scout Registration
             </button>
           </div>
