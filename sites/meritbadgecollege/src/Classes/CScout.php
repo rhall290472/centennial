@@ -630,7 +630,7 @@ class CScout extends CMBCollege
     $TodaysDate = strtotime("now");
     $ScoutID = "";
     $Scout = new cScout;
-    ?>
+?>
 
     <?php
     $i = 0;
@@ -643,9 +643,9 @@ class CScout extends CMBCollege
         // Three scouts per page.
         if ($i++ >= 3) {
           $i = 0;
-          ?>
+    ?>
           <p style="page-break-before: always;">&nbsp;</p>
-           <?php
+        <?php
         }
 
         if ($row['Registration'] <= 0)
@@ -659,22 +659,22 @@ class CScout extends CMBCollege
         $UnitType = $row['UnitType'];
         $UnitNumber = $row['UnitNumber'];
         $BSAIdScout = $row['BSAIdScout'];
-        
+
         echo "<b> District: " . $District . " Unit: " . $UnitType . " " . $UnitNumber . " BSA Id#: " . $BSAIdScout . "</b>";
         ?>
-        <table class='table'  style='width:1024';>
-        <td style='width:150px'>
-        <td style='width:200px'>
-        <td style='width:100px'>
-        <td style='width:10px'>
-        <td style='width:10px'>
-        <tr>
-        <th>Period</th>
-        <th>Merit badge</th>
-        <th>Counselor</th>
-        <th>Email</th>
-        <th>Room</th>
-        </tr>
+        <table class='table' style='width:1024' ;>
+          <td style='width:150px'>
+          <td style='width:200px'>
+          <td style='width:100px'>
+          <td style='width:10px'>
+          <td style='width:10px'>
+            <tr>
+              <th>Period</th>
+              <th>Merit badge</th>
+              <th>Counselor</th>
+              <th>Email</th>
+              <th>Room</th>
+            </tr>
         <?php
       }
       // Now get the Counselor data for the Merit Badge.
@@ -723,731 +723,733 @@ class CScout extends CMBCollege
     $ScoutID = "";
     $Scout = new cScout;
     //$CollegeYear = $GLOBALS["MBCollegeYear"];
-    ?>
-    <!-- <p style="page-break-after: always;">&nbsp;</p> -->
-    <!-- <div style="page-break-inside:avoid;page-break-after:always"></div> -->
-    <div class="pagebreak"> </div>
-    <?php
-    $i = 0;
-    while ($row = $report_results->fetch_assoc()) {
-      // If New Scout, shutdown old table and create a new one.
-      if ($ScoutID != $row['BSAIdScout']) {
-        $ScoutID = $row['BSAIdScout'];
-        echo "</table>";
+        ?>
+        <!-- <p style="page-break-after: always;">&nbsp;</p> -->
+        <!-- <div style="page-break-inside:avoid;page-break-after:always"></div> -->
+        <div class="pagebreak"> </div>
+        <?php
+        $i = 0;
+        while ($row = $report_results->fetch_assoc()) {
+          // If New Scout, shutdown old table and create a new one.
+          if ($ScoutID != $row['BSAIdScout']) {
+            $ScoutID = $row['BSAIdScout'];
+            echo "</table>";
 
-        // Three scouts per page.
-        if ($i++ >= 3) {
-          $i = 0;
-    ?>
-          <p style="page-break-after: always;">&nbsp;</p>
-    <?php
-        }
+            // Three scouts per page.
+            if ($i++ >= 3) {
+              $i = 0;
+        ?>
+              <p style="page-break-after: always;">&nbsp;</p>
+        <?php
+            }
 
-        if ($row['Registration'] <= 0)
-          $Formatter = "<b style='color:green;'>";
-        else
-          $Formatter = "<b style='color:black;'>";
-        echo "<br>";
-        echo "<h2>" . $Formatter . $row['FirstNameScout'] . " " . $Formatter . $row['LastNameScout'] . "</h2>";
+            if ($row['Registration'] <= 0)
+              $Formatter = "<b style='color:green;'>";
+            else
+              $Formatter = "<b style='color:black;'>";
+            echo "<br>";
+            echo "<h2>" . $Formatter . $row['FirstNameScout'] . " " . $Formatter . $row['LastNameScout'] . "</h2>";
 
-        echo "<table class='table'  style='width:90vw';>";
-        echo "<td >";
-        echo "<td >";
-        echo "<td >";
-        echo "<td >";
-        echo "<tr>";
-        echo "<th>Period</th>";
-        echo "<th>Merit badge</th>";
-        echo "<th>Counselor</th>";
-        echo "<th>Room</th>";
-        echo "</tr>";
-      }
-      // Now get the Counselor data for the Merit Badge.
-      $qryByPeriod = sprintf("SELECT * FROM college_counselors 
+            echo "<table class='table'  style='width:90vw';>";
+            echo "<td >";
+            echo "<td >";
+            echo "<td >";
+            echo "<td >";
+            echo "<tr>";
+            echo "<th>Period</th>";
+            echo "<th>Merit badge</th>";
+            echo "<th>Counselor</th>";
+            echo "<th>Room</th>";
+            echo "</tr>";
+          }
+          // Now get the Counselor data for the Merit Badge.
+          $qryByPeriod = sprintf("SELECT * FROM college_counselors 
                 WHERE MBName='%s' AND MBPeriod='%s' AND College='%s'", $row['MeritBadge'], $row['Period'], $CollegeYear);
-      $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
-      $rowPeriod = $resultByPeriod->fetch_assoc();
+          $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
+          $rowPeriod = $resultByPeriod->fetch_assoc();
 
-      if (mysqli_num_rows($resultByPeriod) == 0) {
-        // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
-        $Formatter = "<b style='color:red;'>";
-        $FirstName = "";
-        $LastName = "";
-        $Email = "";
-        $Room = "";
-      } else {
-        $Formatter = "";
-        $FirstName = $rowPeriod['FirstName'];
-        $LastName = $rowPeriod['LastName'];
-        $Room = $rowPeriod['MBRoom'];
+          if (mysqli_num_rows($resultByPeriod) == 0) {
+            // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
+            $Formatter = "<b style='color:red;'>";
+            $FirstName = "";
+            $LastName = "";
+            $Email = "";
+            $Room = "";
+          } else {
+            $Formatter = "";
+            $FirstName = $rowPeriod['FirstName'];
+            $LastName = $rowPeriod['LastName'];
+            $Room = $rowPeriod['MBRoom'];
+          }
+
+          $PeriodTime = $Scout->PeriodTime($row['Period']);
+
+          echo "<tr><td>" .
+            $Formatter . $PeriodTime . "</td><td>" .
+            $Formatter . $row['MeritBadge'] . "</td><td>" .
+            $Formatter . $FirstName . " " . $LastName . "</td><td>" .
+            $Formatter . $Room . "</td></tr>";
+        }
+        echo "</table>";
       }
-
-      $PeriodTime = $Scout->PeriodTime($row['Period']);
-
-      echo "<tr><td>" .
-        $Formatter . $PeriodTime . "</td><td>" .
-        $Formatter . $row['MeritBadge'] . "</td><td>" .
-        $Formatter . $FirstName . " " . $LastName . "</td><td>" .
-        $Formatter . $Room . "</td></tr>";
-    }
-    echo "</table>";
-  }
-  /*=============================================================================
+      /*=============================================================================
     *
     * This function will email a schedule of Scouts Merit Badge Classes 
     * 
     *===========================================================================*/
-  //public function EmailReportMeritBadges($report_results, $bPreview){
-  //   $ScoutID = "";
-  //   $Scout = new cScout;
-  //   $CollegeYear = getYear();
-  //   $htmlMessage = "";
-  //   $to = "";
-  //   $head = "";
-  //   $subject  = "";
-  //   $ScoutFirst = "";
-  //   $ScoutLast = "";
-  //   $bFirstPass = true;
-  //
-  //   while ($ScoutRow = $report_results->fetch_assoc()) {
-  //
-  //       // If New Scout, shutdown old table and create a new one.
-  //       if ($ScoutID != $ScoutRow['BSAIdScout']) {
-  //
-  //
-  //           $ScoutID = $ScoutRow['BSAIdScout'];
-  //
-  //           if($bFirstPass)
-  //               $bFirstPass = false;
-  //           else{
-  //               $htmlMessage .= "</table>";
-  //           
-  //               $retval = mail ($to,$subject,$htmlMessage,$head);
-  //               //$retval = false;
-  //               if( $retval == true ) {
-  //                   echo "</br>Message sent successfully...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
-  //               }else {
-  //                   echo "</br><b style='color:red;'>Message could not be sent...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
-  //               }
-  //           }
-  //   
-  //
-  //           $to = $ScoutRow['email'];
-  //           //$to = "rhall290472@gmail.com";
-  //           //$subject = "Centennial-Black Feather Merit Badge College ".$ScoutRow['email'];
-  //           $subject = "Centennial-Black Feather Merit Badge College ";
-  //
-  //UnitNumber
-  //           
-  //           // Create email headers
-  //           $head = implode("\r\n", [
-  //               "MIME-Version: 1.0",
-  //               "Content-type: text/html; charset=utf-8",
-  //               "Bcc: richard.hall@centennialdistrict.co"
-  //             ]);
-  //
-  //
-  //
-  //           //Start new html message here...
-  //
-  //
-  //           //$htmlMessage  = "<html><body>";
-  //           $District = $ScoutRow['District'];
-  //           $UnitType = $ScoutRow['UnitType'];
-  //           $UnitNumber = $ScoutRow['UnitNumber'];
-  //           $BSAIdScout = $ScoutRow['BSAIdScout'];
-  //           $ScoutFirst = $ScoutRow['FirstNameScout'];
-  //           $ScoutLast = $ScoutRow['LastNameScout'];
-  //
-  //           // Message to scout/parents
-  //             $htmlMessage  = "<p>Thank you for registering your scout for the Centenninal-Black Feather Merit Badge College ";
-  //             $htmlMessage .= "below you will find your scouts schedule and please <b>NOTE</b> the times have changed. This was do to ";
-  //             $htmlMessage .= "a request from our host (Regis) to be finished with the college by 3:30pm. Checkin for the college ";
-  //             $htmlMessage .= "will start 30-minutes before the schedule class time.</p>";
-  //             $htmlMessage .= "<h2>This email now includes the room numbers for your scout(s) class(es)</h2> ";
-  //             $htmlMessage .= "<p>Please verify your Scouts BSA ID#, it will be used to connect your scout to the counselor</p>";
-  //             $htmlMessage .= "<p>If you have any questions please contact <a href='mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College Help'>Richard Hall</a>";
-  //            $htmlMessage = file_get_contents("https://mbcollege.centennialdistrict.co/ScoutEmaill.html");
-  //
-  //
-  //
-  //           $htmlMessage .="<br>"."\r\n";
-  //           $htmlMessage .= "<h2>". $ScoutRow['FirstNameScout']. " ". $ScoutRow['LastNameScout']."</h2>"."\r\n";
-  //           $htmlMessage .= "<b> District:".$District." Unit:".$UnitType." ".$UnitNumber." BSA Id#: ".$BSAIdScout."</b>\r\n";
-  //
-  //           $htmlMessage .= "<table class='table'  style='width:1024';>"."\r\n";
-  //           $htmlMessage .= "<td style='width:150px'>"."\r\n";
-  //           $htmlMessage .= "<td style='width:200px'>"."\r\n";
-  //           $htmlMessage .= "<td style='width:100px'>"."\r\n";
-  //           $htmlMessage .= "<td style='width:10px'>"."\r\n";
-  //           $htmlMessage .= "<td style='width:10px'>"."\r\n";
-  //           $htmlMessage .= "<tr>"."\r\n";
-  //           $htmlMessage .= "<th>Period</th>"."\r\n";
-  //           $htmlMessage .= "<th>Merit badge</th>"."\r\n";
-  //           $htmlMessage .= "<th>Counselor</th>"."\r\n";
-  //           $htmlMessage .= "<th>Email</th>"."\r\n";
-  //           $htmlMessage .= "<th>Room</th>"."\r\n";
-  //           $htmlMessage .= "</tr>"."\r\n";
-  //       }
-  //       // Now get the Counselor data for the Merit Badge.
-  //       $qryByPeriod = sprintf("SELECT * FROM college_counselors 
-  //           WHERE MBName='%s' AND MBPeriod='%s' AND College='%s'", $ScoutRow['MeritBadge'], $ScoutRow['Period'], $CollegeYear);
-  //       $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
-  //       $rowPeriod = $resultByPeriod->fetch_assoc();
-  //
-  //       if(mysqli_num_rows($resultByPeriod) == 0){
-  //           // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
-  //           $Formatter = "<b style='color:red;'>";
-  //           $FirstName = "";
-  //           $LastName = "";
-  //           $Email = "";
-  //       }
-  //       else{
-  //           $Formatter = "";
-  //           $FirstName = $rowPeriod['FirstName'];
-  //           $LastName = $rowPeriod['LastName'];
-  //           $Email = $rowPeriod['Email'];
-  //           $Room = $rowPeriod['MBRoom'];
-  //       }
-  //
-  //       $PeriodTime = self::PeriodTime($ScoutRow['Period']);
-  //
-  //       $htmlMessage .= "<tr><td>" .
-  //           $Formatter.$PeriodTime . "</td><td>" .
-  //           $Formatter.$ScoutRow['MeritBadge'] . "</td><td>" .
-  //           $Formatter.$FirstName ." ".$LastName . "</td><td>" .
-  //           $Formatter.$Email . "</td><td>" .
-  //           $Formatter.$Room ."</td></tr>";
-  //   }
-  //   $htmlMessage .= "</table>";
-  //
-  //   // TODO: send last one here..
-  //   if($bPreview){
-  //    // Do email it...
-  //   }
-  //   else{
-  //       $retval = mail ($to,$subject,$htmlMessage,$head);
-  //       //$retval = false;
-  //       if( $retval == true ) {
-  //           echo "</br>Message sent successfully...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
-  //       }else {
-  //           echo "</br><b style='color:red;'>Message could not be sent...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
-  //       }
-  //    }
-  //
-  //}
-  /*=============================================================================
+      //public function EmailReportMeritBadges($report_results, $bPreview){
+      //   $ScoutID = "";
+      //   $Scout = new cScout;
+      //   $CollegeYear = getYear();
+      //   $htmlMessage = "";
+      //   $to = "";
+      //   $head = "";
+      //   $subject  = "";
+      //   $ScoutFirst = "";
+      //   $ScoutLast = "";
+      //   $bFirstPass = true;
+      //
+      //   while ($ScoutRow = $report_results->fetch_assoc()) {
+      //
+      //       // If New Scout, shutdown old table and create a new one.
+      //       if ($ScoutID != $ScoutRow['BSAIdScout']) {
+      //
+      //
+      //           $ScoutID = $ScoutRow['BSAIdScout'];
+      //
+      //           if($bFirstPass)
+      //               $bFirstPass = false;
+      //           else{
+      //               $htmlMessage .= "</table>";
+      //           
+      //               $retval = mail ($to,$subject,$htmlMessage,$head);
+      //               //$retval = false;
+      //               if( $retval == true ) {
+      //                   echo "</br>Message sent successfully...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
+      //               }else {
+      //                   echo "</br><b style='color:red;'>Message could not be sent...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
+      //               }
+      //           }
+      //   
+      //
+      //           $to = $ScoutRow['email'];
+      //           //$to = "rhall290472@gmail.com";
+      //           //$subject = "Centennial-Black Feather Merit Badge College ".$ScoutRow['email'];
+      //           $subject = "Centennial-Black Feather Merit Badge College ";
+      //
+      //UnitNumber
+      //           
+      //           // Create email headers
+      //           $head = implode("\r\n", [
+      //               "MIME-Version: 1.0",
+      //               "Content-type: text/html; charset=utf-8",
+      //               "Bcc: richard.hall@centennialdistrict.co"
+      //             ]);
+      //
+      //
+      //
+      //           //Start new html message here...
+      //
+      //
+      //           //$htmlMessage  = "<html><body>";
+      //           $District = $ScoutRow['District'];
+      //           $UnitType = $ScoutRow['UnitType'];
+      //           $UnitNumber = $ScoutRow['UnitNumber'];
+      //           $BSAIdScout = $ScoutRow['BSAIdScout'];
+      //           $ScoutFirst = $ScoutRow['FirstNameScout'];
+      //           $ScoutLast = $ScoutRow['LastNameScout'];
+      //
+      //           // Message to scout/parents
+      //             $htmlMessage  = "<p>Thank you for registering your scout for the Centenninal-Black Feather Merit Badge College ";
+      //             $htmlMessage .= "below you will find your scouts schedule and please <b>NOTE</b> the times have changed. This was do to ";
+      //             $htmlMessage .= "a request from our host (Regis) to be finished with the college by 3:30pm. Checkin for the college ";
+      //             $htmlMessage .= "will start 30-minutes before the schedule class time.</p>";
+      //             $htmlMessage .= "<h2>This email now includes the room numbers for your scout(s) class(es)</h2> ";
+      //             $htmlMessage .= "<p>Please verify your Scouts BSA ID#, it will be used to connect your scout to the counselor</p>";
+      //             $htmlMessage .= "<p>If you have any questions please contact <a href='mailto:richard.hall@centennialdistrict.co?subject=Merit Badge College Help'>Richard Hall</a>";
+      //            $htmlMessage = file_get_contents("https://mbcollege.centennialdistrict.co/ScoutEmaill.html");
+      //
+      //
+      //
+      //           $htmlMessage .="<br>"."\r\n";
+      //           $htmlMessage .= "<h2>". $ScoutRow['FirstNameScout']. " ". $ScoutRow['LastNameScout']."</h2>"."\r\n";
+      //           $htmlMessage .= "<b> District:".$District." Unit:".$UnitType." ".$UnitNumber." BSA Id#: ".$BSAIdScout."</b>\r\n";
+      //
+      //           $htmlMessage .= "<table class='table'  style='width:1024';>"."\r\n";
+      //           $htmlMessage .= "<td style='width:150px'>"."\r\n";
+      //           $htmlMessage .= "<td style='width:200px'>"."\r\n";
+      //           $htmlMessage .= "<td style='width:100px'>"."\r\n";
+      //           $htmlMessage .= "<td style='width:10px'>"."\r\n";
+      //           $htmlMessage .= "<td style='width:10px'>"."\r\n";
+      //           $htmlMessage .= "<tr>"."\r\n";
+      //           $htmlMessage .= "<th>Period</th>"."\r\n";
+      //           $htmlMessage .= "<th>Merit badge</th>"."\r\n";
+      //           $htmlMessage .= "<th>Counselor</th>"."\r\n";
+      //           $htmlMessage .= "<th>Email</th>"."\r\n";
+      //           $htmlMessage .= "<th>Room</th>"."\r\n";
+      //           $htmlMessage .= "</tr>"."\r\n";
+      //       }
+      //       // Now get the Counselor data for the Merit Badge.
+      //       $qryByPeriod = sprintf("SELECT * FROM college_counselors 
+      //           WHERE MBName='%s' AND MBPeriod='%s' AND College='%s'", $ScoutRow['MeritBadge'], $ScoutRow['Period'], $CollegeYear);
+      //       $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
+      //       $rowPeriod = $resultByPeriod->fetch_assoc();
+      //
+      //       if(mysqli_num_rows($resultByPeriod) == 0){
+      //           // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
+      //           $Formatter = "<b style='color:red;'>";
+      //           $FirstName = "";
+      //           $LastName = "";
+      //           $Email = "";
+      //       }
+      //       else{
+      //           $Formatter = "";
+      //           $FirstName = $rowPeriod['FirstName'];
+      //           $LastName = $rowPeriod['LastName'];
+      //           $Email = $rowPeriod['Email'];
+      //           $Room = $rowPeriod['MBRoom'];
+      //       }
+      //
+      //       $PeriodTime = self::PeriodTime($ScoutRow['Period']);
+      //
+      //       $htmlMessage .= "<tr><td>" .
+      //           $Formatter.$PeriodTime . "</td><td>" .
+      //           $Formatter.$ScoutRow['MeritBadge'] . "</td><td>" .
+      //           $Formatter.$FirstName ." ".$LastName . "</td><td>" .
+      //           $Formatter.$Email . "</td><td>" .
+      //           $Formatter.$Room ."</td></tr>";
+      //   }
+      //   $htmlMessage .= "</table>";
+      //
+      //   // TODO: send last one here..
+      //   if($bPreview){
+      //    // Do email it...
+      //   }
+      //   else{
+      //       $retval = mail ($to,$subject,$htmlMessage,$head);
+      //       //$retval = false;
+      //       if( $retval == true ) {
+      //           echo "</br>Message sent successfully...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
+      //       }else {
+      //           echo "</br><b style='color:red;'>Message could not be sent...To: ".$to."-".$ScoutFirst. " ". $ScoutLast."</br>";
+      //       }
+      //    }
+      //
+      //}
+      /*=============================================================================
      *
      * This function will produce a schedule of Scouts Merit Badge Classes 
      * 
      *===========================================================================*/
-  function ReportBadBSAId($report_results)
-  {
-    $csv_hdr = "ScoutLastName, ScoutFirstName, District, UnitType, UnitNumber, BSAIdScout, Telephone, email";
-    $csv_output = "";
+      function ReportBadBSAId($report_results)
+      {
+        $csv_hdr = "ScoutLastName, ScoutFirstName, District, UnitType, UnitNumber, BSAIdScout, Telephone, email";
+        $csv_output = "";
 
 
-    $Fname = "";
-    $Lname = "";
-    $Expired = false;
-    $TodaysDate = strtotime("now");
-    $Scout = "";
-    $CollegeYear = parent::getYear();
+        $Fname = "";
+        $Lname = "";
+        $Expired = false;
+        $TodaysDate = strtotime("now");
+        $Scout = "";
+        $CollegeYear = parent::getYear();
 
-    echo "<table class='table'  style='width:1024';>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<td style='width:150px'>";
-    echo "<tr>";
-    echo "<th>ScoutLastName</th>";
-    echo "<th>ScoutFirstName</th>";
-    echo "<th>District</th>";
-    echo "<th>Unit Type</th>";
-    echo "<th>UNit Number</th>";
-    echo "<th>ScoutBSAMemberID</th>";
-    echo "<th>Telephone</th>";
-    echo "<th>Email</th>";
-    echo "</tr>";
+        echo "<table class='table'  style='width:1024';>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<td style='width:150px'>";
+        echo "<tr>";
+        echo "<th>ScoutLastName</th>";
+        echo "<th>ScoutFirstName</th>";
+        echo "<th>District</th>";
+        echo "<th>Unit Type</th>";
+        echo "<th>UNit Number</th>";
+        echo "<th>ScoutBSAMemberID</th>";
+        echo "<th>Telephone</th>";
+        echo "<th>Email</th>";
+        echo "</tr>";
 
 
-    while ($row = $report_results->fetch_assoc()) {
+        while ($row = $report_results->fetch_assoc()) {
 
-      echo "<tr><td>" .
-        $row['LastNameScout'] . "</td><td>" .
-        $row['FirstNameScout'] . "</td><td>" .
-        $row['District'] . "</td><td>" .
-        $row['UnitType'] . "</td><td>" .
-        $row['UnitNumber'] . "</td><td>" .
-        $row['BSAIdScout'] . "</td><td>" .
-        self::formatPhoneNumber(NULL, $row['Telephone']) . "</td><td>" .
-        self::formatEmail($row['email']) . "</td></tr>";
+          echo "<tr><td>" .
+            $row['LastNameScout'] . "</td><td>" .
+            $row['FirstNameScout'] . "</td><td>" .
+            $row['District'] . "</td><td>" .
+            $row['UnitType'] . "</td><td>" .
+            $row['UnitNumber'] . "</td><td>" .
+            $row['BSAIdScout'] . "</td><td>" .
+            self::formatPhoneNumber(NULL, $row['Telephone']) . "</td><td>" .
+            self::formatEmail($row['email']) . "</td></tr>";
 
-      //Now create for CSV file
-      $csv_output .= $row['LastNameScout'] . ",";
-      $csv_output .= $row['FirstNameScout'] . ",";
-      $csv_output .= $row['District'] . ",";
-      $csv_output .= $row['UnitType']  . ",";
-      $csv_output .= $row['UnitNumber']  . ",";
-      $csv_output .= $row['BSAIdScout'] . ",";
-      $csv_output .= $row['Telephone'] . ",";
-      $csv_output .= $row['email'] . "\n";
-    }
-    echo "</table>";
+          //Now create for CSV file
+          $csv_output .= $row['LastNameScout'] . ",";
+          $csv_output .= $row['FirstNameScout'] . ",";
+          $csv_output .= $row['District'] . ",";
+          $csv_output .= $row['UnitType']  . ",";
+          $csv_output .= $row['UnitNumber']  . ",";
+          $csv_output .= $row['BSAIdScout'] . ",";
+          $csv_output .= $row['Telephone'] . ",";
+          $csv_output .= $row['email'] . "\n";
+        }
+        echo "</table>";
 
-    ?>
-    <center>
-      <form name="export" action="export.php" method="post">
-        <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
-        <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-        <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-      </form>
-    </center>
-    <br />
-  <?php
-  }
-  /*=============================================================================
+        ?>
+        <center>
+          <form name="export" action="export.php" method="post">
+            <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
+            <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
+            <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
+          </form>
+        </center>
+        <br />
+      <?php
+      }
+      /*=============================================================================
     *
     * This function will produce a schedule of Scouts Merit Badge Classes 
     * 12Sep2023 - Scout book changed the format of the CSV file, now each counselor
     * will need there own upload file.
     * 
     *===========================================================================*/
-  public function ReportCSV($report_results)
-  {
-    $csv_hdr = "ScoutLastName, ScoutBSAMemberID, MeritBadgeName";
-    $csv_output = "";
+      public function ReportCSV($report_results)
+      {
+        $csv_hdr = "ScoutLastName, ScoutBSAMemberID, MeritBadgeName";
+        $csv_output = "";
 
-    $Counselor_Name = null;
+        $Counselor_Name = null;
 
-    while ($row = $report_results->fetch_assoc()) {
-      // Get Counselor Name
-      if (is_null($Counselor_Name)) {
-        $Counselor_Name = $row['LastName'] . "_" . $row['FirstName'];
-      } else if (strcasecmp($Counselor_Name, $row['LastName'] . "_" . $row['FirstName'])) {
-        $Counselor_Name = "All_Counselors";
+        while ($row = $report_results->fetch_assoc()) {
+          // Get Counselor Name
+          if (is_null($Counselor_Name)) {
+            $Counselor_Name = $row['LastName'] . "_" . $row['FirstName'];
+          } else if (strcasecmp($Counselor_Name, $row['LastName'] . "_" . $row['FirstName'])) {
+            $Counselor_Name = "All_Counselors";
+          }
+          if (!isset($this->N1BSAId) || $row['BSAId'] !== $this->N1BSAId) {
+            echo "<table class='table'  style='width:700';>";
+            echo "<td style='width:100px'>";
+            echo "<td style='width:50px'>";
+            echo "<td style='width:150px'>";
+            echo "<td style='width:100px'>";
+            echo "<tr>";
+            echo "<th>ScoutLastName</th>";
+            echo "<th>ScoutBSAMemberID</th>";
+            echo "<th>MeritBadgeName</th>";
+            echo "</tr>";
+          }
+          $this->N1BSAId = $row['BSAId'];
+          echo "<tr><td>" .
+            $row['LastNameScout'] . "</td><td>" .
+            $row['BSAIdScout'] . "</td><td>" .
+            $row['MeritBadge'] . "</td></tr>";
+
+          //Now create for CSV file
+          $csv_output .= $row['LastNameScout'] . ",";
+          $csv_output .= $row['BSAIdScout'] . ",";
+          if ($row['MeritBadge'] == "Signs, Signals, and Codes") {
+            // TODO: This is a problem but I don't know how to fix it
+            $csv_output .= $row['MeritBadge'] . ",";
+          } else
+            $csv_output .= $row['MeritBadge'] . "\n";
+        }
+        echo "</table>";
+
+      ?>
+        <center>
+          <form name="export" action="export.php" method="post">
+            <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
+            <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
+            <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
+            <input type="hidden" value="<?php echo $Counselor_Name; ?>" name="csv_filename">
+          </form>
+        </center>
+        <br />
+      <?php
       }
-      if (!isset($this->N1BSAId) || $row['BSAId'] !== $this->N1BSAId) {
-        echo "<table class='table'  style='width:700';>";
-        echo "<td style='width:100px'>";
-        echo "<td style='width:50px'>";
-        echo "<td style='width:150px'>";
-        echo "<td style='width:100px'>";
-        echo "<tr>";
-        echo "<th>ScoutLastName</th>";
-        echo "<th>ScoutBSAMemberID</th>";
-        echo "<th>MeritBadgeName</th>";
-        echo "</tr>";
-      }
-      $this->N1BSAId = $row['BSAId'];
-      echo "<tr><td>" .
-        $row['LastNameScout'] . "</td><td>" .
-        $row['BSAIdScout'] . "</td><td>" .
-        $row['MeritBadge'] . "</td></tr>";
-
-      //Now create for CSV file
-      $csv_output .= $row['LastNameScout'] . ",";
-      $csv_output .= $row['BSAIdScout'] . ",";
-      if ($row['MeritBadge'] == "Signs, Signals, and Codes") {
-        // TODO: This is a problem but I don't know how to fix it
-        $csv_output .= $row['MeritBadge'] . ",";
-      } else
-        $csv_output .= $row['MeritBadge'] . "\n";
-    }
-    echo "</table>";
-
-  ?>
-    <center>
-      <form name="export" action="export.php" method="post">
-        <input class='RoundButton' style="width:220px" type="submit" value="Export table to CSV">
-        <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-        <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-        <input type="hidden" value="<?php echo $Counselor_Name; ?>" name="csv_filename">
-      </form>
-    </center>
-    <br />
-  <?php
-  }
-  /*=============================================================================
+      /*=============================================================================
      *
      * This function will email a schedule of Scouts Merit Badge Classes 
      * 
      *===========================================================================*/
-  public function EmailScouts($report_results, $bPreview)
-  {
-    $ScoutID = "";
-    $Scout = new cScout;
-    $CollegeYear = parent::getYear();
-    $htmlMessage = "";
-    $to = "";
-    $head = "";
-    $subject  = "";
-    $ScoutFirst = "";
-    $ScoutLast = "";
-    $bFirstPass = true;
+      public function EmailScouts($report_results, $bPreview)
+      {
+        $ScoutID = "";
+        $Scout = new cScout;
+        $CollegeYear = parent::getYear();
+        $htmlMessage = "";
+        $to = "";
+        $head = "";
+        $subject  = "";
+        $ScoutFirst = "";
+        $ScoutLast = "";
+        $bFirstPass = true;
 
-    while ($ScoutRow = $report_results->fetch_assoc()) {
+        while ($ScoutRow = $report_results->fetch_assoc()) {
 
-      // If New Scout, shutdown old table and create a new one.
-      if ($ScoutID != $ScoutRow['BSAIdScout']) {
+          // If New Scout, shutdown old table and create a new one.
+          if ($ScoutID != $ScoutRow['BSAIdScout']) {
 
 
-        $ScoutID = $ScoutRow['BSAIdScout'];
+            $ScoutID = $ScoutRow['BSAIdScout'];
 
-        if ($bFirstPass)
-          $bFirstPass = false;
-        else {
-          $htmlMessage .= "</table>";
+            if ($bFirstPass)
+              $bFirstPass = false;
+            else {
+              $htmlMessage .= "</table>";
 
-          if ($bPreview) {
-            echo "</br>To: " . $to . "</br>Subject: " . $subject . "</br>Head: " . $head . "</br>";
-            echo $htmlMessage . "</br>";
-          } else {
-            $retval = mail($to, $subject, $htmlMessage, $head);
-            //$retval = false;
-            if ($retval == true) {
-              echo "</br>Message sent successfully...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
-            } else {
-              echo "</br><b style='color:red;'>Message could not be sent...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
+              if ($bPreview) {
+                echo "</br>To: " . $to . "</br>Subject: " . $subject . "</br>Head: " . $head . "</br>";
+                echo $htmlMessage . "</br>";
+              } else {
+                $retval = mail($to, $subject, $htmlMessage, $head);
+                //$retval = false;
+                if ($retval == true) {
+                  echo "</br>Message sent successfully...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
+                } else {
+                  echo "</br><b style='color:red;'>Message could not be sent...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
+                }
+              }
             }
+
+
+            $to = $ScoutRow['email'];
+            //$to = "rhall290472@gmail.com";
+            //$subject = "Centennial-Black Feather Merit Badge College ".$ScoutRow['email'];
+            $subject = "Centennial Merit Badge College ";
+
+
+
+            // Create email headers
+            $head = implode("\r\n", [
+              "MIME-Version: 1.0",
+              "Content-type: text/html; charset=utf-8",
+              "Bcc: richard.hall@centennialdistrict.co"
+            ]);
+
+
+
+            //Start new html message here...
+
+
+            //$htmlMessage  = "<html><body>";
+            $District = $ScoutRow['District'];
+            $UnitType = $ScoutRow['UnitType'];
+            $UnitNumber = $ScoutRow['UnitNumber'];
+            $BSAIdScout = $ScoutRow['BSAIdScout'];
+            $ScoutFirst = $ScoutRow['FirstNameScout'];
+            $ScoutLast = $ScoutRow['LastNameScout'];
+            $MeritBadge = $ScoutRow['MeritBadge'];
+
+
+
+
+
+
+
+
+
+            // Message to scout/parents
+            //$htmlMessage = file_get_contents("ScoutEmail.html");
+            $htmlMessage = file_get_contents("./ScoutEmail.html");
+            //                $htmlMessage  = "<p>Thank you for registering your scout for the Black Feather-Centenninal Merit Badge College ";
+            //                $htmlMessage .= "below you will find your scouts scheduled. Check-in for the college  ";
+            //                $htmlMessage .= "will start 30-minutes before the schedule class time.</p>";
+            //                //$htmlMessage .= "<h2>This email includes the room numbers for your scout(s) class(es)</h2> ";
+            //                $htmlMessage .= "<p>Please verify your Scouts BSA ID#, it will be used to connect your scout to the counselor</p>";
+            //                if($MeritBadge == "Rifle Shooting"){
+            //                    $htmlMessage .= "<h2>Rifle Shooting Merit Badge</h2> ";
+            //                    $htmlMessage .= "<p>The Merit Badge College is just days away. I have a few important comments that you'll need prior to the event. 
+            //                        Please review the required material ahead of time</p>.";
+            //                    $htmlMessage .= "<h2>Bring a copy of health form, this is required for shooting sports Forms A and B only</h2>";
+            //                    $htmlMessage .= "<a href='https://filestore.scouting.org/filestore/HealthSafety/pdf/680-001_AB.pdf'>Medical Forms</a>";
+            //                    $htmlMessage .= "<h2>Bring a copy of the Rifle Shooting Merit Badge Workbook</h2>";
+            //                    $htmlMessage .= "<a href='http://usscouts.org/usscouts/mb/worksheets/Rifle-Shooting.pdf'>Rifle Shooting</a>";
+            //                    $htmlMessage .= "<p>Bring a camp chair</p>";
+            //                }
+            //                else if($MeritBadge == "Archery"){
+            //                    $htmlMessage .= "<h2>Archery Merit Badge</h2> ";
+            //                    $htmlMessage .= "<p>The Merit Badge College is just days away. I have a few important comments that you'll need prior to the event. 
+            //                        Please review the required material ahead of time</p>.";
+            //                    $htmlMessage .= "<h2>Bring a copy of health form, this is required for shooting sports Forms A and B only</h2>";
+            //                    $htmlMessage .= "<a href='https://filestore.scouting.org/filestore/HealthSafety/pdf/680-001_AB.pdf'>Medical Forms</a>";
+            //                    $htmlMessage .= "<h2>Bring a copy of the Archery Merit Badge Workbook</h2>";
+            //                    $htmlMessage .= "<a href='http://usscouts.org/mb/worksheets/Archery.pdf'>Archery</a>";
+            //                    $htmlMessage .= "<p>Bring a camp chair</p>";
+            //                
+            //                }
+            //                else{
+            //                    $htmlMessage .= "<h2>Bring a copy of the Merit Badge Workbook(s)</h2><a href='http://usscouts.org/mb/worksheets/list.asp'>Work Books</a>";
+            //                    $htmlMessage .= "<p>Bring a camp chair</p>";
+            //                }
+            //
+            //
+            //                $htmlMessage .= "<p>If you have any questions please contact <a href='mailto:jcoroot@gmail.com?subject=Merit Badge College Help'>Johnny Cordova</a>";
+
+            $htmlMessage .= "<br>" . "\r\n";
+            $htmlMessage .= "<h2>" . $ScoutRow['FirstNameScout'] . " " . $ScoutRow['LastNameScout'] . "</h2>" . "\r\n";
+            $htmlMessage .= "<b> District:" . $District . " Unit:" . $UnitType . " " . $UnitNumber . " BSA Id#: " . $BSAIdScout . "</b>\r\n";
+
+            $htmlMessage .= "<table class='table'  style='width:1024';>" . "\r\n";
+            $htmlMessage .= "<td style='width:150px'>" . "\r\n";
+            $htmlMessage .= "<td style='width:200px'>" . "\r\n";
+            $htmlMessage .= "<td style='width:100px'>" . "\r\n";
+            $htmlMessage .= "<td style='width:10px'>" . "\r\n";
+            $htmlMessage .= "<td style='width:10px'>" . "\r\n";
+            $htmlMessage .= "<tr>" . "\r\n";
+            $htmlMessage .= "<th>Period</th>" . "\r\n";
+            $htmlMessage .= "<th>Merit badge</th>" . "\r\n";
+            $htmlMessage .= "<th>Counselor</th>" . "\r\n";
+            $htmlMessage .= "<th>Email</th>" . "\r\n";
+            $htmlMessage .= "<th>Room</th>" . "\r\n";
+            $htmlMessage .= "<th>Prerequisities</th>" . "\r\n";
+            $htmlMessage .= "</tr>" . "\r\n";
+          }
+          // Now get the Counselor data for the Merit Badge.
+          $qryByPeriod = sprintf("SELECT * FROM college_counselors 
+                WHERE MBName='%s' AND MBPeriod='%s' AND College='%s'", $ScoutRow['MeritBadge'], $ScoutRow['Period'], $CollegeYear);
+          $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
+          $rowPeriod = $resultByPeriod->fetch_assoc();
+
+          if (mysqli_num_rows($resultByPeriod) == 0) {
+            // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
+            $Formatter = "<b style='color:red;'>";
+            $FirstName = "";
+            $LastName = "";
+            $Email = "";
+          } else {
+            $Formatter = "";
+            $FirstName = $rowPeriod['FirstName'];
+            $LastName = $rowPeriod['LastName'];
+            $Email = $rowPeriod['Email'];
+            $Room = $rowPeriod['MBRoom'];
+            $Prerequisities = $rowPeriod['MBPrerequisities'];
+          }
+
+          $PeriodTime = $Scout->PeriodTime($ScoutRow['Period']);
+
+          $htmlMessage .= "<tr><td>" .
+            $Formatter . $PeriodTime . "</td><td>" .
+            $Formatter . $ScoutRow['MeritBadge'] . "</td><td>" .
+            $Formatter . $FirstName . " " . $LastName . "</td><td>" .
+            $Formatter . self::formatEmail($Email) . "</td><td>" .
+            $Formatter . $Room . "</td><td>" .
+            $Formatter . $Prerequisities . "</td></tr>";
+        }
+        $htmlMessage .= "</table>";
+
+        // TODO: send last one here..
+        if ($bPreview) {
+          echo "</br>To: " . $to . "</br>Subject: " . $subject . "</br>Head: " . $head . "</br>";
+          echo $htmlMessage . "</br>";
+        } else {
+          $retval = mail($to, $subject, $htmlMessage, $head);
+          //$retval = false;
+          if ($retval == true) {
+            echo "</br>Message sent successfully...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
+          } else {
+            echo "</br><b style='color:red;'>Message could not be sent...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
           }
         }
-
-
-        $to = $ScoutRow['email'];
-        //$to = "rhall290472@gmail.com";
-        //$subject = "Centennial-Black Feather Merit Badge College ".$ScoutRow['email'];
-        $subject = "Centennial Merit Badge College ";
-
-
-
-        // Create email headers
-        $head = implode("\r\n", [
-          "MIME-Version: 1.0",
-          "Content-type: text/html; charset=utf-8",
-          "Bcc: richard.hall@centennialdistrict.co"
-        ]);
-
-
-
-        //Start new html message here...
-
-
-        //$htmlMessage  = "<html><body>";
-        $District = $ScoutRow['District'];
-        $UnitType = $ScoutRow['UnitType'];
-        $UnitNumber = $ScoutRow['UnitNumber'];
-        $BSAIdScout = $ScoutRow['BSAIdScout'];
-        $ScoutFirst = $ScoutRow['FirstNameScout'];
-        $ScoutLast = $ScoutRow['LastNameScout'];
-        $MeritBadge = $ScoutRow['MeritBadge'];
-
-
-
-
-
-
-
-
-
-        // Message to scout/parents
-        //$htmlMessage = file_get_contents("ScoutEmail.html");
-        $htmlMessage = file_get_contents("./ScoutEmail.html");
-        //                $htmlMessage  = "<p>Thank you for registering your scout for the Black Feather-Centenninal Merit Badge College ";
-        //                $htmlMessage .= "below you will find your scouts scheduled. Check-in for the college  ";
-        //                $htmlMessage .= "will start 30-minutes before the schedule class time.</p>";
-        //                //$htmlMessage .= "<h2>This email includes the room numbers for your scout(s) class(es)</h2> ";
-        //                $htmlMessage .= "<p>Please verify your Scouts BSA ID#, it will be used to connect your scout to the counselor</p>";
-        //                if($MeritBadge == "Rifle Shooting"){
-        //                    $htmlMessage .= "<h2>Rifle Shooting Merit Badge</h2> ";
-        //                    $htmlMessage .= "<p>The Merit Badge College is just days away. I have a few important comments that you'll need prior to the event. 
-        //                        Please review the required material ahead of time</p>.";
-        //                    $htmlMessage .= "<h2>Bring a copy of health form, this is required for shooting sports Forms A and B only</h2>";
-        //                    $htmlMessage .= "<a href='https://filestore.scouting.org/filestore/HealthSafety/pdf/680-001_AB.pdf'>Medical Forms</a>";
-        //                    $htmlMessage .= "<h2>Bring a copy of the Rifle Shooting Merit Badge Workbook</h2>";
-        //                    $htmlMessage .= "<a href='http://usscouts.org/usscouts/mb/worksheets/Rifle-Shooting.pdf'>Rifle Shooting</a>";
-        //                    $htmlMessage .= "<p>Bring a camp chair</p>";
-        //                }
-        //                else if($MeritBadge == "Archery"){
-        //                    $htmlMessage .= "<h2>Archery Merit Badge</h2> ";
-        //                    $htmlMessage .= "<p>The Merit Badge College is just days away. I have a few important comments that you'll need prior to the event. 
-        //                        Please review the required material ahead of time</p>.";
-        //                    $htmlMessage .= "<h2>Bring a copy of health form, this is required for shooting sports Forms A and B only</h2>";
-        //                    $htmlMessage .= "<a href='https://filestore.scouting.org/filestore/HealthSafety/pdf/680-001_AB.pdf'>Medical Forms</a>";
-        //                    $htmlMessage .= "<h2>Bring a copy of the Archery Merit Badge Workbook</h2>";
-        //                    $htmlMessage .= "<a href='http://usscouts.org/mb/worksheets/Archery.pdf'>Archery</a>";
-        //                    $htmlMessage .= "<p>Bring a camp chair</p>";
-        //                
-        //                }
-        //                else{
-        //                    $htmlMessage .= "<h2>Bring a copy of the Merit Badge Workbook(s)</h2><a href='http://usscouts.org/mb/worksheets/list.asp'>Work Books</a>";
-        //                    $htmlMessage .= "<p>Bring a camp chair</p>";
-        //                }
-        //
-        //
-        //                $htmlMessage .= "<p>If you have any questions please contact <a href='mailto:jcoroot@gmail.com?subject=Merit Badge College Help'>Johnny Cordova</a>";
-
-        $htmlMessage .= "<br>" . "\r\n";
-        $htmlMessage .= "<h2>" . $ScoutRow['FirstNameScout'] . " " . $ScoutRow['LastNameScout'] . "</h2>" . "\r\n";
-        $htmlMessage .= "<b> District:" . $District . " Unit:" . $UnitType . " " . $UnitNumber . " BSA Id#: " . $BSAIdScout . "</b>\r\n";
-
-        $htmlMessage .= "<table class='table'  style='width:1024';>" . "\r\n";
-        $htmlMessage .= "<td style='width:150px'>" . "\r\n";
-        $htmlMessage .= "<td style='width:200px'>" . "\r\n";
-        $htmlMessage .= "<td style='width:100px'>" . "\r\n";
-        $htmlMessage .= "<td style='width:10px'>" . "\r\n";
-        $htmlMessage .= "<td style='width:10px'>" . "\r\n";
-        $htmlMessage .= "<tr>" . "\r\n";
-        $htmlMessage .= "<th>Period</th>" . "\r\n";
-        $htmlMessage .= "<th>Merit badge</th>" . "\r\n";
-        $htmlMessage .= "<th>Counselor</th>" . "\r\n";
-        $htmlMessage .= "<th>Email</th>" . "\r\n";
-        $htmlMessage .= "<th>Room</th>" . "\r\n";
-        $htmlMessage .= "<th>Prerequisities</th>" . "\r\n";
-        $htmlMessage .= "</tr>" . "\r\n";
       }
-      // Now get the Counselor data for the Merit Badge.
-      $qryByPeriod = sprintf("SELECT * FROM college_counselors 
-                WHERE MBName='%s' AND MBPeriod='%s' AND College='%s'", $ScoutRow['MeritBadge'], $ScoutRow['Period'], $CollegeYear);
-      $resultByPeriod = self::doQuery($qryByPeriod, $CollegeYear);
-      $rowPeriod = $resultByPeriod->fetch_assoc();
-
-      if (mysqli_num_rows($resultByPeriod) == 0) {
-        // PROBLEM !! No Counselor found for this merit badge in selected Period !!!
-        $Formatter = "<b style='color:red;'>";
-        $FirstName = "";
-        $LastName = "";
-        $Email = "";
-      } else {
-        $Formatter = "";
-        $FirstName = $rowPeriod['FirstName'];
-        $LastName = $rowPeriod['LastName'];
-        $Email = $rowPeriod['Email'];
-        $Room = $rowPeriod['MBRoom'];
-        $Prerequisities = $rowPeriod['MBPrerequisities'];
-      }
-
-      $PeriodTime = $Scout->PeriodTime($ScoutRow['Period']);
-
-      $htmlMessage .= "<tr><td>" .
-        $Formatter . $PeriodTime . "</td><td>" .
-        $Formatter . $ScoutRow['MeritBadge'] . "</td><td>" .
-        $Formatter . $FirstName . " " . $LastName . "</td><td>" .
-        $Formatter . self::formatEmail($Email) . "</td><td>" .
-        $Formatter . $Room . "</td><td>" .
-        $Formatter . $Prerequisities. "</td></tr>";
-    }
-    $htmlMessage .= "</table>";
-
-    // TODO: send last one here..
-    if ($bPreview) {
-      echo "</br>To: " . $to . "</br>Subject: " . $subject . "</br>Head: " . $head . "</br>";
-      echo $htmlMessage . "</br>";
-    } else {
-      $retval = mail($to, $subject, $htmlMessage, $head);
-      //$retval = false;
-      if ($retval == true) {
-        echo "</br>Message sent successfully...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
-      } else {
-        echo "</br><b style='color:red;'>Message could not be sent...To: " . $to . "-" . $ScoutFirst . " " . $ScoutLast . "</br>";
-      }
-    }
-  }
-  /*=============================================================================
+      /*=============================================================================
      *
      * This function will import scouts from double know file
      * 
      *===========================================================================*/
-  public function ImportScouts($fileName)
-  {
-    /* Defined the file columns, which change */
-    $colMeritBadge = 0;         /* Event */
-    $colRegistration = 1;       /* Registration # */
-    $colRegistrationCost = 12;  /* Registration Cost */
-    $colFirstName = 18;         /* First Name */
-    $colLastName = 19;          /*Last Name */
-    $colPhone = 21;             /* Primary Telephone */
-    $colEmail = 22;             /* Primary Email */
-    $colGender = 35;            /* Gender */
-    $colPeriod = 43;            /* Program */
-    //        $colDistrict = 42;          /* What district are you with? */
-    $colUnit = 45;              /* What type of unit are you in? */
-    //        $colUnitNum = 44;           /* What is your Unit Number? */
-    $colBSA_ID = 46;            /* What is your Unit Number? */
+      /*=============================================================================
+ *
+ * Updated ImportScouts() - Works with Cen MB College Reg Report
+ * Now prompts user for the real period (A, B, C, D, E, F, AB, CD, etc.)
+ *
+ *===========================================================================*/
+      public function ImportScouts($fileName)
+      {
+        $MBCollegeName = parent::getYear();
 
-    $MBCollegeName = parent::getYear();
+        $RecordsInError = 0;
+        $Inserted = 0;
+        $Updated = 0;
+        $ProcessedBadges = 0;
 
-    $RecordsInError = 0;
-    $SkippedRecords = 0;
-    $UnitType = "";
-    $UnitNumber = null;
-    //$FakeBSAID = -2;
-    $DoNotAttend = 0; //TODO: Need to fix
+        $filePath = "Data/" . $fileName;
 
-    $filePath = "Data/" . $fileName;
+        echo "\n=== Starting Import for: $fileName ===\n";
+        echo "When prompted, enter the period for each merit badge (A, B, C, D, E, F, AB, CD, or ? to skip)\n\n";
 
-    $Inserted = 0;
-    $Updated = 0;
-    $row = 0;
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
-        if ($row < 2) {
-          $row++;
-          continue;
-        }
-        $MeritBadge = $data[$colMeritBadge];
-        $pos = strpos($MeritBadge, "2023 Centennial");
-        if ($pos !== false) { // Not a merit badge line, skip
-          $SkippedRecords++;
+        if (($handle = fopen($filePath, "r")) !== FALSE) {
+          // Read header
+          fgetcsv($handle);
+
+          $row = 0;
+          while (($data = fgetcsv($handle, 0, ',', '"', '')) !== FALSE) {
+            $row++;
+
+            // Basic scout info
+            $FirstNameScout  = ucfirst(strtolower(trim($data[12] ?? '')));   // First Name
+            $LastNameScout   = ucfirst(strtolower(trim($data[13] ?? '')));   // Last Name
+
+            if (empty($FirstNameScout) || empty($LastNameScout)) {
+              continue;
+            }
+
+            $Email           = strtolower(trim($data[5] ?? ''));               // Registration Contact Email
+            $Phone           = trim($data[15] ?? $data[6] ?? '');              // Parent/Guardian Phone
+            $BSAId           = null;
+            $Registration    = null;
+            $District        = trim($data[8] ?? '');
+            $UnitTypeRaw     = trim($data[9] ?? '');
+            $UnitNumber      = trim($data[10] ?? '');
+            $UnitDesignation = strtoupper(trim($data[11] ?? ''));
+
+            // Determine Unit Type (Troop-B, Troop-G, Troop-F, etc.)
+            if ($UnitTypeRaw === 'Troop' && $UnitDesignation) {
+              $UnitType = 'Troop-' . $UnitDesignation;
+            } else {
+              $UnitType = $UnitTypeRaw;
+            }
+
+            $Gender = ($UnitDesignation === 'G') ? 'Female' : 'Male';
+
+            // Process each possible period column (Period 1 to Period 4)
+            for ($p = 1; $p <= 4; $p++) {
+              $mbIndex = 15 + $p;                     // Period 1 = index 16, etc.
+              $MBNameRaw = trim($data[$mbIndex] ?? '');
+
+              if (empty($MBNameRaw)) {
+                continue;
+              }
+
+              // Clean merit badge name (remove version info)
+              $MBName = preg_replace('/\s*\([^)]*\)/', '', $MBNameRaw);
+              $MBName = trim($MBName);
+
+              // === Prompt user for the correct period ===
+              echo "Row $row | Scout: $FirstNameScout $LastNameScout | MB: $MBName\n";
+              echo "Enter period (A/B/C/D/E/F/AB/CD or ? to skip): ";
+
+              $input = trim(fgets(STDIN));
+              $input = strtoupper($input);
+
+              if ($input === '?' || $input === '') {
+                echo "   → Skipped\n\n";
+                continue;
+              }
+
+              $Period = $input;   // Use whatever the user entered (A, B, AB, CD, etc.)
+
+              $ProcessedBadges++;
+
+              // Check if already signed up for this period
+              if (self::IsSignedUpPeriod($MBCollegeName, $LastNameScout, $FirstNameScout, $Period)) {
+                self::UpdateInfo(
+                  $FirstNameScout,
+                  $LastNameScout,
+                  $Email,
+                  $Phone,
+                  $BSAId,
+                  $MBCollegeName,
+                  $Registration,
+                  $District,
+                  $UnitType,
+                  $UnitNumber,
+                  $Gender
+                );
+
+                if (self::UpdateMBClass($MBName, $Period)) {
+                  $RecordsInError++;
+                  echo "   → Update ERROR\n";
+                } else {
+                  $Updated++;
+                  echo "   → Updated\n";
+                }
+              } else {
+                self::AddInfo(
+                  $FirstNameScout,
+                  $LastNameScout,
+                  $Email,
+                  $Phone,
+                  $BSAId,
+                  $MBCollegeName,
+                  $Registration,
+                  $District,
+                  $UnitType,
+                  $UnitNumber,
+                  $Gender
+                );
+
+                if (self::AddMBClass($MBName, $Period, 0)) {   // 0 = DoNotAttend
+                  $RecordsInError++;
+                  echo "   → Add ERROR\n";
+                } else {
+                  $Inserted++;
+                  echo "   → Inserted\n";
+                }
+              }
+              echo "\n";
+            }
+          }
+
+          fclose($handle);
+
+          $Usermsg = "Import finished!\n" .
+            "Inserted: $Inserted | Updated: $Updated | Errors: $RecordsInError\n" .
+            "Total merit badges processed: $ProcessedBadges";
+
+          parent::function_alert($Usermsg);
+          echo "\n$Usermsg\n";
         } else {
-          $Period = $data[$colPeriod];
-          if ($Period[9] == '&')
-            $Period = $Period[7] . $Period[11];
-          else
-            $Period = $Period[7];
-
-          //                    // Double-knot sessions and my Period don't match so....
-          //                    switch($Period){
-          //                        case 'A':
-          //                            $Period = 'A';
-          //                            break;
-          //                        case 'B':
-          //                            $Period = 'B';
-          //                            break;
-          //                        case 'AB':
-          //                            $Period = 'AB';
-          //                            break;
-          //                        default:
-          //                            $Period = '?';
-          //                    }
-
-          // Common data for each Merit Badge
-          $FirstNameScout =   ucfirst(strtolower($data[$colFirstName]));
-          $LastNameScout =    ucfirst(strtolower($data[$colLastName]));
-          $Email =            strtolower($data[$colEmail]);
-          $Phone =            $data[$colPhone];
-          $BSAId =            $data[$colBSA_ID];
-          $Registration =     $data[$colRegistration];
-          //                    $District     =     $data[ $colDistrict];
-          $District     =     null;
-          $UnitType     =     $data[$colUnit];
-          if ($data[$colUnit] == "Crew")
-            $UnitType     =     $data[$colUnit] . "-NA";
-          if ($data[$colUnit] == "Troop") {
-            if ($data[$colGender] == "Female")
-              $UnitType = "Troop-G";
-            else
-              $UnitType = "Troop-B";
-          }
-          //                    $UnitNumber   =     $data[$colUnitNum];
-          $Gender       =     $data[$colGender];
-          $MBName =           $data[$colMeritBadge];
-          $RegistrationCost = $data[$colRegistrationCost];
-
-          //Fix up MB Name by removing (....) from string.
-          $pos = strpos($MBName, '(');
-          if ($pos !== false) {
-            $pos--;
-            $MBName = substr($MBName, 0,  $pos);
-          }
-
-          // If we are updating the records for a updated double-knot file we will to check
-          // if we already have the scout recorded.
-          if (self::IsSignedUpPeriod($MBCollegeName, $LastNameScout, $FirstNameScout, $Period)) {
-            // Then update record else
-            self::UpdateInfo(
-              $FirstNameScout,
-              $LastNameScout,
-              $Email,
-              $Phone,
-              $BSAId,
-              $MBCollegeName,
-              $Registration,
-              $District,
-              $UnitType,
-              $UnitNumber,
-              $Gender
-            );
-            if (self::UpdateMBClass($MBName, $Period))
-              $RecordsInError++;
-            else
-              $Updated++;
-          } else {
-            self::AddInfo(
-              $FirstNameScout,
-              $LastNameScout,
-              $Email,
-              $Phone,
-              $BSAId,
-              $MBCollegeName,
-              $Registration,
-              $District,
-              $UnitType,
-              $UnitNumber,
-              $Gender
-            );
-            if (self::AddMBClass($MBName, $Period, $DoNotAttend))
-              $RecordsInError++;
-            else
-              $Inserted++;
-          }
+          parent::function_alert("Failed to open file: " . $filePath);
         }
-      }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      parent::function_alert($Usermsg);
-    } else {
-      $Usermsg = "Failed to open file";
-      parent::function_alert($Usermsg);
-    }
-    return $RecordsInError;
-  }
-  //*************************************************
-  //
-  // Allow user to select a single Scout to display
-  //
-  //*************************************************
-  public function SelectSingleScout($CollegeYear, $bPreview)
-  {
-    $qrySelectedScout = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
+
+        return $RecordsInError;
+      }  //*************************************************
+      //
+      // Allow user to select a single Scout to display
+      //
+      //*************************************************
+      public function SelectSingleScout($CollegeYear, $bPreview)
+      {
+        $qrySelectedScout = "SELECT DISTINCTROW LastNameScout, FirstNameScout, BSAIdScout FROM college_registration
             WHERE College = '$CollegeYear' ORDER BY LastNameScout, FirstNameScout";
 
-    $result_ByScout = self::doQuery($qrySelectedScout);
-    if (!$result_ByScout) {
-      self::function_alert("ERROR: MeritQuery($qrySelectedScout)");
-    }
-  ?>
-    <form method=post>
-      <div class="row  d-print-none">
-        <div class="col-2">
-          <label for='ScoutName'></label>
-          <select class='form-control' id='ScoutName' name='ScoutName'>
-            <option value="" </option>
-              <?php
-              while ($rowCerts = $result_ByScout->fetch_assoc()) {
-                echo "<option value=" . $rowCerts['BSAIdScout'] . ">" . $rowCerts['LastNameScout'] . " " . $rowCerts['FirstNameScout'] . "</option>";
-              }
-              ?>
-          </select>
-        </div>
-        <?php
-        if ($bPreview) { ?>
-          <div class="col-1">
-            <input type='checkbox' name='Preview' id='chkPreview' value='1' />
-            <label for='chkPreview'>Preview Email </label>
-          </div>
-        <?php
+        $result_ByScout = self::doQuery($qrySelectedScout);
+        if (!$result_ByScout) {
+          self::function_alert("ERROR: MeritQuery($qrySelectedScout)");
         }
-        ?>
-        <div class="col-2">
-          <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' />
+      ?>
+        <form method=post>
+          <div class="row  d-print-none">
+            <div class="col-2">
+              <label for='ScoutName'></label>
+              <select class='form-control' id='ScoutName' name='ScoutName'>
+                <option value="" </option>
+                  <?php
+                  while ($rowCerts = $result_ByScout->fetch_assoc()) {
+                    echo "<option value=" . $rowCerts['BSAIdScout'] . ">" . $rowCerts['LastNameScout'] . " " . $rowCerts['FirstNameScout'] . "</option>";
+                  }
+                  ?>
+              </select>
+            </div>
+            <?php
+            if ($bPreview) { ?>
+              <div class="col-1">
+                <input type='checkbox' name='Preview' id='chkPreview' value='1' />
+                <label for='chkPreview'>Preview Email </label>
+              </div>
+            <?php
+            }
+            ?>
+            <div class="col-2">
+              <input class='btn btn-primary btn-sm' type='submit' name='SubmitScout' />
+            </div>
+        </form>
         </div>
-    </form>
-    </div>
-<?php
-  }
-}
+    <?php
+      }
+    }
