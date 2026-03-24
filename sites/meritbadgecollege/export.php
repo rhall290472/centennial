@@ -42,3 +42,4 @@ print $out;
 
 //Exit the script
 exit;
+?>

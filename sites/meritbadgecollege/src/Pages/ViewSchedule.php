@@ -1,5 +1,5 @@
 <?php
- /*
+/*
 !==============================================================================!
 !\                                                                            /!
 !\\                                                                          //!
@@ -33,6 +33,7 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
   <div class="container-fluid">
     <div class="row flex-nowrap">
@@ -592,7 +593,7 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
             </form>
           </center>
           <br />
-          <center />
+          </center>
         <?php
         }
         ?>
