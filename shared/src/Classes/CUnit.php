@@ -282,7 +282,7 @@ class UNIT extends CAdvancement
                 pageLength: -1,
                 paging: false,
                 order: [
-                  [0, 'asc']
+                  [1, 'asc']
                 ],
                 columnDefs: [{
                     type: 'num',
@@ -472,7 +472,7 @@ class UNIT extends CAdvancement
               exit;
             }
             $Unit = parent::formatUnitNumber($data[$col_unitname], $data[$col_genderaccepted]);
-            if (strstr($Unit, "0000") || $Unit == null) {
+            if (strstr($Unit ?? '', "0000") || $Unit === null) {
               continue;
             }
             $ReformattedDate = self::FormatDate($data[$col_expirydtstr]);
@@ -661,7 +661,7 @@ class UNIT extends CAdvancement
               exit;
             }
             $Unit = parent::formatUnitNumber($data[$colUnit_Type] . " " . $data[$colUnit_Number], $data[$colGender_Accepted]);
-            if (strstr($Unit, "0000") || $Unit == null) {
+            if (strstr($Unit ?? '', "0000") || $Unit === null) {
               continue;
             }
             if (self::InsertUpdateCheckTotals($Unit)) {
