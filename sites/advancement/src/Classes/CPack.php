@@ -392,27 +392,28 @@ class CPack extends CAdvancement
          *****************************************************************************/
         public static function &UpdatePack($fileName)
         {
-          $colDistrict = 0;
-          $colOrg      = 1;
-          $colUnitID   = 2;
+          $col_councilname = 0;
+          $colDistrict = 1;
+          $colOrg      = 2;
+          $colUnitID   = 3;
 
-          $colLionMTD  = 3;
-          $colLionYTD  = 4;
-          $colTigerMTD  = 5;
-          $colTigerYTD  = 6;
-          $colBobcatMTD  = 7;
-          $colBobcatYTD  = 8;
-          $colWolfMTD  = 9;
-          $colWolfYTD  = 10;
-          $colBearMTD  = 11;
-          $colBearYTD  = 12;
-          $colWebelosMTD  = 13;
-          $colWebelosYTD  = 14;
-          $colAOLMTD  = 15;
-          $colAOLYTD  = 16;
-          $colRanksMTD = 17;
-          $colRankYTD = 18;
-          $colYouthTotal = 19;
+          $colLionMTD  = 4;
+          $colLionYTD  = 5;
+          $colTigerMTD  = 6;
+          $colTigerYTD  = 7;
+          $colBobcatMTD  = 8;
+          $colBobcatYTD  = 9;
+          $colWolfMTD  = 10;
+          $colWolfYTD  = 11;
+          $colBearMTD  = 12;
+          $colBearYTD  = 13;
+          $colWebelosMTD  = 14;
+          $colWebelosYTD  = 15;
+          $colAOLMTD  = 16;
+          $colAOLYTD  = 17;
+          $colRanksMTD = 18;
+          $colRankYTD = 19;
+          $colYouthTotal = 20;
           //$filePath = "Data/" . $fileName;
           $Datestr = "";
           $sqlPackInsertSt = "INSERT INTO `adv_pack`(`lion`, `tiger`, `bobcat`, `wolf`, `bear`, `webelos`, `aol`, `YTD`, `Unit`, `Date`) 
@@ -434,7 +435,7 @@ class CPack extends CAdvancement
               if (count($data) != ($colYouthTotal + 1)) {
                 $strMsg = "ERROR: UpdatePack(" . $fileName . ") is incorrect.";
                 error_log($strMsg);
-                parent::function_alert($strMsg);
+                //parent::function_alert($strMsg);
                 exit;
               }
               $PackUnit = parent::formatUnitNumber($data[$colOrg], null);

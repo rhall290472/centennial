@@ -449,6 +449,7 @@ class UNIT extends CAdvancement
         $col_qttyouth = 19;
         $col_qttadultvolunteers = 20;
         $col_communityorganizationtypeshort = 21;
+        $col_ciscouncilpaid = 22;
 
         $DateStr = "";
         $RecordsInError = 0;
@@ -464,10 +465,10 @@ class UNIT extends CAdvancement
               $row++;
               continue;
             }
-            if (count($data) != ($col_communityorganizationtypeshort + 1)) {
+            if (count($data) != ($col_ciscouncilpaid + 1)) {
               $strMsg = "ERROR: ImportCORData(" . $fileName . ") is incorrect size.";
               error_log($strMsg);
-              parent::function_alert($strMsg);
+              //parent::function_alert($strMsg);
               exit;
             }
             $Unit = parent::formatUnitNumber($data[$col_unitname], $data[$col_genderaccepted]);

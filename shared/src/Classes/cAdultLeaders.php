@@ -929,105 +929,129 @@ class AdultLeaders
    * Read in the trained leader report from my.scouting.org
    * 
    *****************************************************************************/
-  public static function  &TrainedLeader($fileName)
+  public static function &TrainedLeader($fileName)
   {
-    $colCouncil = 0;
-    $colServiceArea = 1;
-    $colDistrict    = 2;
-    $colSubDistrict = 3;
-    $colUnit        = 4;
-    $colGenderAccepted  = 5;
-    $colCharteredOrg    = 6;
-    $colFirstName       = 7;
-    $colMiddleName      = 8;
-    $colLastName        = 9;
-    $colZipCode         = 10;
-    $colMemberID        = 11;
-    $colProgram         = 12;
-    $colEmail           = 13;
-    $colPosition        = 14;
-    $colDirectContact   = 15;
-    $colTrained         = 16;
-    $colExpirDate       = 17;
-    $colIncomMandatory  = 18;
-    $colIncomClass      = 19;
-    $colIncomOnline     = 20;
-
-    $sqlLeadersTrainedInsertSt = "INSERT INTO `trainedleader`(`Council`, `Service_Area`, `District`, `Sub_District`, `Unit`, `Gender_Accepted`, `Chartered_Org_Name`, `First_Name`, 
-    		`Middle_Name`, `Last_Name`, `Zip_Code`, `MemberID`, `Program`, `Email`, `Position`, `Direct_Contact_Leader`, `Trained`, `Registration_Expiration_Date`, 
-    		`Incomplete_Mandatory`, `Incomplete_Classroom`, `Incomplete_Online`) VALUES (";
-
-    $Inserted = 0;
-    $Updated = 0;
-    $RecordsInError = 0;
-    $row = 1;
     $filePath = $fileName;
+
     if (!file_exists($filePath)) {
       $strError = "ERROR: File not found: " . $filePath;
-      error_log($strError, 0);
+      error_log($strError);
       self::function_alert($strError);
-      exit();
+      return -1;
     }
-    // Delete all of the Old data
+
+    // Clear old data
     if (!self::doQuery("TRUNCATE TABLE `trainedleader`")) {
-      $strError = "see error log - TRUNCATE TABLE `trainedleader`";
-      error_log($strError, 0);
+      $strError = "ERROR: Failed to TRUNCATE TABLE `trainedleader`";
+      error_log($strError);
       self::function_alert($strError);
-      $RecordsInError = -1;
-      exit();
+      return -1;
     }
 
-    // Insert new data
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
-        if ($row < 10) { // Skip the first row(s), headers.
-          $row++;
-          continue;
-        }
-
-        // Verify the proper array size, should be $Exprire_Date + 1
-        if (count($data) != ($colIncomOnline + 1)) {
-          $strMsg = "ERROR: UpdateTotals(" . $fileName . ") is incorrect.";
-          error_log($strMsg);
-          self::function_alert($strMsg);
-          exit;
-        }
-
-        $Unit = self::formatUnitNumber($data[$colUnit], $data[$colGenderAccepted]);
-
-        // Insert Data
-        $sqlLeadersTrainedInsert = "";
-        for ($i = 0; $i < count($data); $i++) {
-          if ($i == 4)
-            $sqlLeadersTrainedInsert = $sqlLeadersTrainedInsert . sprintf("'%s', ", $Unit);
-          else
-            $sqlLeadersTrainedInsert = $sqlLeadersTrainedInsert . sprintf("'%s', ", addslashes($data[$i]));
-        }
-        $sqlLeadersTrainedInsert = substr($sqlLeadersTrainedInsert, 0, (strlen($sqlLeadersTrainedInsert) - 2));
-        $sqlLeadersTrainedInsert =  $sqlLeadersTrainedInsertSt . $sqlLeadersTrainedInsert . ");";
-        //echo $sqlLeadersTrainedInsert."<br />";
-        //echo "<br />";
-        // Update the database
-        if (!mysqli_query(self::getDbConn(), $sqlLeadersTrainedInsert)) {
-          $strErr =  "Insert Error: " . $sqlLeadersTrainedInsert . "" . mysqli_error(self::getDbConn());
-          error_log($strErr);
-          $RecordsInError++;
-        } else
-          $Inserted++;
-        //Reset String
-        $sqlLeadersTrainedInsert = "";
-      }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      self::function_alert($Usermsg);
-    } else {
-      $Usermsg = "ERROR: Failed to open file, TrainedLeader(" . $fileName . ")";
+    $handle = fopen($filePath, "r");
+    if ($handle === FALSE) {
+      $Usermsg = "ERROR: Failed to open file: " . $filePath;
       error_log($Usermsg);
       self::function_alert($Usermsg);
+      return -1;
     }
+
+    $Inserted = 0;
+    $RecordsInError = 0;
+    $row = 0;
+    $columnMap = [];        // Will store "ColumnName" => index
+
+    // Expected columns (exact names from your CSV header)
+    $expectedColumns = [
+      'Council',
+      'Service_Area',
+      'District',
+      'Sub_District',
+      'Unit',
+      'Gender_Accepted',
+      'Chartered_Org_Name',
+      'First_Name',
+      'Middle_Name',
+      'Last_Name',
+      'Zip_Code',
+      'MemberID',
+      'Program',
+      'Email',
+      'Position',
+      'Direct_Contact_Leader',
+      'Trained',
+      'Registration_Expiration_Date',
+      'Incomplete_Mandatory',
+      'Incomplete_Classroom',
+      'Incomplete_Online'
+    ];
+
+    while (($data = fgetcsv($handle, 0, ",", '"', "\\")) !== FALSE) {
+      $row++;
+
+      // Skip empty lines
+      if (empty(array_filter($data))) continue;
+
+      // === FIND HEADER ROW ===
+      if (empty($columnMap) && in_array('Council', $data) && in_array('First_Name', $data)) {
+        // Build column map: name => index
+        foreach ($data as $index => $colName) {
+          $cleanName = trim($colName);
+          $columnMap[$cleanName] = $index;
+        }
+        continue;   // Skip header, move to data rows
+      }
+
+      // Skip rows before we found the header
+      if (empty($columnMap)) continue;
+
+      // === PROCESS DATA ROW ===
+      $Unit = self::formatUnitNumber(
+        $data[$columnMap['Unit'] ?? -1] ?? '',
+        $data[$columnMap['Gender_Accepted'] ?? -1] ?? ''
+      );
+
+      // Build VALUES safely
+      $values = [];
+      foreach ($expectedColumns as $col) {
+        $idx = $columnMap[$col] ?? -1;
+        $value = ($idx >= 0 && isset($data[$idx])) ? $data[$idx] : '';
+
+        if ($col === 'Unit') {
+          $value = $Unit;
+        }
+
+        // Safe handling for null/empty values + fix deprecation
+        $safeValue = addslashes((string)$value);
+
+        $values[] = "'" . $safeValue . "'";
+      }
+
+      $sql = "INSERT INTO `trainedleader` (`"
+        . implode("`, `", $expectedColumns)
+        . "`) VALUES ("
+        . implode(", ", $values)
+        . ");";
+
+
+      if (!mysqli_query(self::getDbConn(), $sql)) {
+        $err = "Insert Error on row $row: " . mysqli_error(self::getDbConn());
+        error_log($err . "\nSQL: " . substr($sql, 0, 500));
+        $RecordsInError++;
+      } else {
+        $Inserted++;
+      }
+    }
+
+    fclose($handle);
+
+    $Usermsg = "Trained Leaders Import Complete - Inserted: $Inserted, Errors: $RecordsInError";
+    self::function_alert($Usermsg);
+    error_log($Usermsg);
 
     return $RecordsInError;
   }
+
   /******************************************************************************
    * 
    * This funtion will import data from the my.scouting.org website.
@@ -1115,24 +1139,24 @@ class AdultLeaders
         //$sqlInsertypt += $sqlInsertypt.sprintf("'%s', ", $Unit);
         //else
         $sqlInsertypt = "'" . $data[$colDistrict[0]] . "', "
-              . "'" . addslashes((string)($data[$colProgram[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($Unit ?? '')) . "', "               // $Unit probably never null, but safe
-              . "'" . addslashes((string)($data[$colGender[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colCharteredOrg[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colFirstName[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colMiddleName[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colLastName[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colMemberID[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colPosition[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colStatus[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colEffectiveThrough[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colYPTCoce[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colYPTCompleted[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colYPTExpired[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colEmail[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colPhone[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colRegistrationDate[0]] ?? '')) . "', "
-              . "'" . addslashes((string)($data[$colOnlineCourses[0]] ?? '')) . "'";
+          . "'" . addslashes((string)($data[$colProgram[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($Unit ?? '')) . "', "               // $Unit probably never null, but safe
+          . "'" . addslashes((string)($data[$colGender[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colCharteredOrg[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colFirstName[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colMiddleName[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colLastName[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colMemberID[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colPosition[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colStatus[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colEffectiveThrough[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colYPTCoce[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colYPTCompleted[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colYPTExpired[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colEmail[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colPhone[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colRegistrationDate[0]] ?? '')) . "', "
+          . "'" . addslashes((string)($data[$colOnlineCourses[0]] ?? '')) . "'";
 
 
 
