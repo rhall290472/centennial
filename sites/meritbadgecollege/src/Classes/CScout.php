@@ -1260,7 +1260,7 @@ class CScout extends CMBCollege
       /*=============================================================================
      *
      * This function will import scouts from double know file
-     * 
+     * $filePath = BASE_PATH . "/Data/" . $fileName;
      *===========================================================================*/
       /*=============================================================================
  *
@@ -1277,29 +1277,29 @@ class CScout extends CMBCollege
         $Updated = 0;
         $ProcessedBadges = 0;
 
-        $filePath = "Data/" . $fileName;
+        $filePath = BASE_PATH . "/Data/" . $fileName;
 
         echo "\n=== Starting Import for: $fileName ===\n";
-        echo "When prompted, enter the period for each merit badge (A, B, C, D, E, F, AB, CD, or ? to skip)\n\n";
 
         if (($handle = fopen($filePath, "r")) !== FALSE) {
-          // Read header
-          fgetcsv($handle);
+
+          // Skip header row (PHP 8.4+ safe)
+          fgetcsv($handle, length: 0, separator: ',', enclosure: '"', escape: '');
 
           $row = 0;
-          while (($data = fgetcsv($handle, 0, ',', '"', '')) !== FALSE) {
+          while (($data = fgetcsv($handle, length: 0, separator: ',', enclosure: '"', escape: '')) !== FALSE) {
             $row++;
 
             // Basic scout info
-            $FirstNameScout  = ucfirst(strtolower(trim($data[12] ?? '')));   // First Name
-            $LastNameScout   = ucfirst(strtolower(trim($data[13] ?? '')));   // Last Name
+            $FirstNameScout = ucfirst(strtolower(trim($data[12] ?? '')));
+            $LastNameScout  = ucfirst(strtolower(trim($data[13] ?? '')));
 
             if (empty($FirstNameScout) || empty($LastNameScout)) {
               continue;
             }
 
-            $Email           = strtolower(trim($data[5] ?? ''));               // Registration Contact Email
-            $Phone           = trim($data[15] ?? $data[6] ?? '');              // Parent/Guardian Phone
+            $Email           = strtolower(trim($data[5] ?? ''));
+            $Phone           = trim($data[15] ?? $data[6] ?? '');
             $BSAId           = null;
             $Registration    = null;
             $District        = trim($data[8] ?? '');
@@ -1307,8 +1307,7 @@ class CScout extends CMBCollege
             $UnitNumber      = trim($data[10] ?? '');
             $UnitDesignation = strtoupper(trim($data[11] ?? ''));
 
-            // Determine Unit Type (Troop-B, Troop-G, Troop-F, etc.)
-            if ($UnitTypeRaw === 'Troop' && $UnitDesignation) {
+            if ($UnitTypeRaw === 'Troop' && $UnitDesignation !== '') {
               $UnitType = 'Troop-' . $UnitDesignation;
             } else {
               $UnitType = $UnitTypeRaw;
@@ -1316,36 +1315,33 @@ class CScout extends CMBCollege
 
             $Gender = ($UnitDesignation === 'G') ? 'Female' : 'Male';
 
-            // Process each possible period column (Period 1 to Period 4)
+            // Process each period (columns 16-19)
             for ($p = 1; $p <= 4; $p++) {
-              $mbIndex = 15 + $p;                     // Period 1 = index 16, etc.
+              $mbIndex = 15 + $p;
               $MBNameRaw = trim($data[$mbIndex] ?? '');
 
               if (empty($MBNameRaw)) {
                 continue;
               }
 
-              // Clean merit badge name (remove version info)
+              // Clean merit badge name
               $MBName = preg_replace('/\s*\([^)]*\)/', '', $MBNameRaw);
               $MBName = trim($MBName);
 
-              // === Prompt user for the correct period ===
-              echo "Row $row | Scout: $FirstNameScout $LastNameScout | MB: $MBName\n";
-              echo "Enter period (A/B/C/D/E/F/AB/CD or ? to skip): ";
+              // === TEMPORARY: Auto-assign period based on column ===
+              // Period 1 → A, Period 2 → B, Period 3 → C, Period 4 → D
+              $Period = match ($p) {
+                1 => 'A',
+                2 => 'B',
+                3 => 'C',
+                4 => 'D',
+                default => 'A'
+              };
 
-              $input = trim(fgets(STDIN));
-              $input = strtoupper($input);
-
-              if ($input === '?' || $input === '') {
-                echo "   → Skipped\n\n";
-                continue;
-              }
-
-              $Period = $input;   // Use whatever the user entered (A, B, AB, CD, etc.)
+              echo "Row $row | Scout: $FirstNameScout $LastNameScout | MB: $MBName → Period $Period\n";
 
               $ProcessedBadges++;
 
-              // Check if already signed up for this period
               if (self::IsSignedUpPeriod($MBCollegeName, $LastNameScout, $FirstNameScout, $Period)) {
                 self::UpdateInfo(
                   $FirstNameScout,
@@ -1383,7 +1379,7 @@ class CScout extends CMBCollege
                   $Gender
                 );
 
-                if (self::AddMBClass($MBName, $Period, 0)) {   // 0 = DoNotAttend
+                if (self::AddMBClass($MBName, $Period, 0)) {
                   $RecordsInError++;
                   echo "   → Add ERROR\n";
                 } else {
@@ -1391,7 +1387,6 @@ class CScout extends CMBCollege
                   echo "   → Inserted\n";
                 }
               }
-              echo "\n";
             }
           }
 
@@ -1408,7 +1403,10 @@ class CScout extends CMBCollege
         }
 
         return $RecordsInError;
-      }  //*************************************************
+      }
+
+
+      //*************************************************
       //
       // Allow user to select a single Scout to display
       //

@@ -59,7 +59,8 @@ if (isset($_POST['CollegeYear']) && $_POST['CollegeYear'] !== '') {
 				<p> Merit Badge College - Import Scouts </p>
 				This function will import the scouts from the Double-Knot signup
 
-				<form action="FileUpload.php" method="post" enctype="multipart/form-data">
+				<form action="index.php?page=FileUpload" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(get_csrf_token()) ?>">
 					<!-- Upload a file -->
 					<input class='RoundButton' style="width:500px; height:40px ! important" type="file" size="255" name="the_file" id=fileToUpload">
 					<input class='RoundButton' style="width:200;  height:40px; margin-bottom:15px ! important" type="submit" name="submit" value="ImportScouts">
