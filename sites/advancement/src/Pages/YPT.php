@@ -136,12 +136,14 @@ $TotalCount = $ValidyptCount - $ExpiredyptCount;
         }
         ?>
         <p style="text-align: center;">Sorted by: <?php echo htmlspecialchars($sort); ?>. Number of Leaders: <?php echo $ValidyptCount; ?></p>
+
         <div class="px-5 py-5">
           <!-- Custom loading overlay -->
           <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
             <div class="spinner"></div>
             <span style="color: #fff; font-size: 16px;">Loading...</span>
           </div>
+
           <table id="yptTable" class="table table-striped">
             <thead>
               <tr>
@@ -151,29 +153,40 @@ $TotalCount = $ValidyptCount - $ExpiredyptCount;
                 <th>Member ID</th>
                 <th>Position</th>
                 <th>Y01 Completed</th>
-                <th>Y01 Expired</th>
+                <th>Y01 Expires</th>
               </tr>
             </thead>
             <tbody>
               <?php
-              if ($ExpiredyptCount > 0) {
+              $hasRows = false;
+              if ($Resultypt && $Resultypt->num_rows > 0) {
                 while ($row = $Resultypt->fetch_assoc()) {
-                  echo "<tr><td>" . htmlspecialchars($row["Unit_Number"]) . "</td><td>" .
-                    htmlspecialchars($row["First_Name"]) . "</td><td>" .
-                    htmlspecialchars($row["Last_Name"]) . "</td><td>" .
-                    htmlspecialchars($row["Member_ID"]) . "</td><td>" .
-                    htmlspecialchars($row["Position"]) . "</td><td>" .
-                    htmlspecialchars($row["Y01_Completed"]) . "</td><td>" .
-                    htmlspecialchars($row["Y01_Expires"]) . "</td></tr>";
+                  $hasRows = true;
+                  echo "<tr>";
+                  echo "<td>" . htmlspecialchars($row['Unit_Number'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['First_Name'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['Last_Name'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['Member_ID'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['Position'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['Y01_Completed'] ?? '') . "</td>";
+                  echo "<td>" . htmlspecialchars($row['Y01_Expires'] ?? '') . "</td>";
+                  echo "</tr>";
                 }
-              } else {
-                echo "<tr><td colspan=\"7\">No expired YPT records found.</td></tr>";
+              }
+              if (!$hasRows) {
+                // Let DataTables show its own "No matching records" message
+                // Do NOT output any <tr> with colspan here
               }
               ?>
             </tbody>
           </table>
-          <p style="text-align: center;" class="px-lg-5">Data last updated: <?php echo htmlspecialchars($cAdvancement->GetLastUpdated("ypt")); ?></p>
+
+          <p style="text-align: center;" class="px-lg-5 mt-3">
+            Data last updated: <?php echo htmlspecialchars($cAdvancement->GetLastUpdated("ypt") ?? 'Never'); ?>
+          </p>
         </div>
+
+
       </div>
     </div>
   </div>

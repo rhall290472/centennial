@@ -1058,130 +1058,123 @@ class AdultLeaders
    * 11-Sep-2021, BSA added phone number field
    * 
    *****************************************************************************/
-  function &Updateypt($fileName)
+  public static function &Updateypt($fileName)
   {
-
-    $colDistrict     = array(0, "District");
-    $colProgram     = array(1, "Program");
-    $colUnit      = array(2, "Unit_Number");
-    $colGender       = array(3,  "Gender_Accepted");
-    $colCharteredOrg   = array(4,  "Chartered_Org_Name");
-    $colFirstName     = array(5,  "First_Name");
-    $colMiddleName     = array(6,  "Middle_Name");
-    $colLastName    = array(7,  "Last_Name");
-    $colMemberID     = array(8,  "Member_ID");
-    $colPosition     = array(9,  "Position");
-    $colStatus       = array(10, "Status");
-    $colEffectiveThrough = array(11, "Effective_Through");
-    $colYPTCoce     = array(12, "Youth_Protection_Code");
-    $colYPTCompleted   = array(13, "Y01_Completed");
-    $colYPTExpired     = array(14, "Y01_Expires");
-    $colStreetAddress  = array(15, "Street_Address");
-    $colCity      = array(16, "City");
-    $colState      = array(17, "State");
-    $colZip        = array(18, "Zip");
-    $colEmail       = array(19, "Email_Address");
-    $colPhone       = array(20, "Phone");
-    $colRegistrationDate = array(21, "Registration_Date");
-    $colExpiryDate       = array(22, "Expiry_Date");
-    $colOnlineCourses   = array(23, "Online_Courses");
-
-
-
-
-    $sqlyptInsertSt = "INSERT INTO `ypt`(`$colDistrict[1]`, `$colProgram[1]`, `$colUnit[1]`, `$colGender[1]`, `$colCharteredOrg[1]`, 
-    	`$colFirstName[1]`, `$colMiddleName[1]`, `$colLastName[1]`, `$colMemberID[1]`, `$colPosition[1]`, `$colStatus[1]`, 
-    	`$colEffectiveThrough[1]`, `$colYPTCoce[1]`, `$colYPTCompleted[1]`, `$colYPTExpired[1]`, 
-    	`$colEmail[1]`, `$colPhone[1]`, `$colRegistrationDate[1]`, `$colOnlineCourses[1]`) VALUES (";
-
-    $Inserted = 0;
-    $Updated = 0;
-    $RecordsInError = 0;
-    $Row = 1;
     $filePath = $fileName;
-    $Datestr = "";
 
     if (!file_exists($filePath) || !is_readable($filePath)) {
-      error_log("Updateypt: File not found or unreadable at $filePath");
-      return ++$RecordsInError;
-    }
-
-    // Delete all of the Old data
-    if (!self::doQuery("TRUNCATE TABLE `ypt`")) {
-      $strError = "TRUNCATE TABLE `ypt`";
+      $strError = "ERROR: File not found or unreadable: " . $filePath;
+      error_log($strError);
       self::function_alert($strError);
+      return 1;  // return error count
     }
 
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 1000, ",", '"', "\\")) !== FALSE) {
-        if ($Row < 10) { // Skip the first row(s), headers.
-          if ($Row == 5)
-            $Datestr = $data[0]; // Get the report date.
-          $Row++;
-          continue;
+    // Clear old data
+    if (!self::doQuery("TRUNCATE TABLE `ypt`")) {
+      $strError = "ERROR: Failed to TRUNCATE TABLE `ypt`";
+      error_log($strError);
+      self::function_alert($strError);
+      return 1;
+    }
+
+    $handle = fopen($filePath, "r");
+    if ($handle === FALSE) {
+      $Usermsg = "ERROR: Failed to open file: " . $filePath;
+      error_log($Usermsg);
+      self::function_alert($Usermsg);
+      return 1;
+    }
+
+    $Inserted = 0;
+    $RecordsInError = 0;
+    $row = 0;
+    $columnMap = [];        // "ColumnName" => index
+
+    // Expected columns for the ypt table (exact header names from your CSV)
+    $expectedColumns = [
+      'District',
+      'Program',           // was colProgram
+      'Unit_Number',       // will be overridden with formatted Unit
+      'Gender_Accepted',
+      'Chartered_Org_Name',
+      'First_Name',
+      'Middle_Name',
+      'Last_Name',
+      'Member_ID',
+      'Position',
+      'Status',
+      'Effective_Through',
+      'Youth_Protection_Code',
+      'Y01_Completed',
+      'Y01_Expires',
+      'Email_Address',
+      'Phone',
+      'Registration_Date',
+      'Online_Courses'
+    ];
+
+    while (($data = fgetcsv($handle, 0, ",", '"', "\\")) !== FALSE) {
+      $row++;
+
+      // Skip empty lines
+      if (empty(array_filter($data))) continue;
+
+      // === FIND HEADER ROW ===
+      if (empty($columnMap) && in_array('District', $data) && in_array('First_Name', $data)) {
+        // Build column map: clean name => index
+        foreach ($data as $index => $colName) {
+          $cleanName = trim($colName);
+          $columnMap[$cleanName] = $index;
         }
-        // Verify the proper array size, should be $Exprire_Date + 1
-        if (count($data) != ($colOnlineCourses[0] + 1)) {
-          $strMsg = "ERROR: Updateypt(" . $fileName . ") is incorrect.";
-          error_log($strMsg);
-          self::function_alert($strMsg);
-          exit;
-        }
-
-
-
-        $Unit = self::formatUnitNumber($data[$colProgram[0]] . " " . $data[$colUnit[0]], $data[$colGender[0]]);
-
-        // Insert Data
-        $sqlInsertypt = "";
-        //for($i=0; $i < count($data); $i++){
-        //if($i == 2)
-        //$sqlInsertypt += $sqlInsertypt.sprintf("'%s', ", $Unit);
-        //else
-        $sqlInsertypt = "'" . $data[$colDistrict[0]] . "', "
-          . "'" . addslashes((string)($data[$colProgram[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($Unit ?? '')) . "', "               // $Unit probably never null, but safe
-          . "'" . addslashes((string)($data[$colGender[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colCharteredOrg[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colFirstName[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colMiddleName[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colLastName[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colMemberID[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colPosition[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colStatus[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colEffectiveThrough[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colYPTCoce[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colYPTCompleted[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colYPTExpired[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colEmail[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colPhone[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colRegistrationDate[0]] ?? '')) . "', "
-          . "'" . addslashes((string)($data[$colOnlineCourses[0]] ?? '')) . "'";
-
-
-
-
-        //$sqlInsertypt = $sqlInsertypt.sprintf("'%s', ", addslashes($data[$i]));
-        //}
-        //$sqlInsertypt = substr($sqlInsertypt, 0, (strlen($sqlInsertypt)-2));
-        $sqlInsertypt =  $sqlyptInsertSt . $sqlInsertypt . ");";
-
-        // Update the database
-        if (!self::doQuery($sqlInsertypt)) {
-          echo "Update Error: " . $sqlInsertypt . "" . mysqli_error(self::getDbConn()) . "<br />";
-          $RecordsInError++;
-        } else
-          $Inserted++;
-        //Reset String
-        $sqlInsertypt = "";
+        continue;   // Skip the header row
       }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      //self::function_alert($Usermsg);
-    } else {
-      $Usermsg = "Failed to open file";
-      //self::function_alert($Usermsg);
+
+      // Skip rows before header is found
+      if (empty($columnMap)) continue;
+
+      // === PROCESS DATA ROW ===
+
+      // Format Unit the same way you did before
+      $program = $data[$columnMap['Program'] ?? -1] ?? '';
+      $unitNum = $data[$columnMap['Unit_Number'] ?? -1] ?? '';
+      $gender  = $data[$columnMap['Gender_Accepted'] ?? -1] ?? '';
+
+      $Unit = self::formatUnitNumber($program . " " . $unitNum, $gender);
+
+      // Build VALUES array
+      $values = [];
+      foreach ($expectedColumns as $col) {
+        if ($col === 'Unit_Number') {
+          $value = $Unit;
+        } else {
+          $idx = $columnMap[$col] ?? -1;
+          $value = ($idx >= 0 && isset($data[$idx])) ? $data[$idx] : '';
+        }
+
+        $safeValue = addslashes((string)$value);
+        $values[] = "'" . $safeValue . "'";
+      }
+
+      $sql = "INSERT INTO `ypt` (`"
+        . implode("`, `", $expectedColumns)
+        . "`) VALUES ("
+        . implode(", ", $values)
+        . ");";
+
+      if (!self::doQuery($sql)) {
+        $err = "Insert Error on row $row: " . mysqli_error(self::getDbConn());
+        error_log($err . "\nSQL: " . substr($sql, 0, 500));
+        $RecordsInError++;
+      } else {
+        $Inserted++;
+      }
     }
+
+    fclose($handle);
+
+    $Usermsg = "YPT Import Complete - Inserted: $Inserted, Errors: $RecordsInError";
+    error_log($Usermsg);
+    // self::function_alert($Usermsg);   // uncomment if you want the alert
 
     return $RecordsInError;
   }
