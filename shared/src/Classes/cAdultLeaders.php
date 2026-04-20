@@ -895,6 +895,7 @@ class AdultLeaders
     switch ($Unit) {
       case "Post":
       case "Crew":
+      case "Ship":
         $NewNumber = $Unit . " " . $Number . "-NA";
         break;
 
