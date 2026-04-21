@@ -55,7 +55,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Post</span>
+        <i class="fs-4 fa-solid fa-house"></i><span class="ms-1 d-none d-sm-inline">Post</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=post-summary">Summary</a></li>
@@ -64,7 +64,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
+        <i class="fs-4 fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=ship-summary">Summary</a></li>
