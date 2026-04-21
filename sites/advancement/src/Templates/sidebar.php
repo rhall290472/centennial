@@ -55,7 +55,16 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
+        <i class="fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Post</span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="?page=post-summary">Summary</a></li>
+        <li><a class="dropdown-item" href="?page=unitview">Unit View</a></li>
+      </ul>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=ship-summary">Summary</a></li>
