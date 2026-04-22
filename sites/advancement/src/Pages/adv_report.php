@@ -197,9 +197,13 @@ try {
                 if (floatval($UnitRankScout) >= $CPack->GetDistrictGoal($row["Date"])) {
                   continue;
                 }
+
                 $Unit = $row['Unit'];
-                $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                // $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                $UnitURL = "<a href=\"$URLPath\">";
                 $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+
                 $Formatter = $UnitRankScout == 0 ? "<b style='color:red;'>" : ($UnitRankScout >= $CPack->GetDistrictGoal($row["Date"]) && $UnitRankScout < $CPack->GetIdealGoal($row["Date"]) ? "<b style='color:orange;'>" : ($UnitRankScout >= $CPack->GetIdealGoal($row["Date"]) ? "<b style='color:green;'>" : ""));
                 echo "<tr><td>$UnitView</td><td>$Formatter" . htmlspecialchars($row["lion"]) . "</td><td>$Formatter" .
                   htmlspecialchars($row["tiger"]) . "</td><td>$Formatter" . htmlspecialchars($row["wolf"]) . "</td><td>$Formatter" .
@@ -261,9 +265,17 @@ try {
                 if (floatval($UnitRankScout) >= $CTroop->GetDistrictGoal($row["Date"])) {
                   continue;
                 }
+
                 $Unit = $row['Unit'];
-                $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                // $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                $URLPath = 'index.php?page=unitview&btn=Units&unit_name=' . urlencode($Unit);
+                $UnitURL = "<a href=\"$URLPath\">";
                 $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
+
+
+                // $Unit = $row['Unit'];
+                // $UnitURL = "<a href='" . htmlspecialchars(SITE_URL . '/centennial/sites/advancement/src/Pages/Unit_View.php?btn=Units&unit_name=' . urlencode($Unit)) . "'>";
+                // $UnitView = sprintf("%s%s</a>", $UnitURL, htmlspecialchars($Unit));
                 $Formatter = $UnitRankScout == 0 ? "<b style='color:red;'>" : ($UnitRankScout >= $CTroop->GetDistrictGoal($row["Date"]) && $UnitRankScout < $CTroop->GetIdealGoal($row["Date"]) ? "<b style='color:orange;'>" : ($UnitRankScout >= $CTroop->GetIdealGoal($row["Date"]) ? "<b style='color:green;'>" : ""));
                 echo "<tr><td>$UnitView</td><td>$Formatter" . htmlspecialchars($row["Scout"]) . "</td><td>$Formatter" .
                   htmlspecialchars($row["Tenderfoot"]) . "</td><td>$Formatter" . htmlspecialchars($row["SecondClass"]) . "</td><td>$Formatter" .
