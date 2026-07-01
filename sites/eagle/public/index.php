@@ -63,6 +63,7 @@ $valid_pages = [
   'changepassword',
   'viewuser',
   'edituser',
+  'verify-life-eagle',
   ''
 ];
 if (!in_array($page, $valid_pages)) {
@@ -299,6 +300,9 @@ if (!isset($_SESSION['csrf_token'])) {
             break;
         case 'edituser':
             include('../src/Pages/EditUser.php');
+            break;
+        case 'verify-life-eagle':
+            include('../src/Pages/VerifyLifeEagle.php');
             break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';

@@ -69,6 +69,7 @@ $page = $page ?? 'home';
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="?page=viewuser">View Users</a></li>
+            <li><a class="dropdown-item" href="?page=verify-life-eagle">Verify Life & Eagle Scouts</a></li>
           </ul>
         </li>
       <?php endif ?>

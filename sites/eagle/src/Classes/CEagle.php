@@ -624,6 +624,7 @@ class CEagle
     $Unit = strtok($UnitNumber, ' ');
     $Number = strtok('');
     $Gender = strtok(' ');
+    $NewNumber = '';
     //
     //$Number = sprintf("%04d",$Number );
     //
@@ -1628,5 +1629,119 @@ class CEagle
     </script>
 
 <?php
+  }
+
+  /*=============================================================================
+     *
+     * Verify Life Scout and Eagle Scout members from a Youth Member Age Report CSV
+     * (e.g. the one generated for Troop 0012 (B)).
+     * 
+     * - Parses the same CSV format used by ImportLife()
+     * - For every scout listed with "Life Scout" or "Eagle Scout" in programname/rank
+     * - Checks if they exist in the `scouts` table (by MemberId)
+     * - If found, also verifies the `Eagled` flag is set correctly 
+     *     (1 for Eagle Scout, 0 for Life Scout)
+     * - Collects all discrepancies and missing scouts
+     * - Stores summary stats + detailed issues list in $_SESSION for display in a report page
+     *
+     *===========================================================================*/
+  public static function VerifyLifeEagleFromCSV($fileName)
+  {
+    $issues = [];
+    $stats = [
+      'total_life_eagle_in_report' => 0,
+      'found_in_db' => 0,
+      'missing_from_db' => 0,
+      'mismatched_marking' => 0,
+      'file_name' => $fileName
+    ];
+
+    $IdxName = 0;
+    $IdxID = 1;
+    $IdxPosition = 2;
+    $IdxRank = 3;
+    $IdxAge = 4;
+    $IdxGrade = 5;
+
+    $filePath = __DIR__ . '/../../src/Pages/Data/' . $fileName;  // your current path
+
+    if (!file_exists($filePath)) {
+      self::function_alert("ERROR: File not found: " . htmlspecialchars($filePath));
+      $_SESSION['verify_stats'] = $stats;
+      $_SESSION['verify_issues'] = [];
+      return $issues;
+    }
+
+    $row = 0;
+    if (($handle = fopen($filePath, "r")) !== FALSE) {
+      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+        if ($row < 9) {
+          $row++;
+          continue;
+        }
+        if (count($data) < 6) continue;
+
+        $rank = trim($data[$IdxRank]);
+        $isLife  = (stripos($rank, "Life Scout") !== false);
+        $isEagle = (stripos($rank, "Eagle Scout") !== false);
+
+        if (!$isLife && !$isEagle) continue;
+
+        $stats['total_life_eagle_in_report']++;
+
+        $fullName = trim($data[$IdxName]);
+        $memberID = trim($data[$IdxID]);
+        $age      = trim($data[$IdxAge]);
+        $grade    = trim($data[$IdxGrade]);
+
+        $safeMemberID = mysqli_real_escape_string(self::getDbConn(), $memberID);
+        $sqlFind = "SELECT Scoutid, Eagled FROM `scouts` WHERE `MemberId` = '$safeMemberID'";
+        $result  = self::doQuery($sqlFind);
+        $numFound = mysqli_num_rows($result);
+
+        $scoutid = null;
+        $eagledInDB = '0';
+
+        if ($numFound > 0) {
+          $rowScout = $result->fetch_assoc();
+          $scoutid = $rowScout['Scoutid'];
+          $eagledInDB = (string)($rowScout['Eagled'] ?? '0');
+        }
+
+        if ($numFound == 0) {
+          $issues[] = [
+            'name' => $fullName,
+            'memberid' => $memberID,
+            'scoutid' => null,
+            'rank_in_report' => $rank,
+            'age' => $age,
+            'grade' => $grade,
+            'issue' => 'Not found in database'
+          ];
+          $stats['missing_from_db']++;
+        } else {
+          $stats['found_in_db']++;
+          $expectedEagled = $isEagle ? '1' : '0';
+
+          if ($eagledInDB !== $expectedEagled) {
+            $issues[] = [
+              'name' => $fullName,
+              'memberid' => $memberID,
+              'scoutid' => $scoutid,
+              'rank_in_report' => $rank,
+              'age' => $age,
+              'grade' => $grade,
+              'issue' => "Marking mismatch: Expected Eagled=$expectedEagled, found $eagledInDB"
+            ];
+            $stats['mismatched_marking']++;
+          }
+        }
+      }
+      fclose($handle);
+    }
+
+    $_SESSION['verify_stats']  = $stats;
+    $_SESSION['verify_issues'] = $issues;
+    return $issues;
   }
 }
