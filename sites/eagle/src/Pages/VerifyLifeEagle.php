@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
   } else if (isset($_FILES['youth_report']) && $_FILES['youth_report']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = __DIR__ . '/Data/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-    
+
     $fileName = basename($_FILES['youth_report']['name']);
     $targetPath = $uploadDir . $fileName;
 
@@ -32,15 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
     $_SESSION['feedback'] = ['type' => 'success', 'message' => 'Verification completed for ' . htmlspecialchars($fileName)];
   }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_scout'])) {
+  $memberID = $_POST['memberid'];
+  $fullName = $_POST['fullname'];
+  $unitStr  = $_POST['unitstr'];
+  CEagle::AddMissingLifeScout($memberID, $fullName, $unitStr);
+  // Refresh issues list
+  CEagle::VerifyLifeEagleFromCSV($stats['file_name'] ?? 'Youth_Member_Age_Report.csv');
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Verify Life & Eagle Scouts</title>
-  <?php load_template("/src/Templates/header.php"); // reuse your header ?>
+  <?php load_template("/src/Templates/header.php"); // reuse your header 
+  ?>
 </head>
+
 <body>
   <?php load_template("/src/Templates/navbar.php"); ?>
   <?php load_template("/src/Templates/sidebar.php"); ?>
@@ -60,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
 
       <form method="post" enctype="multipart/form-data" class="mb-4">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
-        
+
         <div class="row">
           <div class="col-md-6">
             <label class="form-label">Upload CSV File</label>
@@ -74,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
         <button type="submit" name="verify_submit" class="btn btn-primary mt-3">Upload & Run Verification</button>
       </form>
 
-      <?php if (isset($_SESSION['verify_issues'])): 
+      <?php if (isset($_SESSION['verify_issues'])):
         $issues = $_SESSION['verify_issues'];
         $stats = $_SESSION['verify_stats'] ?? [];
       ?>
@@ -103,18 +115,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
               <?php foreach ($issues as $row): ?>
                 <tr>
                   <td>
-  <?php if (!empty($row['scoutid'])): ?>
-    <a href="index.php?page=edit-select-scout&Scoutid=<?= htmlspecialchars($row['scoutid']) ?>" target="_blank">
-      <?= htmlspecialchars($row['name']) ?>
-    </a>
-  <?php else: ?>
-    <?= htmlspecialchars($row['name']) ?>
-  <?php endif; ?>
-</td>
+                    <?php if (!empty($row['scoutid'])): ?>
+                      <a href="index.php?page=edit-select-scout&Scoutid=<?= htmlspecialchars($row['scoutid']) ?>" target="_blank">
+                        <?= htmlspecialchars($row['name']) ?>
+                      </a>
+                    <?php else: ?>
+                      <?= htmlspecialchars($row['name']) ?>
+                    <?php endif; ?>
+                  </td>
                   <td><?= htmlspecialchars($row['memberid']) ?></td>
                   <td><?= htmlspecialchars($row['rank_in_report']) ?></td>
                   <td><?= htmlspecialchars($row['age'] . ' / ' . ($row['grade'] ?? '')) ?></td>
-                  <td class="text-danger"><?= htmlspecialchars($row['issue']) ?></td>
+                  <td>
+                    <?= htmlspecialchars($row['issue']) ?>
+                    <?php if ($row['issue'] === 'Not found in database' && strpos($row['rank_in_report'], 'Life Scout') !== false): ?>
+                      <form method="post" style="display:inline;" onsubmit="return confirm('Add this Life Scout to database?')">
+                        <input type="hidden" name="add_scout" value="1">
+                        <input type="hidden" name="memberid" value="<?= htmlspecialchars($row['memberid']) ?>">
+                        <input type="hidden" name="fullname" value="<?= htmlspecialchars($row['name']) ?>">
+                        <input type="hidden" name="unitstr" value="<?= htmlspecialchars($stats['unit_header'] ?? 'Organization Name: Troop 0012 (B)') ?>">
+                        <button type="submit" class="btn btn-sm btn-success">Add Scout</button>
+                      </form>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -125,4 +148,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_submit'])) {
   </main>
 
 </body>
+
 </html>

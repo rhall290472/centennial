@@ -1744,4 +1744,40 @@ class CEagle
     $_SESSION['verify_issues'] = $issues;
     return $issues;
   }
+
+    public static function AddMissingLifeScout($memberID, $fullName, $unitStr)
+  {
+    if (empty($memberID) || empty($fullName)) {
+      self::function_alert("Error: Missing Member ID or Name");
+      return false;
+    }
+
+    // Parse Unit from CSV header like ImportLife does
+    $Unit = array();
+    $data = [$unitStr]; // simulate row
+    $Position = strpos($data[0], "Name:");
+    if ($Position !== false) {
+      $Unitstr = substr($data[0], $Position + 6);
+      $Unitstr = self::reduceMultipleSpacesToSingleSpace($Unitstr);
+      $Unit = explode(" ", $Unitstr);
+    } else {
+      // fallback
+      $Unit = ['Troop', '0012', 'B'];
+    }
+
+    $dataForInsert = [$fullName, $memberID, 'Youth Member'];
+
+    if (!self::IsScoutinDB($dataForInsert)) {
+      $result = self::InsertScout($dataForInsert, $Unit);
+      if ($result) {
+        self::function_alert("Success: Added " . htmlspecialchars($fullName) . " as Life Scout");
+        return true;
+      }
+    }
+    self::function_alert("Failed to add scout or already exists");
+    return false;
+  }
+
+  
 }
+
