@@ -90,7 +90,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_scout'])) {
         $issues = $_SESSION['verify_issues'];
         $stats = $_SESSION['verify_stats'] ?? [];
       ?>
-        <h4>Results for <?= htmlspecialchars($stats['file_name'] ?? 'report') ?></h4>
+        <h4>Results for <?= htmlspecialchars($stats['file_name'] ?? 'report') ?>
+          <?php if (!empty($stats['unit_type']) && !empty($stats['unit_number'])): ?>
+            — <?= htmlspecialchars($stats['unit_type']) ?>
+            <?= htmlspecialchars($stats['unit_number']) ?>
+            <?= !empty($stats['unit_gender']) ? '(' . $stats['unit_gender'] . ')' : '' ?>
+          <?php endif; ?>
+        </h4>
         <div class="alert alert-info">
           Total Life/Eagle Scouts in CSV: <strong><?= $stats['total_life_eagle_in_report'] ?? 0 ?></strong><br>
           Correctly in DB: <?= $stats['found_in_db'] ?? 0 ?><br>
@@ -125,7 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_scout'])) {
                   </td>
                   <td><?= htmlspecialchars($row['memberid']) ?></td>
                   <td><?= htmlspecialchars($row['rank_in_report']) ?></td>
-                  <td><?= htmlspecialchars($row['age'] . ' / ' . ($row['grade'] ?? '')) ?></td>
+                  <td>
+                    <?= htmlspecialchars($row['age'] ?? '') ?>
+                    /
+                    <?= htmlspecialchars($row['grade'] ?? '') ?>
+                  </td>
                   <td>
                     <?= htmlspecialchars($row['issue']) ?>
                     <?php if ($row['issue'] === 'Not found in database' && strpos($row['rank_in_report'], 'Life Scout') !== false): ?>

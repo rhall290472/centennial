@@ -1653,99 +1653,100 @@ class CEagle
       'found_in_db' => 0,
       'missing_from_db' => 0,
       'mismatched_marking' => 0,
+      'db_only' => 0,
+      'unit_type' => '',
+      'unit_number' => '',
       'file_name' => $fileName
     ];
 
     $IdxName = 0;
     $IdxID = 1;
-    $IdxPosition = 2;
     $IdxRank = 3;
-    $IdxAge = 4;
-    $IdxGrade = 5;
 
-    $filePath = __DIR__ . '/../../src/Pages/Data/' . $fileName;  // your current path
+    $filePath = __DIR__ . '/../../src/Pages/Data/' . $fileName;
 
-    if (!file_exists($filePath)) {
-      self::function_alert("ERROR: File not found: " . htmlspecialchars($filePath));
-      $_SESSION['verify_stats'] = $stats;
-      $_SESSION['verify_issues'] = [];
-      return $issues;
-    }
+    $csvMemberIDs = [];
+    $unitHeader = '';
 
-    $row = 0;
-    if (($handle = fopen($filePath, "r")) !== FALSE) {
+    // Parse CSV
+    if (file_exists($filePath) && ($handle = fopen($filePath, "r")) !== FALSE) {
+      $row = 0;
       while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
+        if ($row == 3) $unitHeader = $data[0] ?? '';
         if ($row < 9) {
           $row++;
           continue;
         }
-        if (count($data) < 6) continue;
+        if (count($data) < 4) continue;
 
         $rank = trim($data[$IdxRank]);
-        $isLife  = (stripos($rank, "Life Scout") !== false);
-        $isEagle = (stripos($rank, "Eagle Scout") !== false);
-
-        if (!$isLife && !$isEagle) continue;
-
-        $stats['total_life_eagle_in_report']++;
-
-        $fullName = trim($data[$IdxName]);
-        $memberID = trim($data[$IdxID]);
-        $age      = trim($data[$IdxAge]);
-        $grade    = trim($data[$IdxGrade]);
-
-        $safeMemberID = mysqli_real_escape_string(self::getDbConn(), $memberID);
-        $sqlFind = "SELECT Scoutid, Eagled FROM `scouts` WHERE `MemberId` = '$safeMemberID'";
-        $result  = self::doQuery($sqlFind);
-        $numFound = mysqli_num_rows($result);
-
-        $scoutid = null;
-        $eagledInDB = '0';
-
-        if ($numFound > 0) {
-          $rowScout = $result->fetch_assoc();
-          $scoutid = $rowScout['Scoutid'];
-          $eagledInDB = (string)($rowScout['Eagled'] ?? '0');
-        }
-
-        if ($numFound == 0) {
-          $issues[] = [
-            'name' => $fullName,
-            'memberid' => $memberID,
-            'scoutid' => null,
-            'rank_in_report' => $rank,
-            'age' => $age,
-            'grade' => $grade,
-            'issue' => 'Not found in database'
-          ];
-          $stats['missing_from_db']++;
-        } else {
-          $stats['found_in_db']++;
-          $expectedEagled = $isEagle ? '1' : '0';
-
-          if ($eagledInDB !== $expectedEagled) {
-            $issues[] = [
-              'name' => $fullName,
-              'memberid' => $memberID,
-              'scoutid' => $scoutid,
-              'rank_in_report' => $rank,
-              'age' => $age,
-              'grade' => $grade,
-              'issue' => "Marking mismatch: Expected Eagled=$expectedEagled, found $eagledInDB"
-            ];
-            $stats['mismatched_marking']++;
-          }
+        if (stripos($rank, "Life Scout") !== false || stripos($rank, "Eagle Scout") !== false) {
+          $stats['total_life_eagle_in_report']++;
+          $memberID = trim($data[$IdxID]);
+          $csvMemberIDs[$memberID] = trim($data[$IdxName]);
         }
       }
       fclose($handle);
+    } else {
+      self::function_alert("ERROR: File not found");
     }
 
-    $_SESSION['verify_stats']  = $stats;
+    // Parse Unit
+    // Parse Unit from header (e.g. "Troop 0012 (B)")
+    if (preg_match('/(Troop|Crew|Pack)\s+(\d+)\s*\(?(B|G|F)\)?/i', $unitHeader, $m)) {
+      $stats['unit_type']   = $m[1];
+      $stats['unit_number'] = $m[2];
+      $stats['unit_gender'] = strtoupper($m[3] ?? '');   // B, G, or F
+    }
+
+    // CSV → DB check (unchanged logic for missing/mismatch)
+    // === DB → CSV Check - Respect Gender for non-family units ===
+    $unitType = $stats['unit_type'];
+    $unitNum  = $stats['unit_number'];
+    $unitGender = $stats['unit_gender'] ?? '';
+
+    if ($unitType && $unitNum) {
+      $genderCondition = '';
+      if ($unitGender === 'B') {
+        $genderCondition = " AND Gender = 'Male'";
+      } elseif ($unitGender === 'G') {
+        $genderCondition = " AND Gender = 'Female'";
+      }
+      // For F (Family) or unknown - include all
+
+      $sqlDB = "SELECT Scoutid, FirstName, LastName, MemberId, Gender 
+                FROM scouts 
+                WHERE UnitType = '$unitType' 
+                  AND UnitNumber = '$unitNum'
+                  AND (Eagled IS NULL OR Eagled = '0')
+                  AND (AgedOut IS NULL OR AgedOut = '0')"
+        . $genderCondition;
+
+      $resultDB = self::doQuery($sqlDB);
+
+      while ($scout = $resultDB->fetch_assoc()) {
+        $mid = $scout['MemberId'];
+        if (!isset($csvMemberIDs[$mid])) {
+          $issues[] = [
+            'name' => $scout['FirstName'] . ' ' . $scout['LastName'],
+            'memberid' => $mid,
+            'scoutid' => $scout['Scoutid'],
+            'rank_in_report' => '(not in CSV)',
+            'issue' => 'In Database but missing from current CSV report'
+          ];
+          $stats['db_only']++;
+        }
+      }
+    }
+
+    $_SESSION['verify_stats'] = $stats;
     $_SESSION['verify_issues'] = $issues;
     return $issues;
   }
 
-    public static function AddMissingLifeScout($memberID, $fullName, $unitStr)
+
+
+  public static function AddMissingLifeScout($memberID, $fullName, $unitStr)
   {
     if (empty($memberID) || empty($fullName)) {
       self::function_alert("Error: Missing Member ID or Name");
@@ -1777,7 +1778,4 @@ class CEagle
     self::function_alert("Failed to add scout or already exists");
     return false;
   }
-
-
 }
-

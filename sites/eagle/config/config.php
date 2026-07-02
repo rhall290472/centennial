@@ -82,7 +82,7 @@ if ($is_localhost) {
   define('DB_NAME', 'eagle');
 } else {
   define('DB_HOST', 'rhall29047217205.ipagemysql.com');
-  define('DB_USER', 'eagleadmin');
+  define('DB_USER', 'eagleadmin_001');
   define('DB_PASS', 'w3frRWX^&q');
   define('DB_NAME', 'eagle');
 }
