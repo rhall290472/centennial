@@ -1762,7 +1762,7 @@ class CEagle
       $Unit = explode(" ", $Unitstr);
     } else {
       // fallback
-      $Unit = ['Troop', '0012', 'B'];
+      $Unit = ['Troop', '0000', 'B'];
     }
 
     $dataForInsert = [$fullName, $memberID, 'Youth Member'];
@@ -1778,6 +1778,6 @@ class CEagle
     return false;
   }
 
-  
+
 }
 
