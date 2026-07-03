@@ -93,19 +93,31 @@ ini_set('upload_max_filesize', '4M');
 ini_set('post_max_size', '4M');
 
 
-// Environment configuration  // development
+// Environment configuration
 define('ENV', 'development'); // Set to 'production' on live server
-// Enable error reporting in development only
 
+// Error logging setup
 if (defined('ENV') && ENV === 'development') {
     ini_set('display_errors', 1);
     ini_set('log_errors', 1);
-    ini_set('error_log', BASE_PATH . '/../../shared/logs');
+    
+    $logDir = BASE_PATH . '/../../shared/logs';
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
+    
+    $logFile = $logDir . '/php_errors.log';  // Explicit filename
+    ini_set('error_log', $logFile);
     error_reporting(E_ALL);
+    
+    // Optional: also log to screen for critical errors
+    //echo "<!-- Error log: " . $logFile . " -->\n";
+    
 } else {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', 'https://shared.centennialdistrict.co/logs/error.log');
+    ini_set('error_log', __DIR__ . '/../../../shared/logs/php_errors.log');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 }
 
 //

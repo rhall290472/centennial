@@ -1059,6 +1059,11 @@ class AdultLeaders
    * 11-Sep-2021, BSA added phone number field
    * 
    *****************************************************************************/
+  /******************************************************************************
+   * 
+   * Updated to handle the new 2026+ Safeguarding Youth Training CSV format
+   * 
+   *****************************************************************************/
   public static function &Updateypt($fileName)
   {
     $filePath = $fileName;
@@ -1067,7 +1072,7 @@ class AdultLeaders
       $strError = "ERROR: File not found or unreadable: " . $filePath;
       error_log($strError);
       self::function_alert($strError);
-      return 1;  // return error count
+      return 1;
     }
 
     // Clear old data
@@ -1089,83 +1094,79 @@ class AdultLeaders
     $Inserted = 0;
     $RecordsInError = 0;
     $row = 0;
-    $columnMap = [];        // "ColumnName" => index
+    $columnMap = [];
+    $errorDetails = [];
 
-    // Expected columns for the ypt table (exact header names from your CSV)
-    $expectedColumns = [
-      'District',
-      'Program',           // was colProgram
-      'Unit_Number',       // will be overridden with formatted Unit
-      'Gender_Accepted',
-      'Chartered_Org_Name',
-      'First_Name',
-      'Middle_Name',
-      'Last_Name',
-      'Member_ID',
-      'Position',
-      'Status',
-      'Effective_Through',
-      'Youth_Protection_Code',
-      'Y01_Completed',
-      'Y01_Expires',
-      'Email_Address',
-      'Phone',
-      'Registration_Date',
-      'Online_Courses'
+    // Map new CSV headers → your existing table columns
+    $columnMapping = [
+      'district' => 'District',
+      'unittype' => 'Program',
+      'unitnumber' => 'Unit_Number',
+      'genderaccepted' => 'Gender_Accepted',
+      'chartedorganization' => 'Chartered_Org_Name',
+      'firstname' => 'First_Name',
+      'middlename' => 'Middle_Name',
+      'lastname' => 'Last_Name',
+      'memberid' => 'Member_ID',
+      'positionname' => 'Position',
+      'isyptcurrent2' => 'Status',
+      'yptexpirationdatec' => 'Effective_Through',
+      'y01coursecode' => 'Youth_Protection_Code',
+      'y01completiondatec' => 'Y01_Completed',
+      'y01expirationdatec' => 'Y01_Expires',
+      'emailaddress' => 'Email_Address',
+      'phonenumber' => 'Phone',
+      'registrationdatec' => 'Registration_Date',
+      'stronlinecourses' => 'Online_Courses'
     ];
 
     while (($data = fgetcsv($handle, 0, ",", '"', "\\")) !== FALSE) {
       $row++;
 
-      // Skip empty lines
       if (empty(array_filter($data))) continue;
 
-      // === FIND HEADER ROW ===
-      if (empty($columnMap) && in_array('District', $data) && in_array('First_Name', $data)) {
-        // Build column map: clean name => index
+      // Skip metadata
+      if ($row < 15 && stripos(implode(' ', $data), 'Report:') !== false) continue;
+
+      // Find header
+      if (empty($columnMap) && stripos(implode(' ', $data), 'district') !== false) {
         foreach ($data as $index => $colName) {
-          $cleanName = trim($colName);
-          $columnMap[$cleanName] = $index;
+          $clean = strtolower(trim($colName));
+          $columnMap[$clean] = $index;
         }
-        continue;   // Skip the header row
+        continue;
       }
 
-      // Skip rows before header is found
       if (empty($columnMap)) continue;
 
-      // === PROCESS DATA ROW ===
-
-      // Format Unit the same way you did before
-      $program = $data[$columnMap['Program'] ?? -1] ?? '';
-      $unitNum = $data[$columnMap['Unit_Number'] ?? -1] ?? '';
-      $gender  = $data[$columnMap['Gender_Accepted'] ?? -1] ?? '';
-
+      // Format Unit
+      $program = $data[$columnMap['unittype'] ?? -1] ?? '';
+      $unitNum = $data[$columnMap['unitnumber'] ?? -1] ?? '';
+      $gender  = $data[$columnMap['genderaccepted'] ?? -1] ?? '';
       $Unit = self::formatUnitNumber($program . " " . $unitNum, $gender);
 
-      // Build VALUES array
+      // Build insert using your actual table columns
       $values = [];
-      foreach ($expectedColumns as $col) {
-        if ($col === 'Unit_Number') {
-          $value = $Unit;
-        } else {
-          $idx = $columnMap[$col] ?? -1;
-          $value = ($idx >= 0 && isset($data[$idx])) ? $data[$idx] : '';
+      foreach ($columnMapping as $csvCol => $tableCol) {
+        $idx = $columnMap[$csvCol] ?? -1;
+        $value = ($idx >= 0 && isset($data[$idx])) ? $data[$idx] : '';
+
+        if ($csvCol === 'unitnumber') {
+          $value = $Unit ?? '';
         }
 
         $safeValue = addslashes((string)$value);
         $values[] = "'" . $safeValue . "'";
       }
 
-      $sql = "INSERT INTO `ypt` (`"
-        . implode("`, `", $expectedColumns)
-        . "`) VALUES ("
-        . implode(", ", $values)
-        . ");";
+      $sql = "INSERT INTO `ypt` (`" . implode("`, `", array_values($columnMapping)) . "`) 
+              VALUES (" . implode(", ", $values) . ");";
 
       if (!self::doQuery($sql)) {
-        $err = "Insert Error on row $row: " . mysqli_error(self::getDbConn());
-        error_log($err . "\nSQL: " . substr($sql, 0, 500));
         $RecordsInError++;
+        $err = mysqli_error(self::getDbConn());
+        error_log("Row $row failed: $err");
+        if (count($errorDetails) < 5) $errorDetails[] = "Row $row: $err";
       } else {
         $Inserted++;
       }
@@ -1175,10 +1176,17 @@ class AdultLeaders
 
     $Usermsg = "YPT Import Complete - Inserted: $Inserted, Errors: $RecordsInError";
     error_log($Usermsg);
-    // self::function_alert($Usermsg);   // uncomment if you want the alert
+
+    if ($RecordsInError > 0) {
+      self::function_alert($Usermsg . "\n\nCheck error log for details.");
+    } else {
+      self::function_alert($Usermsg);
+    }
 
     return $RecordsInError;
   }
+
+
   /******************************************************************************
    * This funtion will 
    *****************************************************************************/

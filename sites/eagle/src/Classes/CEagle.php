@@ -85,7 +85,17 @@ class CEagle
     $db = self::getInstance();
     if (!self::checkDatabaseConnection($db->dbConn)) {
       $db->dbConn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-      $db->dbConn->set_charset('utf8');
+
+      if ($db->dbConn->connect_error) {
+        $error = "Database connection failed: " . $db->dbConn->connect_error;
+        error_log($error);
+        if (defined('ENV') && ENV === 'development') {
+          die($error);  // Show clear error locally
+        }
+        $db->dbConn = null;
+      } else {
+        $db->dbConn->set_charset('utf8mb4');  // Better than utf8
+      }
     }
     return $db;
   }
@@ -97,13 +107,21 @@ class CEagle
   {
     try {
       $db = self::initConnection();
+      if ($db->dbConn === null || $db->dbConn->connect_error) {
+        throw new Exception("No valid database connection");
+      }
       return $db->dbConn;
     } catch (Exception $ex) {
-      $strError = "I was unable to open a connection to the database. " . $ex->getMessage();
+      $strError = "Database connection error: " . $ex->getMessage();
       error_log($strError, 0);
+      if (defined('ENV') && ENV === 'development') {
+        echo "<div style='color:red; padding:20px; background:#fff;'>$strError</div>";
+        exit;
+      }
       return null;
     }
   }
+
   private static function checkDatabaseConnection($mysqli)
   {
     // Check if connection object exists and no connection error

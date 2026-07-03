@@ -103,7 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     try {
       $sql = "SELECT Userid, username, password, enabled, Role FROM users WHERE username = ?";
-      if ($stmt = mysqli_prepare($CEagle->getDbConn(), $sql)) {
+      $conn = $CEagle->getDbConn();
+      if (!$conn) {
+        $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Database connection failed. Check XAMPP MySQL.'];
+        header("Location: index.php?page=login");
+        exit;
+      }
+      if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
@@ -112,16 +118,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (mysqli_stmt_fetch($stmt)) {
               //$newPassword = password_hash($password, PASSWORD_DEFAULT);
               if (password_verify($password, $hashed_password) && $enabled) {
-              // Update lastlogged in
-              $updateSql = "UPDATE users SET LastLogin = NOW() WHERE Userid = ?";
-              if ($updateStmt = mysqli_prepare($CEagle->getDbConn(), $updateSql)) {
-                mysqli_stmt_bind_param($updateStmt, "i", $id);
-                mysqli_stmt_execute($updateStmt);
-                mysqli_stmt_close($updateStmt);
-                // You can silently ignore failure here — logging in is more important
-              } else {
-                error_log("Failed to prepare LastLogin update: " . mysqli_error($CEagle->getDbConn()));
-              }
+                // Update lastlogged in
+                $updateSql = "UPDATE users SET LastLogin = NOW() WHERE Userid = ?";
+                if ($updateStmt = mysqli_prepare($conn, $updateSql)) {
+                  mysqli_stmt_bind_param($updateStmt, "i", $id);
+                  mysqli_stmt_execute($updateStmt);
+                  mysqli_stmt_close($updateStmt);
+                  // You can silently ignore failure here — logging in is more important
+                } else {
+                  error_log("Failed to prepare LastLogin update: " . mysqli_error($conn));
+                }
 
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;
@@ -141,11 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.php?page=login");
           }
         } else {
-          throw new Exception("Database query failed: " . mysqli_error($CEagle->getDbConn()));
+          throw new Exception("Database query failed: " . mysqli_error($conn));
         }
         mysqli_stmt_close($stmt);
       } else {
-        throw new Exception("Failed to prepare statement: " . mysqli_error($CEagle->getDbConn()));
+        throw new Exception("Failed to prepare statement: " . mysqli_error($conn));
       }
     } catch (Exception $e) {
       error_log("index.php - Login error: " . $e->getMessage() . " " . __FILE__ . " " . __LINE__, 0);
@@ -213,10 +219,10 @@ if (!isset($_SESSION['csrf_token'])) {
               <?php if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) { ?>
                 <!-- <img class="EagleScoutimage" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
                 <!-- <img class="EagleScoutimage d-block mx-auto" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
-                 <!-- <img class="EagleScoutimage img-fluid mx-auto d-block" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
-                  <div class="text-center">
-  <img class="EagleScoutimage d-block mx-auto" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
-</div>
+                <!-- <img class="EagleScoutimage img-fluid mx-auto d-block" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" /> -->
+                <div class="text-center">
+                  <img class="EagleScoutimage d-block mx-auto" src="./img/EagleScout_insignia.jpg" alt="Eagle Rank" />
+                </div>
               <?php } else { ?>
                 <iframe src="https://www.google.com/maps/d/embed?mid=1Hj3PV-LAAKDU5-IenX9esVcbfx1_Ruc&ehbc=2E312F" width="100%" height="800px"></iframe>
               <?php } ?>
@@ -290,20 +296,20 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
 
         case 'register':
-            include('register.php');
-            break;
-         case 'changepassword':
-            include('../src/Pages/changepassword.php');
-            break;
+          include('register.php');
+          break;
+        case 'changepassword':
+          include('../src/Pages/changepassword.php');
+          break;
         case 'viewuser':
-            include('../src/Pages/ViewUsers.php');
-            break;
+          include('../src/Pages/ViewUsers.php');
+          break;
         case 'edituser':
-            include('../src/Pages/EditUser.php');
-            break;
+          include('../src/Pages/EditUser.php');
+          break;
         case 'verify-life-eagle':
-            include('../src/Pages/VerifyLifeEagle.php');
-            break;
+          include('../src/Pages/VerifyLifeEagle.php');
+          break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }
