@@ -30,13 +30,13 @@ class CEagle
    * see how this works in a moment.
    */
   private static $instances = [];
+  private $dbConn = null;
 
   /**
    * Database connection instance.
    *
    * @var mysqli|null
    */
-  private $dbConn = null;
 
   /**
    * The Singleton's constructor should always be private to prevent direct
@@ -147,6 +147,8 @@ class CEagle
     $Result = null;
     try {
       $mysqli = self::getDbConn();
+      if (!$mysqli) return $Result;
+
       $Result = $mysqli->query($sql);
       if (!$Result) {
         $strError = $mysqli->error;
@@ -154,11 +156,11 @@ class CEagle
       }
     } catch (Exception $ex) {
       $strError = "I was unable to execute query. " . $ex->getMessage();
-      error_log($strError, 0);
+      error_log($strError);
       $Result = null;
     }
     if (!$Result)
-      error_log("SQL Statement failed: " . $$sql);
+      error_log("SQL Statement failed: " . $sql);
     return $Result;
   }
   /**************************************************************************
@@ -289,18 +291,18 @@ class CEagle
      * This function will format the phone number field to look pretty ;-)
      * 
      *===========================================================================*/
-  public static function &formatPhoneNumber($row, $Phone)
+  public static function formatPhoneNumber($row, $Phone)
   {
-    if (!is_null($row)) {
-      switch ($row['PrimaryContact']) {
+    if ($row !== null) {
+      switch ($row['PrimaryContact'] ?? '') {
         case "Home":
-          $Phone = $row['HomePhone'];
+          $Phone = $row['HomePhone'] ?? '';
           break;
         case "Mobile":
-          $Phone = $row['MobilePhone'];
+          $Phone = $row['MobilePhone'] ?? '';
           break;
         case "Work":
-          $Phone = $row['WorkPhone'];
+          $Phone = $row['WorkPhone'] ?? '';
           break;
         default:
           $Phone = "None";
@@ -308,7 +310,7 @@ class CEagle
       }
     }
 
-    $phoneNumber = preg_replace('/[^0-9]/', '', $Phone);
+    $phoneNumber = preg_replace('/[^0-9]/', '', (string)$Phone);
 
     if (strlen($phoneNumber) > 10) {
       $countryCode = substr($phoneNumber, 0, strlen($phoneNumber) - 10);
@@ -1433,76 +1435,141 @@ class CEagle
    * the use of triggers in the database.
    *
    *****************************************************************************/
+  /*=============================================================================
+     * CreateAudit - FIXED escaping + null handling
+     *=============================================================================*/
   public static function CreateAudit($Old, $New, $IdKey)
   {
-    if ($New[$IdKey] == -1) {
+    if (($New[$IdKey] ?? -1) == -1) {
       $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit.'];
       return;
     }
 
     $Index = 0;
     $Indexid = 'Coachesid';
-    if ($IdKey == 'Coachesid') {
+    if ($IdKey === 'Coachesid') {
       $PrimaryKey = 'Coachesid';
       $db = 'coaches_audit_trail';
     } else {
       $PrimaryKey = 'Scoutid';
       $db = 'scouts_audit_trail';
     }
+
     foreach ($New as $key => $value) {
-      // Don't audit the coachesid value
-      if ($Index == 0) {
+      if ($Index === 0) {
         $Indexid = $key;
         $Index++;
         continue;
-      } else if ($Old[$key] != $New[$key]) {
-        $sqlStmt = "INSERT INTO `$db`(`$PrimaryKey`, `column_name`, `old_value`, `new_value`, `done_by`)
-                     VALUES ('$New[$Indexid]','$key','$Old[$key]','$New[$key]','$_SESSION[username]')";
-        //Excute the sql Statement
+      }
+
+      $oldVal = $Old[$key] ?? null;
+      $newVal = $New[$key] ?? null;
+
+      if ($oldVal != $newVal) {   // loose comparison is intentional here for legacy
+        // Proper escaping
+        $oldEsc = $Old[$key] !== null ? "'" . self::getDbConn()->real_escape_string((string)$oldVal) . "'" : 'NULL';
+        $newEsc = $New[$key] !== null ? "'" . self::getDbConn()->real_escape_string((string)$newVal) . "'" : 'NULL';
+
+        $sqlStmt = "INSERT INTO `$db` (`$PrimaryKey`, `column_name`, `old_value`, `new_value`, `done_by`)
+                            VALUES ('" . self::getDbConn()->real_escape_string((string)$New[$Indexid]) . "',
+                                    '" . self::getDbConn()->real_escape_string($key) . "',
+                                    $oldEsc, $newEsc,
+                                    '" . self::getDbConn()->real_escape_string($_SESSION['username'] ?? 'unknown') . "')";
+
         $Result = self::doQuery($sqlStmt);
         if (!$Result) {
-          $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed CreateAudit 2.'];
+          error_log("CreateAudit failed for column $key");
+          $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Failed to create audit trail.'];
           return;
         }
       }
       $Index++;
     }
-    return $Result;
   }
   /*****************************************************************************
    *
+   * Updated & Secured: UpdateScoutRecord
+   * - Proper mysqli real_escape_string usage
+   * - Null-safe handling
+   * - Fixed potential SQL injection
+   * - Better error handling
    *
    *****************************************************************************/
   public static function UpdateScoutRecord($Scout)
   {
-    //Check to see if this is a new scout, 
-    $ProjectName = addslashes($Scout['ProjectName']);
-
-    // TODO: Need to ensure that we do not have a duplicate scout
-    //self::IsScoutIDinDB($Scout['MemberId']);
-
-
-    $sqlStmt = "UPDATE `scouts` SET `FirstName`='$Scout[FirstName]',`PreferredName`='$Scout[PreferredName]',`MiddleName`='$Scout[MiddleName]',`LastName`='$Scout[LastName]', `is_deleted`='$Scout[is_deleted]',
-            `Email`='$Scout[Email]', `Phone_Home`='$Scout[Phone_Home]',`Phone_Mobile`='$Scout[Phone_Mobile]',
-            `Street_Address`='$Scout[Street_Address]',`City`='$Scout[City]',`State`='$Scout[State]',`Zip`='$Scout[Zip]',
-            `UnitType`='$Scout[UnitType]',`UnitNumber`='$Scout[UnitNumber]', `District`='$Scout[District]',`Gender`='$Scout[Gender]', `AgeOutDate`='$Scout[AgeOutDate]',`MemberId`='$Scout[MemberId]',
-            `ULFirst`='$Scout[ULFirst]',`ULLast`='$Scout[ULLast]',`ULPhone`='$Scout[ULPhone]',`ULEmail`='$Scout[ULEmail]',
-            `CCFirst`='$Scout[CCFirst]',`CCLast`='$Scout[CCLast]',`CCPhone`='$Scout[CCPhone]',`CCEmail`='$Scout[CCEmail]',
-            `GuardianFirst`='$Scout[GuardianFirst]',`GuardianLast`='$Scout[GuardianLast]',`GuardianPhone`='$Scout[GuardianPhone]',
-            `GuardianEmail`='$Scout[GuardianEmail]', `GuardianRelationship`='$Scout[GuardianRelationship]',
-            `AgedOut`='$Scout[AgedOut]',`AttendedPreview`='$Scout[AttendedPreview]',`ProjectApproved`='$Scout[ProjectApproved]',`ProjectDate`='$Scout[ProjectDate]',`Coach`='$Scout[Coach]',`ProjectHours`='$Scout[ProjectHours]',
-            `Beneficiary`='$Scout[Beneficiary]',`ProjectName`='$ProjectName',
-            `BOR`='$Scout[BOR]',`BOR_Member`='$Scout[BOR_Member]',`Eagled`='$Scout[Eagled]',
-            `Notes`='$Scout[Notes]',`updated_by`='$_SESSION[username]' WHERE `Scoutid` = '$Scout[Scoutid]'";
-    //    }
-
-    // Excute the sql Statement
-    $Result = self::doQuery($sqlStmt);
-    if (!$Result) {
-      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Duplicate Member IDs found in database for Member ID:  Please contact the system administrator.'];
+    $mysqli = self::getDbConn();
+    if (!$mysqli) {
+      $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Database connection error.'];
+      return false;
     }
+
+    // Sanitize all inputs
+    $Scoutid          = (int)($Scout['Scoutid'] ?? 0);
+    $ProjectName      = $mysqli->real_escape_string($Scout['ProjectName'] ?? '');
+    $Notes            = $mysqli->real_escape_string($Scout['Notes'] ?? '');
+
+    $sqlStmt = "UPDATE `scouts` SET 
+            `FirstName`          = '" . $mysqli->real_escape_string($Scout['FirstName'] ?? '') . "',
+            `PreferredName`      = '" . $mysqli->real_escape_string($Scout['PreferredName'] ?? '') . "',
+            `MiddleName`         = '" . $mysqli->real_escape_string($Scout['MiddleName'] ?? '') . "',
+            `LastName`           = '" . $mysqli->real_escape_string($Scout['LastName'] ?? '') . "',
+            `is_deleted`         = '" . (int)($Scout['is_deleted'] ?? 0) . "',
+            `Email`              = '" . $mysqli->real_escape_string($Scout['Email'] ?? '') . "',
+            `Phone_Home`         = '" . $mysqli->real_escape_string($Scout['Phone_Home'] ?? '') . "',
+            `Phone_Mobile`       = '" . $mysqli->real_escape_string($Scout['Phone_Mobile'] ?? '') . "',
+            `Street_Address`     = '" . $mysqli->real_escape_string($Scout['Street_Address'] ?? '') . "',
+            `City`               = '" . $mysqli->real_escape_string($Scout['City'] ?? '') . "',
+            `State`              = '" . $mysqli->real_escape_string($Scout['State'] ?? '') . "',
+            `Zip`                = '" . $mysqli->real_escape_string($Scout['Zip'] ?? '') . "',
+            `UnitType`           = '" . $mysqli->real_escape_string($Scout['UnitType'] ?? '') . "',
+            `UnitNumber`         = '" . $mysqli->real_escape_string($Scout['UnitNumber'] ?? '') . "',
+            `District`           = '" . $mysqli->real_escape_string($Scout['District'] ?? '') . "',
+            `Gender`             = '" . $mysqli->real_escape_string($Scout['Gender'] ?? '') . "',
+            `AgeOutDate`         = '" . $mysqli->real_escape_string($Scout['AgeOutDate'] ?? '') . "',
+            `MemberId`           = '" . $mysqli->real_escape_string($Scout['MemberId'] ?? '') . "',
+            `ULFirst`            = '" . $mysqli->real_escape_string($Scout['ULFirst'] ?? '') . "',
+            `ULLast`             = '" . $mysqli->real_escape_string($Scout['ULLast'] ?? '') . "',
+            `ULPhone`            = '" . $mysqli->real_escape_string($Scout['ULPhone'] ?? '') . "',
+            `ULEmail`            = '" . $mysqli->real_escape_string($Scout['ULEmail'] ?? '') . "',
+            `CCFirst`            = '" . $mysqli->real_escape_string($Scout['CCFirst'] ?? '') . "',
+            `CCLast`             = '" . $mysqli->real_escape_string($Scout['CCLast'] ?? '') . "',
+            `CCPhone`            = '" . $mysqli->real_escape_string($Scout['CCPhone'] ?? '') . "',
+            `CCEmail`            = '" . $mysqli->real_escape_string($Scout['CCEmail'] ?? '') . "',
+            `GuardianFirst`      = '" . $mysqli->real_escape_string($Scout['GuardianFirst'] ?? '') . "',
+            `GuardianLast`       = '" . $mysqli->real_escape_string($Scout['GuardianLast'] ?? '') . "',
+            `GuardianPhone`      = '" . $mysqli->real_escape_string($Scout['GuardianPhone'] ?? '') . "',
+            `GuardianEmail`      = '" . $mysqli->real_escape_string($Scout['GuardianEmail'] ?? '') . "',
+            `GuardianRelationship`= '" . $mysqli->real_escape_string($Scout['GuardianRelationship'] ?? '') . "',
+            `AgedOut`            = '" . (int)($Scout['AgedOut'] ?? 0) . "',
+            `AttendedPreview`    = '" . (int)($Scout['AttendedPreview'] ?? 0) . "',
+            `ProjectApproved`    = '" . (int)($Scout['ProjectApproved'] ?? 0) . "',
+            `ProjectDate`        = '" . $mysqli->real_escape_string($Scout['ProjectDate'] ?? '') . "',
+            `Coach`              = '" . (int)($Scout['Coach'] ?? 0) . "',
+            `ProjectHours`       = '" . (int)($Scout['ProjectHours'] ?? 0) . "',
+            `Beneficiary`        = '" . $mysqli->real_escape_string($Scout['Beneficiary'] ?? '') . "',
+            `ProjectName`        = '$ProjectName',
+            `BOR`                = '" . $mysqli->real_escape_string($Scout['BOR'] ?? '') . "',
+            `BOR_Member`         = '" . $mysqli->real_escape_string($Scout['BOR_Member'] ?? '') . "',
+            `Eagled`             = '" . (int)($Scout['Eagled'] ?? 0) . "',
+            `Notes`              = '$Notes',
+            `updated_by`         = '" . $mysqli->real_escape_string($_SESSION['username'] ?? 'system') . "'
+            WHERE `Scoutid` = $Scoutid";
+
+    $Result = self::doQuery($sqlStmt);
+
+    if (!$Result) {
+      $errorMsg = $mysqli->error ?? 'Unknown error';
+      error_log("UpdateScoutRecord failed for Scoutid $Scoutid: " . $errorMsg);
+      $_SESSION['feedback'] = [
+        'type' => 'danger',
+        'message' => 'Failed to update scout record. Please check for duplicate Member IDs.'
+      ];
+      return false;
+    }
+
     return $Result;
   }
+
   /*****************************************************************************
    *
    *

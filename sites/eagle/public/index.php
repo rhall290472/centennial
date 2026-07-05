@@ -64,6 +64,7 @@ $valid_pages = [
   'viewuser',
   'edituser',
   'verify-life-eagle',
+  'view_error_log',
   ''
 ];
 if (!in_array($page, $valid_pages)) {
@@ -309,6 +310,9 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
         case 'verify-life-eagle':
           include('../src/Pages/VerifyLifeEagle.php');
+          break;
+        case 'view_error_log':
+          include('../src/Pages/view_error_log.php');
           break;
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
