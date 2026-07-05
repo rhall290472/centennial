@@ -156,17 +156,20 @@ if (empty($unit_name)) {
     $UNIT->GotoURL("index.php");
   }
   if ($resultCO = $resultQueryCO->fetch_assoc()) {
-    $UnitCO = $resultCO['Chartered_Org'];
-    $UnitExpire = $resultCO['Expire_Date'];
-    $Commissioner = $resultCO['Assigned_Commissioner'];
-    $Contact = $resultCO['Last_Contact'];
+    $UnitCO       = $resultCO['Chartered_Org']       ?? '';
+    $UnitExpire   = $resultCO['Expire_Date']         ?? '';
+    $Commissioner = $resultCO['Assigned_Commissioner'] ?? '';
+    $Contact      = $resultCO['Last_Contact']        ?? '';
   } else {
-    $UnitCO = "";
-    $UnitExpire = "";
-    $Commissioner = "";
-    $Contact = "";
+    $UnitCO = $UnitExpire = $Commissioner = $Contact = '';
   }
-  $UnitCO = sprintf("%s</br>Expire Date: %s", htmlspecialchars($UnitCO), htmlspecialchars($UnitExpire));
+
+  // Fixed line - safe from null values
+  $UnitCO = sprintf(
+    "%s<br>Expire Date: %s",
+    htmlspecialchars((string)$UnitCO),
+    htmlspecialchars((string)$UnitExpire)
+  );
   $UnitCommissioner = sprintf("Unit Commissioner: %s</br> Last Contact: %s", htmlspecialchars($Commissioner), htmlspecialchars($Contact));
   $sqlDirectUnTrained = sprintf(
     'SELECT * FROM trainedleader WHERE Unit = "%s" AND Direct_Contact_Leader = "%s" AND Trained = "NO" ',
@@ -359,7 +362,7 @@ if (empty($unit_name)) {
             }
             $YPTStatus = $cAdultLeaders->GetMemberYPTStatus($row['MemberID']);
             if (!strcmp($YPTStatus, "NO")) {
-             // $YPTURL = "<a href='index.php?page=ypt&btn=ByLastName&SortBy=Last_Name&last_name=" . urlencode($LastName) . "'>";
+              // $YPTURL = "<a href='index.php?page=ypt&btn=ByLastName&SortBy=Last_Name&last_name=" . urlencode($LastName) . "'>";
               $YPTURL = "<a href='index.php?page=ypt&btn=ByLastName&MemberID=" . urlencode($LastName) . "'>";
               $YPTStatus = sprintf("%s%s</a>", $YPTURL, htmlspecialchars($YPTStatus));
             } else {
