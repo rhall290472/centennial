@@ -1831,7 +1831,7 @@ class CEagle
 
 
 
-  public static function AddMissingLifeScout($memberID, $fullName, $unitStr)
+  public static function AddMissingLifeScout(string|int $memberID, string $fullName, string $unitStr)
   {
     if (empty($memberID) || empty($fullName)) {
       self::function_alert("Error: Missing Member ID or Name");
