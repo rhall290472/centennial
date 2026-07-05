@@ -126,9 +126,9 @@ class AdultLeaders
 
   /**
    *
-   * @return DbConn
+   * @return self
    */
-  private static function initConnection()
+  private static function initConnection(): self
   {
     $db = self::getInstance();
     $connConf = self::getConfigData();
@@ -161,7 +161,7 @@ class AdultLeaders
    ** Excutes a mysqli_query
    **
    *************************************************************************/
-  public static function &doQuery($sql)
+  public static function &doQuery(string $sql)
   {
     $Result = null;
     try {
@@ -183,61 +183,108 @@ class AdultLeaders
     }
     return $Result;
   }
-  /******************************************************************************
+  /**
+   * Get Unit Leader (Scoutmaster or Venturing Crew Advisor)
    * 
-   * Return the current unit leader information
-   * 
-   *****************************************************************************/
-  public static function GetUnitLeader($Unit)
+   * @param string|int $Unit  Unit number (can be string or integer)
+   * @return array{FirstName: string, LastName: string, Email: string, Phone: string}
+   */
+  public static function GetUnitLeader(string|int $Unit): array
   {
-    $UL = array();
+    $UL = [
+      'FirstName' => '',
+      'LastName'  => '',
+      'Email'     => '',
+      'Phone'     => ''
+    ];
 
-    $qryUL = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND (`Position`='Scoutmaster' OR
-        `Position`='Venturing Crew Advisor')";
-    $result_ul = self::doQuery($qryUL);
-    if ($result_ul && $row = $result_ul->fetch_assoc()) {
-      $UL['FirstName'] = $row['First_Name'];
-      $UL['LastName'] = $row['Last_Name'];
-      $UL['Email'] = $row['Email_Address'];
-      $UL['Phone'] = $row['Phone'];
-    } else {
-      $UL['FirstName'] = '';
-      $UL['LastName'] = '';
-      $UL['Email'] = '';
-      $UL['Phone'] = '';
+    if (empty($Unit)) {
+      return $UL;
     }
+
+    // Safely escape the unit number
+    $safeUnit = self::getDbConn()->real_escape_string((string)$Unit);
+
+    // Supports positions that may be comma-separated (e.g. "Other Role, Scoutmaster")
+    $qryUL = "SELECT First_Name, Last_Name, Email_Address, Phone 
+              FROM ypt 
+              WHERE Unit_Number = '$safeUnit' 
+                AND (
+                    Position = 'Scoutmaster' 
+                    OR Position = 'Venturing Crew Advisor'
+                    OR Position LIKE '%, Scoutmaster' 
+                    OR Position LIKE '%, Scoutmaster,%' 
+                    OR Position LIKE 'Scoutmaster,%'
+                    OR Position LIKE '%, Venturing Crew Advisor' 
+                    OR Position LIKE '%, Venturing Crew Advisor,%' 
+                    OR Position LIKE 'Venturing Crew Advisor,%'
+                )
+              LIMIT 1";
+
+    $result_ul = self::doQuery($qryUL);
+
+    if ($result_ul && $row = $result_ul->fetch_assoc()) {
+      $UL['FirstName'] = $row['First_Name'] ?? '';
+      $UL['LastName']  = $row['Last_Name']  ?? '';
+      $UL['Email']     = $row['Email_Address'] ?? '';
+      $UL['Phone']     = $row['Phone'] ?? '';
+    }
+
     return $UL;
   }
-  /******************************************************************************
-   * 
-   * Return the current Committee Chair information
-   * 
-   *****************************************************************************/
-  public static function GetCommitteeChair($Unit)
-  {
-    $CC = array();
 
-    $qryCC = "SELECT * FROM ypt WHERE `Unit_Number`='$Unit' AND `Position`='Committee Chair'";
-    $result_cc = self::doQuery($qryCC);
-    if ($result_cc && $row = $result_cc->fetch_assoc()) {
-      $CC['FirstName'] = $row['First_Name'];
-      $CC['LastName'] = $row['Last_Name'];
-      $CC['Email'] = $row['Email_Address'];
-      $CC['Phone'] = $row['Phone'];
-    } else {
-      $CC['FirstName'] = '';
-      $CC['LastName'] = '';
-      $CC['Email'] = '';
-      $CC['Phone'] = '';
+  /**
+   * Get Committee Chair for a given Unit
+   * 
+   * @param string|int $Unit  Unit number (can be string or integer)
+   * @return array{FirstName: string, LastName: string, Email: string, Phone: string}
+   */
+  public static function GetCommitteeChair(string|int $Unit): array
+  {
+    $CC = [
+      'FirstName' => '',
+      'LastName'  => '',
+      'Email'     => '',
+      'Phone'     => ''
+    ];
+
+    if (empty($Unit)) {
+      return $CC;
     }
+
+    // Safely escape the unit number
+    $safeUnit = self::getDbConn()->real_escape_string((string)$Unit);
+
+    // Match "Committee Chair" even when it's part of a comma-separated list
+    $qryCC = "SELECT First_Name, Last_Name, Email_Address, Phone 
+              FROM ypt 
+              WHERE Unit_Number = '$safeUnit' 
+                AND (
+                    Position = 'Committee Chair' 
+                    OR Position LIKE '%, Committee Chair' 
+                    OR Position LIKE '%, Committee Chair,%' 
+                    OR Position LIKE 'Committee Chair,%'
+                )
+              LIMIT 1";
+
+    $result_cc = self::doQuery($qryCC);
+
+    if ($result_cc && $row = $result_cc->fetch_assoc()) {
+      $CC['FirstName'] = $row['First_Name'] ?? '';
+      $CC['LastName']  = $row['Last_Name']  ?? '';
+      $CC['Email']     = $row['Email_Address'] ?? '';
+      $CC['Phone']     = $row['Phone'] ?? '';
+    }
+
     return $CC;
   }
+
   /******************************************************************************
    * 
    * Return YES if member is YPT Current
    * 
    *****************************************************************************/
-  public static function IsTrained($FName, $LName, $Position)
+  public static function IsTrained(string $FName, string $LName, string $Position): bool
   {
     // Input validation
     if (
@@ -310,7 +357,7 @@ class AdultLeaders
    * Return a mysqli results for for all untrained leader in selected position
    * 
    *****************************************************************************/
-  public static function GetPositionUnTrained($Position)
+  public static function GetPositionUnTrained(string $Position): mysqli_result|bool
   {
     $qry = "SELECT * FROM trainedleader WHERE Position='$Position' AND Trained = 'NO' ORDER BY Last_Name";
     $result = self::doQuery($qry);
@@ -324,7 +371,7 @@ class AdultLeaders
    * will be limited to two.
    * 
    *****************************************************************************/
-  public static function FindMemberUnit($FName, $LName, $Unit1Type, $Unit2Type)
+  public static function FindMemberUnit(string $FName, string $LName, string $Unit1Type, ?string $Unit2Type)
   {
     $Units = ['', ''];  // Default empty array with two slots
 
@@ -387,7 +434,7 @@ class AdultLeaders
    * will be limited to two.
    * 
    *****************************************************************************/
-  public static function FindMemberID($FName, $LName)
+  public static function FindMemberID(string $FName, string $LName)
   {
     $MemberID = array();
 
@@ -412,7 +459,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTByID($mid)
+  public static function GetYPTByID(string|int $mid)
   {
     // Validate input
     if (empty($mid) || !is_string($mid)) {
@@ -461,7 +508,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTIDCount($mID)
+  public static function GetYPTIDCount(string|int $mID)
   {
     if (!empty($mID)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Member_ID` = '%s' ORDER BY Last_Name", $mID);
@@ -475,7 +522,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTTotalIDCount($mID)
+  public static function GetYPTTotalIDCount(string|int $mID)
   {
     if (!empty($mID)) {
       $SqlValidypt = sprintf("SELECT * FROM `ypt` WHERE `Member_ID` = '%s'", $mID);
@@ -489,7 +536,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetResultIDYPT($mID)
+  public static function GetResultIDYPT(string|int $mID)
   {
     if (!empty($mID)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Member_ID` = '%s' ORDER BY Last_Name", $mID);
@@ -502,7 +549,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTPositionCount($position)
+  public static function GetYPTPositionCount(string $position)
   {
     if (!empty($position)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Position` = '%s' ORDER BY Position", $position);
@@ -516,7 +563,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTTotalPositionCount($position)
+  public static function GetYPTTotalPositionCount(string $position)
   {
     if (!empty($position)) {
       $SqlValidypt = sprintf("SELECT * FROM `ypt` WHERE `Position` = '%s'", $position);
@@ -530,7 +577,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetResultPositionYPT($position)
+  public static function GetResultPositionYPT(string $position)
   {
     if (!empty($position)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Position` = '%s' ORDER BY Position", $position);
@@ -543,7 +590,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTUnitCount($unit)
+  public static function GetYPTUnitCount(string $unit)
   {
     if (!empty($unit)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Unit_Number` = '%s' ORDER BY Unit_Number", $unit);
@@ -557,7 +604,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTTotalUnitCount($unit)
+  public static function GetYPTTotalUnitCount(string $unit)
   {
     if (!empty($unit)) {
       $SqlValidypt = sprintf("SELECT * FROM `ypt`  WHERE `Unit_Number` = '%s'", $unit);
@@ -571,7 +618,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetResultUnitYPT($unit)
+  public static function GetResultUnitYPT(string $unit)
   {
     if (!empty($unit)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Unit_Number` = '%s' ORDER BY Unit_Number", $unit);
@@ -584,7 +631,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetMemberYPT($Member)
+  public static function GetMemberYPT(string|int $Member)
   {
     if (empty($Member)) {
       $strErrorMsg = "Error: GetMemberYPT(" . $Member . ") called with empty MemberID";
@@ -605,7 +652,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetMemberYPTStatus($Member)
+  public static function GetMemberYPTStatus(string|int $Member)
   {
     if (empty($Member)) {
       $strErrorMsg = "Error: GetMemberYPT(" . $Member . ") called with empty MemberID";
@@ -661,7 +708,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetUnTrainedIDCount($ID)
+  public static function GetUnTrainedIDCount(string|int $ID)
   {
     if (!empty($ID)) {
       $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
@@ -679,7 +726,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetTotalIDCount($ID)
+  public static function GetTotalIDCount(string|int $ID)
   {
     $dbConn = self::getDbConn();
     if (!$dbConn) return 0;
@@ -709,7 +756,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetResultIDUnTrained($ID)
+  public static function GetResultIDUnTrained(string|int $ID)
   {
     if (!empty($ID)) {
       $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND `MemberID` = '%s' ORDER BY Direct_Contact_Leader DESC,Position", $ID);
@@ -724,7 +771,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetByPosition($position)
+  public static function GetByPosition(string $position)
   {
     //echo "<h1>Untrained Leaders by Positon ", $position, "</h1>";
     $sql = array();
@@ -744,7 +791,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetUnTrainedPositionCount($position)
+  public static function GetUnTrainedPositionCount(string $position)
   {
     $dbConn = self::getDbConn();
     if (!$dbConn) {
@@ -787,7 +834,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetTotalPositionCount($position)
+  public static function GetTotalPositionCount(string $position)
   {
     if (!empty($position)) {
       $SqlTotal = sprintf("SELECT * FROM trainedleader WHERE `Position` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
@@ -803,7 +850,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetResultPositionUnTrained($position)
+  public static function GetResultPositionUnTrained(string $position)
   {
     if (!empty($position)) {
       $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Position = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $position);
@@ -819,7 +866,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetUnTrainedUnitCount($unit)
+  public static function GetUnTrainedUnitCount(string $unit)
   {
     if (!empty($unit)) {
       $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
@@ -836,7 +883,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetTotalUnitCount($unit)
+  public static function GetTotalUnitCount(string $unit)
   {
     if (!empty($unit)) {
       $SqlTotal = sprintf("SELECT * FROM trainedleader WHERE `Unit` = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
@@ -852,7 +899,7 @@ class AdultLeaders
    * Execute a quuery of the connected database and return a list of untrained leaders
    * by last name.
    */
-  public static function GetResultUnitUnTrained($unit)
+  public static function GetResultUnitUnTrained(string $unit)
   {
     if (!empty($unit)) {
       $SqlUnTrained = sprintf("SELECT * FROM trainedleader WHERE `Trained` = 'No' AND Unit = '%s' ORDER BY Direct_Contact_Leader DESC,Last_Name", $unit);
@@ -865,7 +912,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function function_alert($msg)
+  public static function function_alert(string $msg)
   {
     // echo "<script type='text/javascript'>alert('$msg');</script>";
   }
@@ -875,7 +922,7 @@ class AdultLeaders
    * Reports so, we will make our own standard.
    * 
    *****************************************************************************/
-  public static function formatUnitNumber($UnitNumber, $UnitGender)
+  public static function formatUnitNumber(string $UnitNumber, string $UnitGender)
   {
     // Split on whitespace, filter out empty pieces
     $parts = preg_split('/\s+/', trim($UnitNumber), -1, PREG_SPLIT_NO_EMPTY);
@@ -930,7 +977,7 @@ class AdultLeaders
    * Read in the trained leader report from my.scouting.org
    * 
    *****************************************************************************/
-  public static function &TrainedLeader($fileName)
+  public static function &TrainedLeader(string $fileName)
   {
     $filePath = $fileName;
 
@@ -1064,7 +1111,7 @@ class AdultLeaders
    * Updated to handle the new 2026+ Safeguarding Youth Training CSV format
    * 
    *****************************************************************************/
-  public static function &Updateypt($fileName)
+  public static function &Updateypt(string $fileName)
   {
     $filePath = $fileName;
 
@@ -1190,7 +1237,7 @@ class AdultLeaders
   /******************************************************************************
    * This funtion will 
    *****************************************************************************/
-  public static function UpdateFunctionalRole($fileName)
+  public static function UpdateFunctionalRole(string $fileName)
   {
     $RecordsInError = 0;
     $Inserted = 0;
@@ -1244,7 +1291,7 @@ class AdultLeaders
           $firstName = trim($data[self::COL_FIRSTNAME] ?? '');
           $lastName = trim($data[self::COL_LASTNAME] ?? '');
           $positionName = trim($data[self::COL_POSITIONNAME] ?? '');
-          $unit = self::formatUnitNumber($data[self::COL_DISPLAYNAME] ?? '', null);
+          $unit = self::formatUnitNumber($data[self::COL_DISPLAYNAME] ?? '', '');
 
           //                if (empty($firstName) || empty($lastName) || empty($unit) || empty($positionName)) {
           if (empty($firstName) || empty($lastName) || empty($positionName)) {
@@ -1316,7 +1363,7 @@ class AdultLeaders
    * $DirectContact must be either a YES or NO
    * 
    *****************************************************************************/
-  public static function DirectTrained($Unit, $DirectContact)
+  public static function DirectTrained(string $Unit, string $DirectContact)
   {
     $Direct = array(
       "Trained" => 0,
