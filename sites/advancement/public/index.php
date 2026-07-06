@@ -176,8 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
     try {
+      $conn = $CAdvancement->getDbConn();
       $sql = "SELECT id, username, password, enabled FROM users WHERE username = ?";
-      if ($stmt = mysqli_prepare($CAdvancement->getDbConn(), $sql)) {
+      if ($stmt = mysqli_prepare($conn, $sql)) {
         mysqli_stmt_bind_param($stmt, "s", $username);
         if (mysqli_stmt_execute($stmt)) {
           mysqli_stmt_store_result($stmt);
@@ -185,6 +186,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $enabled);
             if (mysqli_stmt_fetch($stmt)) {
               if (password_verify($password, $hashed_password) && $enabled) {
+                // Update lastlogged in
+                $updateSql = "UPDATE users SET LastLogin = NOW() WHERE id = ?";
+                if ($updateStmt = mysqli_prepare($conn, $updateSql)) {
+                  mysqli_stmt_bind_param($updateStmt, "i", $id);
+                  mysqli_stmt_execute($updateStmt);
+                  mysqli_stmt_close($updateStmt);
+                  // You can silently ignore failure here — logging in is more important
+                } else {
+                  error_log("Failed to prepare LastLogin update: " . mysqli_error($conn));
+                }
+
                 $_SESSION["loggedin"] = true;
                 $_SESSION["id"] = $id;
                 $_SESSION["username"] = $username;
@@ -416,7 +428,7 @@ if (!isset($_SESSION['csrf_token'])) {
         case 'view_error_log':
           include('../src/Pages/view_error_log.php');
           break;
-          
+
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }
