@@ -508,7 +508,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTIDCount(string|int $mID)
+  public static function GetYPTIDCount(string|int|null $mID): int
   {
     if (!empty($mID)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Member_ID` = '%s' ORDER BY Last_Name", $mID);
@@ -522,7 +522,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTTotalIDCount(string|int $mID)
+  public static function GetYPTTotalIDCount(string|int|null $mID): int
   {
     if (!empty($mID)) {
       $SqlValidypt = sprintf("SELECT * FROM `ypt` WHERE `Member_ID` = '%s'", $mID);
@@ -536,7 +536,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetResultIDYPT(string|int $mID)
+  public static function GetResultIDYPT(string|int|null $mID)
   {
     if (!empty($mID)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Member_ID` = '%s' ORDER BY Last_Name", $mID);
@@ -549,7 +549,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTPositionCount(string $position)
+  public static function GetYPTPositionCount(string|null $position): int
   {
     if (!empty($position)) {
       $SqlExpiredypt = sprintf("SELECT * FROM `ypt` WHERE `Status` = 'NO' AND `Position` = '%s' ORDER BY Position", $position);
@@ -563,7 +563,7 @@ class AdultLeaders
   /******************************************************************************
    * 
    *****************************************************************************/
-  public static function GetYPTTotalPositionCount(string $position)
+  public static function GetYPTTotalPositionCount(string|null $position): int
   {
     if (!empty($position)) {
       $SqlValidypt = sprintf("SELECT * FROM `ypt` WHERE `Position` = '%s'", $position);

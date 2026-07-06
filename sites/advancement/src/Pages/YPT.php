@@ -22,9 +22,10 @@ load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
 load_class(SHARED_PATH . 'src/Classes/cAdultLeaders.php');
 
 $SortBy = isset($_GET['btn']) ? $_GET['btn'] : 'ByLastName';
-$mID = isset($_GET['MemberID']) ? $_GET['MemberID'] : '';
-$position = isset($_GET['position_name']) ? $_GET['position_name'] : '';
-$unit = isset($_GET['Unit_Number']) ? $_GET['Unit_Number'] : '';
+$mID = isset($_GET['MemberID']) && $_GET['MemberID'] !== '' ? $_GET['MemberID'] : null;
+$position = isset($_GET['position_name']) && $_GET['position_name'] !== '' ? $_GET['position_name'] : null;
+$unit = isset($_GET['Unit_Number']) && $_GET['Unit_Number'] !== '' ? $_GET['Unit_Number'] : null;
+
 
 $cAdultLeaders = AdultLeaders::getInstance();
 $cAdvancement = CAdvancement::getInstance();
@@ -32,19 +33,19 @@ $cAdvancement = CAdvancement::getInstance();
 try {
   switch ($SortBy) {
     case 'ByLastName':
-      $ExpiredyptCount = $mID ? $cAdultLeaders->GetYPTIDCount($mID) : $cAdultLeaders->GetYPTIDCount(null);
-      $ValidyptCount = $mID ? $cAdultLeaders->GetYPTTotalIDCount($mID) : $cAdultLeaders->GetYPTTotalIDCount(null);
-      $Resultypt = $cAdultLeaders->GetResultIDYPT($mID);
+      $ExpiredyptCount = $cAdultLeaders->GetYPTIDCount($mID);
+      $ValidyptCount   = $cAdultLeaders->GetYPTTotalIDCount($mID);
+      $Resultypt       = $cAdultLeaders->GetResultIDYPT($mID);
       break;
     case 'ByPosition':
-      $ExpiredyptCount = $position ? $cAdultLeaders->GetYPTPositionCount($position) : $cAdultLeaders->GetYPTPositionCount(null);
-      $ValidyptCount = $position ? $cAdultLeaders->GetYPTTotalPositionCount($position) : $cAdultLeaders->GetYPTTotalPositionCount(null);
-      $Resultypt = $cAdultLeaders->GetResultPositionYPT($position);
+      $ExpiredyptCount = $cAdultLeaders->GetYPTPositionCount($position);
+      $ValidyptCount   = $cAdultLeaders->GetYPTTotalPositionCount($position);
+      $Resultypt       = $cAdultLeaders->GetResultPositionYPT($position);
       break;
     case 'ByUnit':
-      $ExpiredyptCount = $unit ? $cAdultLeaders->GetYPTUnitCount($unit) : $cAdultLeaders->GetYPTUnitCount(null);
-      $ValidyptCount = $unit ? $cAdultLeaders->GetYPTTotalUnitCount($unit) : $cAdultLeaders->GetYPTTotalUnitCount(null);
-      $Resultypt = $cAdultLeaders->GetResultUnitYPT($unit);
+      $ExpiredyptCount = $cAdultLeaders->GetYPTUnitCount($unit);
+      $ValidyptCount   = $cAdultLeaders->GetYPTTotalUnitCount($unit);
+      $Resultypt       = $cAdultLeaders->GetResultUnitYPT($unit);
       break;
     default:
       $ExpiredyptCount = 0;
