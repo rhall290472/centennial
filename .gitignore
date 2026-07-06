@@ -2,3 +2,5 @@ vendor/
 .env
 logs/
 sessions/
+sites/eagle/sync.ffs_lock
+shared/sync.ffs_lock
