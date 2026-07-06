@@ -127,7 +127,9 @@ $valid_pages = [
   'register',
   'changepassword',
   'updatedata',
-  'unitview'
+  'unitview',
+  'viewuser',
+  'view_error_log'
 ];
 if (!in_array($page, $valid_pages)) {
   $page = 'home'; // Default to home if page is invalid
@@ -408,6 +410,13 @@ if (!isset($_SESSION['csrf_token'])) {
           include('../src/Pages/changepassword.php');
           break;
 
+        case 'viewuser':
+          include('../src/Pages/ViewUsers.php');
+          break;
+        case 'view_error_log':
+          include('../src/Pages/view_error_log.php');
+          break;
+          
         default:
           echo '<h1>404</h1><p>Page not found.</p>';
       }

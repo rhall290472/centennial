@@ -83,10 +83,10 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
       <li class="nav-item">
         <a class="nav-link" href="index.php?page=changepassword">Change Password</a>
-    </li>
-    <li class="nav-item">
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="index.php?page=logout">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a>
-    </li>
+      </li>
     <?php else: ?>
       <li class="nav-item">
         <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
@@ -109,6 +109,16 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
           <li><a class="dropdown-item" href="?page=updatedata&update=UpdateVenturing">Venturing</a></li>
         </ul>
       </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fs-4"></i><span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="?page=viewuser">View Users</a></li>
+          <li><a class="dropdown-item" href="?page=view_error_log">View Error Log</a></li>
+        </ul>
+      </li>
+
     <?php endif; ?>
   </ul>
   <button class="btn btn-outline-secondary mt-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
@@ -176,6 +186,6 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
   <?php
   echo '<em class="text-muted">Copyright &copy; ' . date('Y') . ' ' . htmlspecialchars($_SERVER['HTTP_HOST']) . '</em>';
   ?>
-    
-  </div>
+
+</div>
 </div>
