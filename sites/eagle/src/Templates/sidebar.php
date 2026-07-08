@@ -96,26 +96,33 @@ $page = $page ?? 'home';
     Close Sidebar
   </button>
 
-  <!-- Your version footer – cleaned up & using relative units -->
+  <!-- Version footer -->
   <p class="text-muted small" id="versionInfo">
     <em>Loading version...</em>
   </p>
 
-  <!-- Your script (with fixes – see notes below) -->
   <script>
     const repo = 'rhall290472/centennial';
     const ref = 'main';
     const versionInfo = document.getElementById('versionInfo');
 
-    fetch(`https://api.github.com/repos/${repo}/git/ref/heads/${ref}`)
+    fetch(`https://api.github.com/repos/${repo}/commits/${ref}`)
       .then(r => {
-        if (!r.ok) throw new Error('Failed to fetch ref');
+        if (!r.ok) throw new Error('Failed to fetch commit');
         return r.json();
       })
       .then(data => {
-        const sha = data.object.sha;
+        const sha = data.sha;
         const shortSha = sha.slice(0, 7);
+        const commitDate = new Date(data.commit.committer.date || data.commit.author.date);
 
+        const formattedDate = commitDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        // Check for tag (optional but nice)
         return fetch(`https://api.github.com/repos/${repo}/tags?per_page=100`)
           .then(r => r.ok ? r.json() : [])
           .then(tags => {
@@ -123,22 +130,19 @@ $page = $page ?? 'home';
             return {
               sha,
               shortSha,
-              tag: matchingTag?.name ?? null
+              tag: matchingTag?.name ?? null,
+              date: formattedDate
             };
           });
       })
       .then(({
         sha,
         shortSha,
-        tag
+        tag,
+        date
       }) => {
         const version = tag || shortSha;
         const link = `https://github.com/${repo}/commit/${sha}`;
-        const date = new Date().toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
 
         versionInfo.innerHTML = `
         <em>
@@ -158,5 +162,5 @@ $page = $page ?? 'home';
   echo '<em class="text-muted">Copyright &copy; ' . date('Y') . ' ' . htmlspecialchars($_SERVER['HTTP_HOST']) . '</em>';
   ?>
 
-  </div>
+</div>
 </div>
