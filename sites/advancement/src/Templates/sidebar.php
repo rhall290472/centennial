@@ -24,7 +24,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-emoji-surprise"></i><span class="ms-1 d-none d-sm-inline">Packs</span>
+        <i class="fs-4 bi-emoji-smile"></i><span class="ms-1 d-none d-sm-inline">Packs</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=pack-summary">Summary</a></li>
@@ -35,7 +35,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-backpack4"></i><span class="ms-1 d-none d-sm-inline">Troops</span>
+        <i class="fs-4 bi-binoculars"></i><span class="ms-1 d-none d-sm-inline">Troops</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=troop-summary">Summary</a></li>
@@ -46,7 +46,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 bi-shield"></i><span class="ms-1 d-none d-sm-inline">Crews</span>
+        <i class="fs-4 bi-compass"></i><span class="ms-1 d-none d-sm-inline">Crews</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=crew-summary">Summary</a></li>
@@ -55,7 +55,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 fa-solid fa-house"></i><span class="ms-1 d-none d-sm-inline">Post</span>
+        <i class="fs-4 bi-person-badge"></i><span class="ms-1 d-none d-sm-inline">Post</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=post-summary">Summary</a></li>
@@ -64,7 +64,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fs-4 fas fa-ship"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
+        <i class="fs-4 bi-life-preserver"></i><span class="ms-1 d-none d-sm-inline">Ship</span>
       </a>
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" href="?page=ship-summary">Summary</a></li>
@@ -89,7 +89,7 @@ if (file_exists(__DIR__ . '/../../config/config.php')) {
       </li>
     <?php else: ?>
       <li class="nav-item">
-        <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
+        <a class="nav-link <?php echo ($page ?? '') === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
       </li>
     <?php endif; ?>
     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>

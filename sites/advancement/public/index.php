@@ -120,6 +120,8 @@ $valid_pages = [
   'troop-below-goal',
   'troop-meeting-goal',
   'crew-summary',
+  'ship-summary',
+  'post-summary',
   'adv-report',
   'membership-report',
   'login',
@@ -398,6 +400,12 @@ if (!isset($_SESSION['csrf_token'])) {
           break;
         case 'crew-summary':
           include('../src/Pages/crew_summary.php');
+          break;
+        case 'post-summary':
+          include('../src/Pages/post_summary.php');
+          break;
+        case 'ship-summary':
+          include('../src/Pages/ship_summary.php');
           break;
         case 'adv-report':
           include('../src/Pages/adv_report.php');

@@ -8,11 +8,11 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link <?php echo $page === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
+          <a class="nav-link <?php echo ($page ?? '') === 'home' ? 'active' : ''; ?>" href="?page=home">Home</a>
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['untrained', 'ypt', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array(($page ?? ''), ['untrained', 'ypt', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Adults
           </a>
           <ul class="dropdown-menu">
@@ -23,7 +23,7 @@
 
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['pack-summary', 'pack-below-goal', 'pack-meeting-goal', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array(($page ?? ''), ['pack-summary', 'pack-below-goal', 'pack-meeting-goal', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Packs
           </a>
           <ul class="dropdown-menu">
@@ -36,7 +36,7 @@
 
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['troop-summary', 'troop-below-goal', 'troop-meeting-goal', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array(($page ?? ''), ['troop-summary', 'troop-below-goal', 'troop-meeting-goal', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Troops
           </a>
           <ul class="dropdown-menu">
@@ -48,7 +48,7 @@
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['crew-summary', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array(($page ?? ''), ['crew-summary', 'unitview']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Crews
           </a>
           <ul class="dropdown-menu">
@@ -59,7 +59,7 @@
 
 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle <?php echo in_array($page, ['adv-report', 'membership-report']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle <?php echo in_array(($page ?? ''), ['adv-report', 'membership-report']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Reports
           </a>
           <ul class="dropdown-menu">
@@ -95,7 +95,7 @@
           </li>
         <?php else: ?>
           <li class="nav-item">
-            <a class="nav-link <?php echo $page === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
+            <a class="nav-link <?php echo ($page ?? '') === 'login' ? 'active' : ''; ?>" href="?page=login">Login</a>
           </li>
         <?php endif; ?>
       </ul>

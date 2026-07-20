@@ -225,6 +225,7 @@ class CAdvancement
         <select class='form-control d-print-none' id='Year' name='Year'>
 
           <?php
+          $arrYears = [];
           while ($row = $result->fetch_assoc()) {
             $arrYears[] = date("Y", strtotime($row['Expire_Date']));
           }
@@ -463,14 +464,22 @@ class CAdvancement
   public static function &InsertUpdateCheck($UnitYear, $Unit)
   {
 
-    switch ($Unit[0]) {
-      case 'P':
+    $parts = explode(' ', $Unit, 2);
+    $UnitType = $parts[0];
+    switch ($UnitType) {
+      case 'Pack':
         $sql = "SELECT * FROM `adv_pack` WHERE `Date` ='$UnitYear' AND `Unit`='$Unit'";
         break;
-      case 'T':
+      case 'Troop':
         $sql = "SELECT * FROM `adv_troop` WHERE `Date` ='$UnitYear' AND `Unit`='$Unit'";
         break;
-      case 'C':
+      case 'Post':
+        $sql = "SELECT * FROM `adv_post` WHERE `Date` ='$UnitYear' AND `Unit`='$Unit'";
+        break;
+      case 'Ship':
+        $sql = "SELECT * FROM `adv_ship` WHERE `Date` ='$UnitYear' AND `Unit`='$Unit'";
+        break;
+      case 'Crew':
         $sql = "SELECT * FROM `adv_crew` WHERE `Date` ='$UnitYear' AND `Unit`='$Unit'";
         break;
       default:
@@ -583,74 +592,5 @@ class CShip extends CAdvancement
   public function someBusinessLogic()
   {
     // ...
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * The Singleton class defines the `GetInstance` method that serves as an
- * alternative to constructor and lets clients access the same instance of this
- * class over and over.
- */
-class CPost extends CAdvancement
-{
-  private static $MemberTotal = array();
-  /**************************************************************************
-   **
-   **
-   **
-   *************************************************************************/
-  public static function GetMemberTotals()
-  {
-    $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Total_Youth), SUM(Male_Adults), SUM(Female_Adults), SUM(Total_Adults), SUM(Youth_Last_Year), SUM(Adults_Last_Year)
-		FROM membershiptotals WHERE Expire_Date LIKE '%s%%' AND Unit LIKE 'Post%%'", self::GetYear());
-
-    $resultPackSum = mysqli_query(parent::getDbConn(), $sqlPackSum, MYSQLI_STORE_RESULT);
-    if ($resultPackSum) {
-      $MemberTotal = $resultPackSum->fetch_assoc();
-      self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
-      self::$MemberTotal['Female_Youth']     = $MemberTotal['SUM(Female_Youth)'];
-      self::$MemberTotal['Total_Youth']      = $MemberTotal['SUM(Total_Youth)'];
-      self::$MemberTotal['Youth_Last_Year']  = $MemberTotal['SUM(Youth_Last_Year)'];
-      self::$MemberTotal['Male_Adults']      = $MemberTotal['SUM(Male_Adults)'];
-      self::$MemberTotal['Female_Adults']    = $MemberTotal['SUM(Female_Adults)'];
-      self::$MemberTotal['Total_Adults']     = $MemberTotal['SUM(Total_Adults)'];
-      self::$MemberTotal['Adults_Last_Year'] = $MemberTotal['SUM(Adults_Last_Year)'];
-    }
-    return self::$MemberTotal;
-  }
-  /**************************************************************************
-   **
-   **
-   **
-   *************************************************************************/
-  public static function GetPreviousMemberTotals()
-  {
-    $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Youth)
-		FROM adv_post WHERE Date LIKE '%s%%'", self::GetYear());
-
-    $resultPackSum = mysqli_query(parent::getDbConn(), $sqlPackSum, MYSQLI_STORE_RESULT);
-    if ($resultPackSum) {
-      $MemberTotal = $resultPackSum->fetch_assoc();
-      self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
-      self::$MemberTotal['Female_Youth']     = $MemberTotal['SUM(Female_Youth)'];
-      self::$MemberTotal['Total_Youth']      = $MemberTotal['SUM(Youth)'];
-    }
-    return self::$MemberTotal;
   }
 }
