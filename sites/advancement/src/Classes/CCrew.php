@@ -57,7 +57,7 @@ class CCrew extends CAdvancement
             SUM(Pathfinder), SUM(Summit), SUM(Venturing)
             FROM adv_crew WHERE Date=%d', parent::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlTroopSum, MYSQLI_STORE_RESULT);
+    $resultPackSum = parent::doQuery($sqlTroopSum);
     $RankTotal = $resultPackSum->fetch_assoc();
 
     self::$CrewTotals['Scout'] = $RankTotal['SUM(Scout)'];
@@ -88,7 +88,7 @@ class CCrew extends CAdvancement
     $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Total_Youth), SUM(Male_Adults), SUM(Female_Adults), SUM(Total_Adults), SUM(Youth_Last_Year), SUM(Adults_Last_Year)
 		FROM membershiptotals WHERE Expire_Date LIKE '%s%%' AND Unit LIKE 'Crew%%'", self::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlPackSum, MYSQLI_STORE_RESULT);
+    $resultPackSum = parent::doQuery($sqlPackSum);
     if ($resultPackSum) {
       $MemberTotal = $resultPackSum->fetch_assoc();
       self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
@@ -112,7 +112,7 @@ class CCrew extends CAdvancement
     $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Youth)
 		FROM adv_crew WHERE Date LIKE '%s%%'", self::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlPackSum, MYSQLI_STORE_RESULT);
+    $resultPackSum = parent::doQuery($sqlPackSum);
     if ($resultPackSum) {
       $MemberTotal = $resultPackSum->fetch_assoc();
       self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
@@ -230,7 +230,7 @@ class CCrew extends CAdvancement
    * update the Crew advancement data from this file.
    * 
    *****************************************************************************/
-  public static function &UpdateCrew($fileName)
+  public static function &UpdateCrew(string $fileName)
   {
     
     $sqlCrewInsertSt = "INSERT INTO `adv_crew`(`Scout`, `Tenderfoot`, `SecondClass`, `FirstClass`, `Star`, `Life`, `Eagle`, `YTD`,
@@ -337,7 +337,7 @@ class CCrew extends CAdvancement
    * This will update the Venturing awards
    * 
    *****************************************************************************/
-  public static function &UpdateVenturing($fileName)
+  public static function &UpdateVenturing(string $fileName)
   {
     $col_distorgname = 0;
     $col_organizationname = 1;

@@ -8,20 +8,23 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../config/config.php';
-require_once 'CUnit.php';
+require_once SHARED_CLASS_URL . 'CUnit.php';
 require_once 'CPack.php';
 require_once 'CTroop.php';
 require_once 'CCrew.php';
-require_once 'CAdvancement.php';
-require_once 'cAdultLeaders.php';
+require_once SHARED_CLASS_URL . 'CAdvancement.php';
+require_once SHARED_CLASS_URL . 'cAdultLeaders.php';
 
 class FileUploader
 {
+  /** @var string[] */
   private $allowedExtensions = ALLOWED_FILE_EXTENSIONS;
+  /** @var int */
   private $maxFileSize = MAX_FILE_SIZE;
+  /** @var string */
   private $uploadDir;
 
-  public function __construct($uploadDir)
+  public function __construct(string $uploadDir)
   {
     $this->uploadDir = rtrim($uploadDir, '/') . '/';
     if (!is_dir($this->uploadDir)) {
@@ -29,6 +32,11 @@ class FileUploader
     }
   }
 
+  /**
+     * @param array $file $_FILES['the_file']
+     * @param array $errors Passed by reference
+     * @return string|false Uploaded filename or false on failure
+     */
   public function uploadFile($file, &$errors)
   {
     $uploadErrors = [
@@ -103,7 +111,7 @@ $errors = [];
 $Update = filter_input(INPUT_POST, 'submit');
 
 $classMap = [
-  'UpdateTotals' => CUnit::class,
+  'UpdateTotals' => UNIT::class,
   'UpdatePack' => CPack::class,
   'UpdateTroop' => CTroop::class,
   'UpdateCrew' => CCrew::class,
@@ -111,7 +119,7 @@ $classMap = [
   'Updateypt' => AdultLeaders::class,
   'UpdateVenturing' => CCrew::class,
   'UpdateAdventure' => CPack::class,
-  'UpdateCommissioners' => CUnit::class,
+  'UpdateCommissioners' => UNIT::class,
   'UpdateFunctionalRole' => AdultLeaders::class,
 ];
 

@@ -39,12 +39,12 @@ load_class(SHARED_PATH . '/src/Classes/CAdvancement.php');
  * alternative to constructor and lets clients access the same instance of this
  * class over and over.
  */
-class CPost extends CAdvancement
+class CShip extends CAdvancement
 {
-  private static $CrewTotals = array();
+  private static $ShipTotals = array();
   private static $MemberTotal = array();
-  private static $CrewDistrictGoal = 0; //Crews have no advancement goals
-  private static $CrewIdealGoal = 0;    //Crews have no advancement goals
+  private static $ShipDistrictGoal = 0; //Ships have no advancement goals
+  private static $ShipIdealGoal = 0;    //Ships have no advancement goals
   /**************************************************************************
    **
    **
@@ -52,31 +52,33 @@ class CPost extends CAdvancement
    *************************************************************************/
   public static function GetTotals()
   {
-    $sqlTroopSum = sprintf('SELECT SUM(Scout),SUM(Tenderfoot),SUM(SecondClass),SUM(FirstClass),
+    $sqlShipSum = sprintf('SELECT SUM(Scout),SUM(Tenderfoot),SUM(SecondClass),SUM(FirstClass),
             SUM(Star),SUM(Life),SUM(Eagle),SUM(Palms),SUM(YTD),SUM(MeritBadge),SUM(Discovery),
             SUM(Pathfinder), SUM(Summit), SUM(Venturing)
-            FROM adv_crew WHERE Date=%d', parent::GetYear());
+            FROM adv_ship WHERE Date=%d', parent::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlTroopSum);
+    $resultPackSum = parent::doQuery($sqlShipSum);
+    if(!$resultPackSum)
+      return false;
     $RankTotal = $resultPackSum->fetch_assoc();
 
-    self::$CrewTotals['Scout'] = $RankTotal['SUM(Scout)'];
-    self::$CrewTotals['Tenderfoot'] = $RankTotal['SUM(Tenderfoot)'];
-    self::$CrewTotals['SecondClass'] = $RankTotal['SUM(SecondClass)'];
-    self::$CrewTotals['FirstClass'] = $RankTotal['SUM(FirstClass)'];
-    self::$CrewTotals['Star'] = $RankTotal['SUM(Star)'];
-    self::$CrewTotals['Life'] = $RankTotal['SUM(Life)'];
-    self::$CrewTotals['Eagle'] = $RankTotal['SUM(Eagle)'];
-    self::$CrewTotals['Palms'] = $RankTotal['SUM(Palms)'];
-    self::$CrewTotals['YTD'] = $RankTotal['SUM(YTD)'];
-    self::$CrewTotals['Youth'] = parent::GetProgramTotalYouth("Troop");
-    self::$CrewTotals['MeritBadges'] = $RankTotal['SUM(MeritBadge)'];
-    self::$CrewTotals['Discovery'] = $RankTotal['SUM(Discovery)'];
-    self::$CrewTotals['Pathfinder'] = $RankTotal['SUM(Pathfinder)'];
-    self::$CrewTotals['Summit'] = $RankTotal['SUM(Summit)'];
-    self::$CrewTotals['Venturing'] = $RankTotal['SUM(Venturing)'];
+    self::$ShipTotals['Scout'] = $RankTotal['SUM(Scout)'];
+    self::$ShipTotals['Tenderfoot'] = $RankTotal['SUM(Tenderfoot)'];
+    self::$ShipTotals['SecondClass'] = $RankTotal['SUM(SecondClass)'];
+    self::$ShipTotals['FirstClass'] = $RankTotal['SUM(FirstClass)'];
+    self::$ShipTotals['Star'] = $RankTotal['SUM(Star)'];
+    self::$ShipTotals['Life'] = $RankTotal['SUM(Life)'];
+    self::$ShipTotals['Eagle'] = $RankTotal['SUM(Eagle)'];
+    self::$ShipTotals['Palms'] = $RankTotal['SUM(Palms)'];
+    self::$ShipTotals['YTD'] = $RankTotal['SUM(YTD)'];
+    self::$ShipTotals['Youth'] = parent::GetProgramTotalYouth("Troop");
+    self::$ShipTotals['MeritBadges'] = $RankTotal['SUM(MeritBadge)'];
+    self::$ShipTotals['Discovery'] = $RankTotal['SUM(Discovery)'];
+    self::$ShipTotals['Pathfinder'] = $RankTotal['SUM(Pathfinder)'];
+    self::$ShipTotals['Summit'] = $RankTotal['SUM(Summit)'];
+    self::$ShipTotals['Venturing'] = $RankTotal['SUM(Venturing)'];
 
-    return self::$CrewTotals;
+    return self::$ShipTotals;
   }
   /**************************************************************************
    **
@@ -86,9 +88,9 @@ class CPost extends CAdvancement
   public static function GetMemberTotals()
   {
     $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Total_Youth), SUM(Male_Adults), SUM(Female_Adults), SUM(Total_Adults), SUM(Youth_Last_Year), SUM(Adults_Last_Year)
-		FROM membershiptotals WHERE Expire_Date LIKE '%s%%' AND Unit LIKE 'Crew%%'", self::GetYear());
+		FROM membershiptotals WHERE Expire_Date LIKE '%s%%' AND Unit LIKE 'Ship%%'", self::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlPackSum, MYSQLI_STORE_RESULT);
+    $resultPackSum = parent::doQuery($sqlPackSum);
     if ($resultPackSum) {
       $MemberTotal = $resultPackSum->fetch_assoc();
       self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
@@ -110,9 +112,9 @@ class CPost extends CAdvancement
   public static function GetPreviousMemberTotals()
   {
     $sqlPackSum = sprintf("SELECT SUM(Male_Youth), SUM(Female_Youth), SUM(Youth)
-		FROM adv_crew WHERE Date LIKE '%s%%'", self::GetYear());
+		FROM adv_ship WHERE Date LIKE '%s%%'", self::GetYear());
 
-    $resultPackSum = parent::doQuery($sqlPackSum, MYSQLI_STORE_RESULT);
+    $resultPackSum = parent::doQuery($sqlPackSum);
     if ($resultPackSum) {
       $MemberTotal = $resultPackSum->fetch_assoc();
       self::$MemberTotal['Male_Youth']       = $MemberTotal['SUM(Male_Youth)'];
@@ -129,7 +131,7 @@ class CPost extends CAdvancement
    *************************************************************************/
   public static function GetDistrictRatio()
   {
-    return ((self::$CrewTotals['YTD'] + self::$CrewTotals['MeritBadges']) / self::$CrewTotals['Youth']);
+    return ((self::$ShipTotals['YTD'] + self::$ShipTotals['MeritBadges']) / self::$ShipTotals['Youth']);
   }
   /**************************************************************************
    **
@@ -140,7 +142,7 @@ class CPost extends CAdvancement
   public static function GetDistrictGoal()
   {
 
-    return self::$CrewDistrictGoal;
+    return self::$ShipDistrictGoal;
   }
   /**************************************************************************
    **
@@ -150,7 +152,7 @@ class CPost extends CAdvancement
    *************************************************************************/
   public static function GetIdealGoal()
   {
-    return self::$CrewIdealGoal;
+    return self::$ShipIdealGoal;
   }
 
   /**************************************************************************
@@ -158,16 +160,16 @@ class CPost extends CAdvancement
    **
    **
    *************************************************************************/
-  public static function GetNumofPosts()
+  public static function GetNumofShips()
   {
-    $NumOfCrews = 0;
+    $NumOfShips = 0;
 
-    $sql = sprintf('SELECT * FROM adv_post WHERE Date=%d ORDER BY Unit ASC', parent::GetYear());
+    $sql = sprintf('SELECT * FROM adv_ship WHERE Date=%d ORDER BY Unit ASC', parent::GetYear());
 
     if ($result = parent::doQuery($sql)) {
-      $NumOfCrews = mysqli_num_rows($result);
+      $NumOfShips = mysqli_num_rows($result);
     }
-    return $NumOfCrews;
+    return $NumOfShips;
   }
   /**************************************************************************
    **
@@ -227,13 +229,13 @@ class CPost extends CAdvancement
   /******************************************************************************
    * 
    * This file will read in the DetailedAdvancementReportScoutsBSA.csv file and
-   * update the Crew advancement data from this file.
+   * update the Ship advancement data from this file.
    * 
    *****************************************************************************/
-  public static function &UpdateCrew($fileName)
+  public static function &UpdateShip(string $fileName)
   {
     
-    $sqlCrewInsertSt = "INSERT INTO `adv_crew`(`Scout`, `Tenderfoot`, `SecondClass`, `FirstClass`, `Star`, `Life`, `Eagle`, `YTD`,
+    $sqlShipInsertSt = "INSERT INTO `adv_ship`(`Scout`, `Tenderfoot`, `SecondClass`, `FirstClass`, `Star`, `Life`, `Eagle`, `YTD`,
     	`Palms`, `MeritBadge`, `Date`, `Unit`) 
         VALUES (";
 
@@ -243,12 +245,12 @@ class CPost extends CAdvancement
     $row = 1;
     $filePath = $fileName;
         if (!file_exists($filePath) || !is_readable($filePath)) {
-        error_log("UpdateCrew: File not found or unreadable at $filePath");
+        error_log("UpdateShip: File not found or unreadable at $filePath");
         return ++$RecordsInError;
       }
 
     $Datestr = "";
-    $CrewYear = self::GetYear();
+    $ShipYear = self::GetYear();
     if (($handle = fopen($filePath, "r")) !== FALSE) {
       while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
         if ($row < 11) { // Skip the first row(s), headers.
@@ -258,16 +260,16 @@ class CPost extends CAdvancement
           continue;
         }
 
-        $CrewUnit = parent::formatUnitNumber($data[1], $data[2]);
-        if ($CrewUnit == null || $CrewUnit[0] == 'T' || $CrewUnit[0] == 'P') {
+        $ShipUnit = parent::formatUnitNumber($data[1], $data[2]);
+        if ($ShipUnit == null || $ShipUnit[0] == 'T' || $ShipUnit[0] == 'P') {
           continue;
-        }  // For some reason there can be pack and crew data in this file.
+        }  // For some reason there can be pack and Ship data in this file.
 
         // Test to see if data is in database and then select either INSERT or UPDATE
-        if (parent::InsertUpdateCheck($CrewYear, $CrewUnit)) {
+        if (parent::InsertUpdateCheck($ShipYear, $ShipUnit)) {
           //Update Date
-          $sqlUpdateCrew = sprintf(
-            "UPDATE `adv_crew` SET `Scout`='%s',`Tenderfoot`='%s', `SecondClass`='%s',`FirstClass`='%s',
+          $sqlUpdateShip = sprintf(
+            "UPDATE `adv_ship` SET `Scout`='%s',`Tenderfoot`='%s', `SecondClass`='%s',`FirstClass`='%s',
     					`Star`='%s',`Life`='%s',`Eagle`='%s', `YTD`='%s',
     					`Palms`='%s',`MeritBadge`='%s',`Date`='%s'
     					WHERE `Unit`='%s' AND `Date`='%s'",
@@ -281,44 +283,44 @@ class CPost extends CAdvancement
             $data[17],
             $data[19],
             $data[21],
-            $CrewYear,
-            $CrewUnit,
-            $CrewYear
+            $ShipYear,
+            $ShipUnit,
+            $ShipYear
           );
 
-          if (!parent::doQuery($sqlUpdateCrew)) {
-            echo "Update Error: " . $sqlUpdateCrew . "" . mysqli_error(parent::getDbConn()) . "<br />";
+          if (!parent::doQuery($sqlUpdateShip)) {
+            echo "Update Error: " . $sqlUpdateShip . "" . mysqli_error(parent::getDbConn()) . "<br />";
             $RecordsInError++;
           } else
             $Updated++;
           //Reset String
-          $sqlUpdateCrew = "";
+          $sqlUpdateShip = "";
         } else {
           // Insert Data
-          $sqlInsertCrew = "";
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[3]);  //Scout_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[5]);  //Tenderfoot_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[7]);  //Second_Class_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[9]);  //First_Class_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[11]);  //Star_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[13]);  //Life_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[15]);  //Eagle_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[17]);  //Total_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[19]);  //Palms_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $data[21]);  //Merit_Badges_YTD
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $CrewYear);  //Year
-          $sqlInsertCrew = $sqlInsertCrew . sprintf("'%s', ", $CrewUnit);  //Unit
+          $sqlInsertShip = "";
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[3]);  //Scout_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[5]);  //Tenderfoot_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[7]);  //Second_Class_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[9]);  //First_Class_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[11]);  //Star_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[13]);  //Life_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[15]);  //Eagle_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[17]);  //Total_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[19]);  //Palms_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $data[21]);  //Merit_Badges_YTD
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $ShipYear);  //Year
+          $sqlInsertShip = $sqlInsertShip . sprintf("'%s', ", $ShipUnit);  //Unit
 
-          $sqlInsertCrew = substr($sqlInsertCrew, 0, (strlen($sqlInsertCrew) - 2));
-          $sqlInsertCrew =  $sqlCrewInsertSt . $sqlInsertCrew . ");";
+          $sqlInsertShip = substr($sqlInsertShip, 0, (strlen($sqlInsertShip) - 2));
+          $sqlInsertShip =  $sqlShipInsertSt . $sqlInsertShip . ");";
           // Update the database
-          if (!parent::doQuery($sqlInsertCrew)) {
-            echo "Insert Error: " . $sqlInsertCrew . "" . mysqli_error(parent::getDbConn()) . "<br />";
+          if (!parent::doQuery($sqlInsertShip)) {
+            echo "Insert Error: " . $sqlInsertShip . "" . mysqli_error(parent::getDbConn()) . "<br />";
             $RecordsInError++;
           } else
             $Inserted++;
           //Reset String
-          $sqlInsertCrew = "";
+          $sqlInsertShip = "";
         }
       }
       fclose($handle);
@@ -328,110 +330,7 @@ class CPost extends CAdvancement
       $Usermsg = "Failed to open file";
       //parent::function_alert($Usermsg);
     }
-    parent::UpdateLastUpdated('adv_crew', $Datestr);
-
-    return $RecordsInError;
-  }
-  /******************************************************************************
-   * 
-   * This will update the Venturing awards
-   * 
-   *****************************************************************************/
-  public static function &UpdateVenturing($fileName)
-  {
-    $col_distorgname = 0;
-    $col_organizationname = 1;
-    $col_unitid = 2;
-    $col_venturingdiscoveryawardmtd = 3;
-    $col_venturingdiscoveryawardytd = 4;
-    $col_venturingpathfinderawardmtd = 5;
-    $col_venturingpathfinderawardytd = 6;
-    $col_venturingsummitawardmtd = 7;
-    $col_venturingsummitawardytd =8 ;
-    $col_venturingawardmtd = 9;
-    $col_venturingawardytd = 10;
-    $col_totalmtd = 11;
-    $col_totalytd = 12;
-    $col_youthqtt = 13;
-
-    $Inserted = 0;
-    $Updated = 0;
-    $RecordsInError = 0;
-    $row = 1;
-    //$filePath = "Data/" . $fileName;
-    $Datestr = "";
-    //$CrewYear = date("Y");
-    $CrewYear = parent::GetYear();
-    if (($handle = fopen($fileName, "r")) !== FALSE) {
-      while (($data = fgetcsv($handle, 0, ',', '"', '')) !== false) {
-        if ($row < 11) { // Skip the first row(s), headers.
-          if ($row == 7)
-            $Datestr = $data[0]; // Get the report date.
-          $row++;
-          continue;
-        }
-
-        $CrewUnit = parent::formatUnitNumber($data[$col_organizationname], $data[$col_organizationname]);
-        if ($data[$col_organizationname][0] == 'C' && $data[$col_organizationname][1] == 'r') {  // For some reason there can be Troop data in this file.
-
-          // Test to see if data is in database and then select either INSERT or UPDATE
-          if (parent::InsertUpdateCheck($CrewYear, $CrewUnit)) {
-            //Update Date
-           //parent::UpdateMembership($data[$col_distorgname],  $CrewUnit, $data[$col_unitid], $data[$col_youthqtt]);
-            $sqlUpdateCrew = sprintf(
-              "UPDATE `adv_crew` SET `discovery`='%s',`pathfinder`='%s', `summit`='%s',`venturing`='%s', `UnitID`='', `Youth`=''
-        					WHERE `Unit`='%s' AND `Date`='%s'",
-              $data[$col_venturingdiscoveryawardytd],
-              $data[$col_venturingpathfinderawardytd],
-              $data[$col_venturingsummitawardytd],
-              $data[$col_venturingawardytd],
-              $data[$col_unitid],
-              $data[$col_youthqtt],
-              $CrewUnit,
-              $CrewYear
-            );
-
-            if (!parent::doQuery($sqlUpdateCrew)) {
-              echo "Update Error: " . $sqlUpdateCrew . "" . mysqli_error(parent::getDbConn()) . "<br />";
-              $RecordsInError++;
-            } else
-              $Updated++;
-            //Reset String
-            $sqlUpdateCrew = "";
-          } 
-          else {
-            // Insert Data
-            ///parent::UpdateMembership($data[$col_distorgname],  $CrewUnit, $data[$colUnitID], $data[$colYouthTotal]);
-            $sqlInsertCrew = sprintf("INSERT INTO `adv_crew`(`discovery`, `pathfinder`, `summit`, `venturing`, `Date`, `YTD`, `Youth`, `Unit`, `UnitID`) 
-              VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-              
-              $data[$col_venturingdiscoveryawardytd],
-              $data[$col_venturingpathfinderawardytd],
-              $data[$col_venturingsummitawardytd],
-              $data[$col_venturingawardytd],
-              $CrewYear,
-              $data[$col_totalytd],
-              $data[$col_youthqtt],
-              $CrewUnit,
-              $data[$col_unitid],
-              );
-
-              if (!parent::doQuery($sqlInsertCrew)) {
-                echo "Update Error: " . $sqlInsertCrew . "" . mysqli_error(parent::getDbConn()) . "<br />";
-                $RecordsInError++;
-              } else
-                $Updated++;
-          }
-        }
-      }
-      fclose($handle);
-      $Usermsg = "Records Updated Inserted: " . $Inserted . " Updated: " . $Updated . " Errors: " . $RecordsInError;
-      //parent::function_alert($Usermsg);
-    } else {
-      $Usermsg = "Failed to open file";
-      //parent::function_alert($Usermsg);
-    }
-    parent::UpdateLastUpdated('adv_crew', $Datestr);
+    parent::UpdateLastUpdated('adv_ship', $Datestr);
 
     return $RecordsInError;
   }

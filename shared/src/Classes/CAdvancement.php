@@ -569,28 +569,3 @@ class CAdvancement
   }
 }
 
-
-
-
-
-
-
-
-
-
-/**
- * The Singleton class defines the `GetInstance` method that serves as an
- * alternative to constructor and lets clients access the same instance of this
- * class over and over.
- */
-class CShip extends CAdvancement
-{
-  /**
-   * Finally, any singleton should define some business logic, which can be
-   * executed on its instance.
-   */
-  public function someBusinessLogic()
-  {
-    // ...
-  }
-}

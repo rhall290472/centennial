@@ -18,38 +18,38 @@
 !==============================================================================!
 */
 
-load_class(BASE_PATH . '/src/Classes/CCrew.php');
+load_class(BASE_PATH . '/src/Classes/CShip.php');
 
-$CCrew = CCrew::getInstance();
+$CShip = CShip::getInstance();
 
 try {
   $SelYear = isset($_SESSION['year']) ? $_SESSION['year'] : date("Y");
-  $CCrew->SetYear($SelYear);
+  $CShip->SetYear($SelYear);
 
-  $Totals = $CCrew->GetTotals();
-  $NumofCrews = $CCrew->GetNumofCrews();
+  $Totals = $CShip->GetTotals();
+  $NumofShips = $CShip->GetNumofShips();
 } catch (Exception $e) {
   $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error loading ship data: ' . $e->getMessage()];
-  error_log("crew_summary.php - Error: " . $e->getMessage(), 0);
+  error_log("Ship_summary.php - Error: " . $e->getMessage(), 0);
   $Totals = ['Discovery' => 0, 'Pathfinder' => 0, 'Summit' => 0, 'Venturing' => 0, 'YTD' => 0, 'MeritBadge' => 0, 'Youth' => 0];
-  $NumofCrews = 0;
+  $NumofShips = 0;
 }
 
-$data = "['Discovery'," . $Totals['Discovery'] . "]," .
-  "['Pathfinder'," . $Totals['Pathfinder'] . "]," .
-  "['Summit'," . $Totals['Summit'] . "]," .
-  "['Venturing'," . $Totals['Venturing'] . "],";
+// $data = "['Discovery'," . $Totals['Discovery'] . "]," .
+//   "['Pathfinder'," . $Totals['Pathfinder'] . "]," .
+//   "['Summit'," . $Totals['Summit'] . "]," .
+//   "['Venturing'," . $Totals['Venturing'] . "],";
 ?>
 
 <sort_options>
   <div class="px-lg-5">
     <div class="row">
       <div class="col-2">
-        <form action="index.php?page=crew-summary" method="POST">
+        <form action="index.php?page=Ship-summary" method="POST">
           <p class="mb-0">Select Year</p>
           <?php
           try {
-            $CCrew->SelectYear();
+            $CShip->SelectYear();
           } catch (Exception $e) {
             $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error loading year selector: ' . $e->getMessage()];
             echo '<select class="form-control" name="Year"><option value="' . date("Y") . '">' . date("Y") . '</option></select>';
@@ -68,8 +68,8 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
         <div class="py-5">
           <?php
           try {
-            $sql = sprintf("SELECT * FROM adv_crew WHERE Date=%d ORDER BY Unit ASC", $CCrew->GetYear());
-            $result = mysqli_query($CCrew->getDbConn(), $sql);
+            $sql = sprintf("SELECT * FROM adv_ship WHERE Date=%d ORDER BY Unit ASC", $CShip->GetYear());
+            $result = mysqli_query($CShip->getDbConn(), $sql);
             if ($result) {
               $rowcount = mysqli_num_rows($result);
               if ($rowcount > 0) {
@@ -77,10 +77,10 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
                   '<div class="spinner"></div>' .
                   '<span style="color: #fff; font-size: 16px;">Loading...</span>' .
                   '</div>' .
-                  '<table id="crewTable" class="table table-striped"><thead><tr>' .
+                  '<table id="ShipTable" class="table table-striped"><thead><tr>' .
                   '<th>Unit</th><th>Star</th><th>Life</th><th>Eagle</th><th>Palms</th><th>Merit Badges</th><th>YTD</th><th>Youth</th><th>Rank/Scout</th><th>Discovery</th><th>Path Finder</th><th>Summit</th><th>Venturing</th><th>Date</th></tr></thead><tbody>';
                 while ($row = $result->fetch_assoc()) {
-                  $UnitYouth = $CCrew->GetUnitTotalYouth($row['Unit'], $row['Youth'], $row['Date']);
+                  $UnitYouth = $CShip->GetUnitTotalYouth($row['Unit'], $row['Youth'], $row['Date']);
                   $Rank_Scout = sprintf("%.2f", ($row["YTD"] + $row['MeritBadge']) / max($UnitYouth, 1));
                   $Unit = $row['Unit'];
                   $UnitDisplay = explode(' ', $Unit)[0];
@@ -97,17 +97,17 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
                 }
                 echo "</tbody></table>";
               } else {
-                echo "<p>No crew data available for $SelYear.</p>";
+                echo "<p>No Ship data available for $SelYear.</p>";
               }
               mysqli_free_result($result);
             } else {
-              throw new Exception("Database query failed: " . mysqli_error($CCrew->getDbConn()));
+              throw new Exception("Database query failed: " . mysqli_error($CShip->getDbConn()));
             }
-            echo "<p style='text-align: center;'>Number of Crews in District: $NumofCrews</p>";
-            echo "<p style='text-align: center;'>Data last updated: " . htmlspecialchars($CCrew->GetLastUpdated("adv_crew")) . "</p>";
+            echo "<p style='text-align: center;'>Number of Ships in District: $NumofShips</p>";
+            echo "<p style='text-align: center;'>Data last updated: " . htmlspecialchars($CShip->GetLastUpdated("adv_ship")) . "</p>";
           } catch (Exception $e) {
-            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying crew data: ' . $e->getMessage()];
-            error_log("crew_summary.php - Error: " . $e->getMessage(), 0);
+            $_SESSION['feedback'] = ['type' => 'danger', 'message' => 'Error displaying Ship data: ' . $e->getMessage()];
+            error_log("ship_summary.php - Error: " . $e->getMessage(), 0);
           }
           ?>
         </div>
@@ -144,7 +144,7 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
 
     var options = {
       chart: {
-        title: 'District wide Crew Awards Data',
+        title: 'District wide Ship Awards Data',
         subtitle: 'Year to date',
       },
       bars: 'vertical'
@@ -156,13 +156,13 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
 
   // Initialize DataTables with export buttons and custom spinner
   $(document).ready(function() {
-    console.log('Starting DataTable initialization for crewTable');
+    console.log('Starting DataTable initialization for ShipTable');
 
     // Show custom loading overlay
     $('#loadingOverlay').show();
     console.log('Loading overlay shown');
 
-    $('#crewTable').DataTable({
+    $('#ShipTable').DataTable({
       dom: 'Bfrtip',
       buttons: [{
           extend: 'copy',
@@ -171,17 +171,17 @@ $data = "['Discovery'," . $Totals['Discovery'] . "]," .
         {
           extend: 'csv',
           className: 'btn btn-primary btn-sm d-print-none mt-2',
-          filename: 'Centennial District Crew Summary'
+          filename: 'Centennial District Ship Summary'
         },
         {
           extend: 'excel',
           className: 'btn btn-primary btn-sm d-print-none mt-2',
-          filename: 'Centennial District Crew Summary'
+          filename: 'Centennial District Ship Summary'
         },
         {
           extend: 'pdf',
           className: 'btn btn-primary btn-sm d-print-none mt-2',
-          filename: 'Centennial District Crew Summary'
+          filename: 'Centennial District Ship Summary'
         }
       ],
       pageLength: -1, // Show all rows
